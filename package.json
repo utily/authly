@@ -1,0 +1,65 @@
+{
+ "name": "authly",
+ "version": "0.0.1",
+ "description": "Tokenized authentication using JSON Web Tokens.",
+ "author": "Certitrade",
+ "license": "MIT",
+ "repository": {
+  "type": "git",
+  "url": "git+https://github.com/certitrade/authly"
+ },
+ "bugs": {
+  "url": "https://github.com/certitrade/authly/issues"
+ },
+ "homepage": "https://github.com/certitrade/authly#readme",
+ "private": false,
+ "main": "dist/index.js",
+ "typings": "dist/index.d.ts",
+ "git": {
+  "tagName": "v${version}"
+ },
+ "github": {
+  "release": true
+ },
+ "jest": {
+  "globals": {
+   "ts-jest": {
+    "tsConfig": "tsconfig.test.json"
+   }
+  },
+  "testEnvironment": "node",
+  "testRegex": "((\\.|/)(test|spec))(\\.|\\/.+)(jsx?|tsx?)$",
+  "testPathIgnorePatterns": [
+   "node_modules/",
+   "dist/"
+  ],
+  "collectCoverageFrom": [
+   "**/*.{ts,tsx,js,jsx}",
+   "!**/node_modules/**",
+   "!**/dist/**"
+  ],
+  "preset": "ts-jest",
+  "testMatch": null
+ },
+ "scripts": {
+  "dev": "watch 'npm run build' .",
+  "lint": "tslint --config tslint.json --project .",
+  "build": "tsc -p .",
+  "test": "jest",
+  "test:watch": "watch jest",
+  "prepare": "npm run build",
+  "clean": "rm -rf dist node_modules coverage"
+ },
+ "dependencies": {},
+ "devDependencies": {
+  "@types/jest": "^24.0.11",
+  "@types/node": "^11.11.4",
+  "babel-core": "^6.26.3",
+  "babel-jest": "^24.5.0",
+  "jest": "^24",
+  "ts-jest": "^24.0.0",
+  "typescript": "^3.3.4000",
+  "typescript-tslint-plugin": "^0.2.1",
+  "watch": "^1.0.2"
+ }
+}
