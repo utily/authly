@@ -1,4 +1,6 @@
+import * as Algorithm from "./Algorithm"
 export interface Header {
-	alg: string
-	typ: string
+	alg: Algorithm.Name
+	typ: "JWT"
+	cty?: "JWT" | string
 }

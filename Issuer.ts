@@ -1,19 +1,40 @@
-import { Type } from "./Type"
+import * as base64Url from "base64-url"
+import * as Algorithm from "./Algorithm"
+import { Header } from "./Header"
+import { Payload } from "./Payload"
 
-// tslint:disable:no-bitwise
-export class Issuer<T> {
-	constructor(private type: Type) {
+export class Issuer {
+	issuer?: string
+	subject?: string
+	audience?: string
+	duration?: number
+	identifier?: string
+	get header(): Header {
+		return {
+			alg: this.algorithm.name,
+			typ: "JWT",
+		}
 	}
-	hash() {}
-	async encode(token: T): Promise<string> {
-		const time = Date.now()
-		const payload = {}
-		for (const name in this.type.claims)
-			if (this.type.claims.hasOwnProperty(name)) {
-				const claim = this.type.claims[name]
-				const value = token[name]
-				payload[claim.abbreviation] = value
-			}
-		return ""
+	get payload(): Payload {
+		const result: Payload = {}
+		if (this.issuer)
+			result.iss = this.issuer
+		if (this.subject)
+			result.sub = this.subject
+		if (this.audience)
+			result.aud = this.audience
+		result.iat = Date.now()
+		if (this.duration)
+			result.exp = result.iat + this.duration
+		return result
+	}
+	constructor(readonly algorithm: Algorithm.Base) {
+	}
+	sign(payload: Payload, issuedAt?: Date): string {
+		payload = { ...this.payload, ...payload }
+		if (issuedAt)
+			payload.iat = issuedAt.getTime()
+		const data = `${base64Url.encode(JSON.stringify(this.header))}.${base64Url.encode(JSON.stringify(payload))}`
+		return `${ data }.${ this.algorithm.sign(data) }`
 	}
 }
