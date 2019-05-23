@@ -1,4 +1,5 @@
 import * as Algorithm from "./Algorithm"
+import { Actor } from "./Actor"
 import { Issuer } from "./Issuer"
 import { Payload } from "./Payload"
 import { Token } from "./Token"

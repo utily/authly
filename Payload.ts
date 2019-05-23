@@ -1,8 +1,8 @@
 export interface Payload {
 	sub?: string // subject
 	iss?: string // issuer
-	aud?: string // audience
+	aud?: string | string[] // audience
 	exp?: number // expires at
 	iat?: number // issued at
-	[claim: string]: string | number | undefined
+	[claim: string]: string | string[] | number | undefined
 }

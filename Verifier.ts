@@ -1,12 +1,14 @@
 import * as base64Url from "base64-url"
 import * as Algorithm from "./Algorithm"
+import { Actor } from "./Actor"
 import { Header } from "./Header"
 import { Payload } from "./Payload"
 import { Token } from "./Token"
 
-export class Verifier {
+export class Verifier extends Actor {
 	readonly algorithms: { [algorithm: string]: Algorithm.Base } = {}
-	constructor(...algorithms: Algorithm.Base[]) {
+	constructor(id: string, ...algorithms: Algorithm.Base[]) {
+		super(id)
 		for (const algorithm of algorithms)
 			this.algorithms[algorithm.name] = algorithm
 	}
@@ -16,9 +18,16 @@ export class Verifier {
 		const algorithm = this.algorithms[header.alg]
 		const result: Payload | undefined = algorithm && algorithm.verify(token, splitted[2]) ? JSON.parse(base64Url.decode(splitted[1])) as Payload : undefined
 		const now = Date.now()
-		return result && (result.exp == undefined || result.exp > now) && (result.iat == undefined || result.iat <= now) ? result : undefined
+		return result &&
+			(result.exp == undefined || result.exp > now) &&
+			(result.iat == undefined || result.iat <= now) &&
+			this.verifyAudience(result.aud) ?
+			result : undefined
 	}
-	authenticate(value: string): Payload | undefined {
-		return req.headers.authorization && req.headers.authorization.startsWith("Bearer ") ? verifier.verify(req.headers.authorization.substr(7)) : undefined
+	private verifyAudience(audience: undefined | string | string[]): boolean {
+		return audience == undefined || typeof(audience) == "string" && audience == this.id || Array.isArray(audience) && audience.some(a => a == this.id)
+	}
+	authenticate(authorization: string): Payload | undefined {
+		return authorization && authorization.startsWith("Bearer ") ? this.verify(authorization.substr(7)) : undefined
 	}
 }

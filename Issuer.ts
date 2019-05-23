@@ -1,15 +1,13 @@
 import * as base64Url from "base64-url"
 import * as Algorithm from "./Algorithm"
+import { Actor } from "./Actor"
 import { Header } from "./Header"
 import { Payload } from "./Payload"
 import { Token } from "./Token"
 
-export class Issuer {
-	issuer?: string
-	subject?: string
-	audience?: string
+export class Issuer extends Actor {
+	audience?: string | string[]
 	duration?: number
-	identifier?: string
 	get header(): Header {
 		return {
 			alg: this.algorithm.name,
@@ -17,19 +15,15 @@ export class Issuer {
 		}
 	}
 	get payload(): Payload {
-		const result: Payload = {}
-		if (this.issuer)
-			result.iss = this.issuer
-		if (this.subject)
-			result.sub = this.subject
+		const result: Payload = { iss: this.id, iat: Date.now() }
 		if (this.audience)
 			result.aud = this.audience
-		result.iat = Date.now()
-		if (this.duration)
+		if (this.duration && result.iat)
 			result.exp = result.iat + this.duration
 		return result
 	}
-	constructor(readonly algorithm: Algorithm.Base) {
+	constructor(id: string, readonly algorithm: Algorithm.Base) {
+		super(id)
 	}
 	sign(payload: Payload, issuedAt?: Date | number): Token {
 		payload = { ...this.payload, ...payload }
