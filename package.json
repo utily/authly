@@ -1,6 +1,6 @@
 {
  "name": "authly",
- "version": "0.0.2",
+ "version": "0.0.3",
  "description": "Tokenized authentication using JSON Web Tokens.",
  "author": "Certitrade",
  "license": "MIT",
