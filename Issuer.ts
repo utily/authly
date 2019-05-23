@@ -2,6 +2,7 @@ import * as base64Url from "base64-url"
 import * as Algorithm from "./Algorithm"
 import { Header } from "./Header"
 import { Payload } from "./Payload"
+import { Token } from "./Token"
 
 export class Issuer {
 	issuer?: string
@@ -30,7 +31,7 @@ export class Issuer {
 	}
 	constructor(readonly algorithm: Algorithm.Base) {
 	}
-	sign(payload: Payload, issuedAt?: Date | number): string {
+	sign(payload: Payload, issuedAt?: Date | number): Token {
 		payload = { ...this.payload, ...payload }
 		if (issuedAt)
 			payload.iat = typeof(issuedAt) == "number" ? issuedAt : issuedAt.getTime()
