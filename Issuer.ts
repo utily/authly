@@ -34,7 +34,7 @@ export class Issuer {
 		payload = { ...this.payload, ...payload }
 		if (issuedAt)
 			payload.iat = typeof(issuedAt) == "number" ? issuedAt : issuedAt.getTime()
-		const data = `${base64Url.encode(JSON.stringify(this.header))}.${base64Url.encode(JSON.stringify(payload))}`
+		const data = `${ base64Url.encode(JSON.stringify(this.header)) }.${ base64Url.encode(JSON.stringify(payload)) }`
 		return `${ data }.${ this.algorithm.sign(data) }`
 	}
 }
