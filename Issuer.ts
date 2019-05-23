@@ -30,10 +30,10 @@ export class Issuer {
 	}
 	constructor(readonly algorithm: Algorithm.Base) {
 	}
-	sign(payload: Payload, issuedAt?: Date): string {
+	sign(payload: Payload, issuedAt?: Date | number): string {
 		payload = { ...this.payload, ...payload }
 		if (issuedAt)
-			payload.iat = issuedAt.getTime()
+			payload.iat = typeof(issuedAt) == "number" ? issuedAt : issuedAt.getTime()
 		const data = `${base64Url.encode(JSON.stringify(this.header))}.${base64Url.encode(JSON.stringify(payload))}`
 		return `${ data }.${ this.algorithm.sign(data) }`
 	}
