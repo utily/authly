@@ -12,17 +12,21 @@ export class Verifier extends Actor {
 		for (const algorithm of algorithms)
 			this.algorithms[algorithm.name] = algorithm
 	}
-	verify(token: string | Token): Payload | undefined {
-		const splitted = token.split(".", 3)
-		const header: Header = JSON.parse(base64Url.decode(splitted[0]))
-		const algorithm = this.algorithms[header.alg]
-		const result: Payload | undefined = algorithm && algorithm.verify(token, splitted[2]) ? JSON.parse(base64Url.decode(splitted[1])) as Payload : undefined
-		const now = Date.now()
-		return result &&
-			(result.exp == undefined || result.exp > now) &&
-			(result.iat == undefined || result.iat <= now) &&
-			this.verifyAudience(result.aud) ?
-			result : undefined
+	verify(token: string | Token | undefined): Payload | undefined {
+		let result: Payload | undefined
+		if (token) {
+			const splitted = token.split(".", 3)
+			const header: Header = JSON.parse(base64Url.decode(splitted[0]))
+			const algorithm = this.algorithms[header.alg]
+			result = algorithm && algorithm.verify(token, splitted[2]) ? JSON.parse(base64Url.decode(splitted[1])) as Payload : undefined
+			const now = Date.now()
+			result = result &&
+				(result.exp == undefined || result.exp > now) &&
+				(result.iat == undefined || result.iat <= now) &&
+				this.verifyAudience(result.aud) ?
+				result : undefined
+		}
+		return result
 	}
 	private verifyAudience(audience: undefined | string | string[]): boolean {
 		return audience == undefined || typeof(audience) == "string" && audience == this.id || Array.isArray(audience) && audience.some(a => a == this.id)
