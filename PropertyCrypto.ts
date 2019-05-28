@@ -8,7 +8,9 @@ const crypto = new WebCrypto()
 export class PropertyCrypto {
 	protected readonly encoder = new TextEncoder("utf-8")
 	protected readonly decoder = new TextDecoder("utf-8")
-	constructor(private secret: string, private properties: string[]) {
+	private properties: string[]
+	constructor(private secret: string, ...properties: string[]) {
+		this.properties = properties
 	}
 	encrypt(payload: Payload): Promise<Payload> {
 		return this.process(payload, value => this.encoder.encode(JSON.stringify(value)), value => Base64.encode(value, "url"))
