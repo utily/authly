@@ -1,4 +1,5 @@
 import * as base64Url from "base64-url"
+import { TextEncoder } from "text-encoder"
 import * as Algorithm from "./Algorithm"
 import { Actor } from "./Actor"
 import { Header } from "./Header"
@@ -19,7 +20,7 @@ export class Verifier extends Actor {
 			const splitted = token.split(".", 3)
 			const header: Header = JSON.parse(base64Url.decode(splitted[0]))
 			const algorithm = this.algorithms[header.alg]
-			result = algorithm && await algorithm.verify(new TextEncoder().encode(`${ splitted[0] }.${ splitted[1] }`), Base64.decode(splitted[2], "url")) ? JSON.parse(base64Url.decode(splitted[1])) as Payload : undefined
+			result = algorithm && await algorithm.verify(new TextEncoder("utf-8").encode(`${ splitted[0] }.${ splitted[1] }`), Base64.decode(splitted[2], "url")) ? JSON.parse(base64Url.decode(splitted[1])) as Payload : undefined
 			const now = Date.now()
 			result = result &&
 				(result.exp == undefined || result.exp > now) &&
