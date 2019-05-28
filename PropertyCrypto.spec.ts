@@ -1,18 +1,7 @@
 import { PropertyCrypto } from "./PropertyCrypto"
-import * as base64Url from "base64-url"
 
 describe("PropertyCrypto", () => {
 	const crypto = new PropertyCrypto("secret", ["encrypted"])
-	it("encoding - decoding", async () => {
-		const encoder = new TextEncoder()
-		const decoder = new TextDecoder()
-		const cleartext = { property: "value", number: 1337 }
-		const encoded = encoder.encode(JSON.stringify(cleartext))
-		const encrypted = base64Url.encode(decoder.decode(encoded))
-		const decrypted = encoder.encode(base64Url.decode(encrypted))
-		const decoded = JSON.parse(decoder.decode(decrypted))
-		expect(decoded).toEqual({ property: "value", number: 1337 })
-	})
 	it("encrypt", async () => {
 		const encrypted = await crypto.encrypt({ iss: "issuer", iat: 123456789, encrypted: { property: "value", number: 1337 } })
 		expect(encrypted).toEqual({
