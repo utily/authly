@@ -1,14 +1,19 @@
-import * as Algorithm from "./Algorithm"
 import { Actor } from "./Actor"
+import * as Algorithm from "./Algorithm"
+import * as Base64 from "./Base64"
 import { Issuer } from "./Issuer"
 import { Payload } from "./Payload"
+import { PropertyCrypto } from "./PropertyCrypto"
 import { Token } from "./Token"
 import { Verifier } from "./Verifier"
 
 export {
+	Actor,
 	Algorithm,
+	Base64,
 	Issuer,
 	Payload,
+	PropertyCrypto,
 	Token,
 	Verifier,
 }

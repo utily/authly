@@ -1,7 +1,7 @@
 {
  "name": "authly",
  "version": "0.0.6",
- "description": "Tokenized authentication using JSON Web Tokens.",
+ "description": "Tokenized authentication using JSON Web Tokens with support for encrypted token properties.",
  "author": "Certitrade",
  "license": "MIT",
  "repository": {
@@ -51,7 +51,8 @@
   "clean": "rm -rf dist node_modules coverage"
  },
  "dependencies": {
-  "base64-url": "^2.2.1"
+  "base64-url": "^2.2.1",
+  "node-webcrypto-ossl": "^1.0.45"
  },
  "devDependencies": {
   "@types/base64-url": "^2.2.0",
