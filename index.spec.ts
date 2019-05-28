@@ -29,4 +29,14 @@ describe("authly", () =>{
 			test: "test",
 		})
 	})
+	it("any", async () => {
+		const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJpc3N1ZXIiLCJpYXQiOjQ5MDYyMDAwLCJhdWQiOlsidmVyaWZpZXIiLCJhdWRpZW5jZSJdLCJ0ZXN0IjoidGVzdCJ9.7zOG5XjdMk6r4YhddJPEvDi2PFYjQrYVJ4stYJpRcgg"
+		const verifier = new authly.Verifier("audience")
+		expect(await verifier.verify(token)).toEqual({
+			iss: "issuer",
+			aud: [ "verifier", "audience" ],
+			iat: 49062000,
+			test: "test",
+		})
+	})
 })
