@@ -1,12 +1,13 @@
 import * as WebCrypto from "node-webcrypto-ossl"
+import { TextEncoder, TextDecoder } from "text-encoder"
 import * as Base64 from "./Base64"
 import { Payload } from "./Payload"
 
 const crypto = new WebCrypto()
 
 export class PropertyCrypto {
-	protected readonly encoder = new TextEncoder()
-	protected readonly decoder = new TextDecoder()
+	protected readonly encoder = new TextEncoder("utf-8")
+	protected readonly decoder = new TextDecoder("utf-8")
 	constructor(private secret: string, private properties: string[]) {
 	}
 	encrypt(payload: Payload): Promise<Payload> {

@@ -52,7 +52,8 @@
  },
  "dependencies": {
   "base64-url": "^2.2.1",
-  "node-webcrypto-ossl": "^1.0.45"
+  "node-webcrypto-ossl": "^1.0.45",
+  "text-encoder": "0.0.4"
  },
  "devDependencies": {
   "@types/base64-url": "^2.2.0",
