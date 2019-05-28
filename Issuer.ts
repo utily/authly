@@ -1,6 +1,7 @@
 import * as base64Url from "base64-url"
-import * as Algorithm from "./Algorithm"
 import { Actor } from "./Actor"
+import * as Algorithm from "./Algorithm"
+import * as Base64 from "./Base64"
 import { Header } from "./Header"
 import { Payload } from "./Payload"
 import { Token } from "./Token"
@@ -25,11 +26,11 @@ export class Issuer extends Actor {
 	constructor(id: string, readonly algorithm: Algorithm.Base) {
 		super(id)
 	}
-	sign(payload: Payload, issuedAt?: Date | number): Token {
+	async sign(payload: Payload, issuedAt?: Date | number): Promise<Token> {
 		payload = { ...this.payload, ...payload }
 		if (issuedAt)
 			payload.iat = typeof(issuedAt) == "number" ? issuedAt : issuedAt.getTime()
 		const data = `${ base64Url.encode(JSON.stringify(this.header)) }.${ base64Url.encode(JSON.stringify(payload)) }`
-		return `${ data }.${ this.algorithm.sign(data) }`
+		return `${ data }.${ Base64.encode(await this.algorithm.sign(new TextEncoder().encode(data)), "url") }`
 	}
 }
