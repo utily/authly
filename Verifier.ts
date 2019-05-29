@@ -1,5 +1,4 @@
 import * as base64Url from "base64-url"
-import { TextEncoder } from "text-encoder"
 import * as Algorithm from "./Algorithm"
 import { Actor } from "./Actor"
 import * as Base64 from "./Base64"
@@ -7,6 +6,7 @@ import { Header } from "./Header"
 import { Payload } from "./Payload"
 import { PropertyCrypto } from "./PropertyCrypto"
 import { Token } from "./Token"
+import { TextEncoder } from "./TextEncoder"
 
 export class Verifier extends Actor {
 	readonly algorithms: { [algorithm: string]: Algorithm.Base } | undefined
@@ -32,7 +32,7 @@ export class Verifier extends Actor {
 			result = JSON.parse(base64Url.decode(splitted[1])) as Payload
 			if (this.algorithms) {
 				const algorithm = this.algorithms[header.alg]
-				result = algorithm && await algorithm.verify(new TextEncoder("utf-8").encode(`${ splitted[0] }.${ splitted[1] }`), Base64.decode(splitted[2], "url")) ? result : undefined
+				result = algorithm && await algorithm.verify(new TextEncoder().encode(`${ splitted[0] }.${ splitted[1] }`), Base64.decode(splitted[2], "url")) ? result : undefined
 			}
 			const now = Date.now()
 			result = result &&
