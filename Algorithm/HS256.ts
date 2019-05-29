@@ -1,12 +1,10 @@
-import * as WebCrypto from "node-webcrypto-ossl"
+import { crypto } from "../crypto"
 import { Symmetric } from "./Symmetric"
 import { Name } from "./Name"
 
-const crypto = new WebCrypto()
-
 export class HS256 extends Symmetric {
 	get name(): Name { return "HS256" }
-	private key: PromiseLike<NodeWebcryptoOpenSSL.CryptoKey>
+	private key: PromiseLike<CryptoKey>
 	constructor(key: Uint8Array) {
 		super()
 		this.key = crypto.subtle.importKey("raw", key, { name: "HMAC", hash: { name: "SHA-256" } }, false, [ "sign", "verify" ])

@@ -1,9 +1,7 @@
-import * as WebCrypto from "node-webcrypto-ossl"
+import { crypto } from "./crypto"
 import { TextEncoder, TextDecoder } from "text-encoder"
 import * as Base64 from "./Base64"
 import { Payload } from "./Payload"
-
-const crypto = new WebCrypto()
 
 export class PropertyCrypto {
 	protected readonly encoder = new TextEncoder("utf-8")
