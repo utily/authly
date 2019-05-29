@@ -1,5 +1,4 @@
 import * as base64Url from "base64-url"
-import { TextEncoder } from "text-encoder"
 import * as Algorithm from "./Algorithm"
 import { Actor } from "./Actor"
 import * as Base64 from "./Base64"
@@ -7,6 +6,7 @@ import { Header } from "./Header"
 import { Payload } from "./Payload"
 import { PropertyCrypto } from "./PropertyCrypto"
 import { Token } from "./Token"
+import { TextEncoder } from "./TextEncoder"
 
 export class Issuer extends Actor {
 	audience?: string | string[]
@@ -39,6 +39,6 @@ export class Issuer extends Actor {
 			payload.iat = typeof(issuedAt) == "number" ? issuedAt : issuedAt.getTime()
 		payload = await this.cryptos.reduce(async (p, c) => c.encrypt(await p), Promise.resolve(payload))
 		const data = `${ base64Url.encode(JSON.stringify(this.header)) }.${ base64Url.encode(JSON.stringify(payload)) }`
-		return `${ data }.${ Base64.encode(await this.algorithm.sign(new TextEncoder("utf-8").encode(data)), "url") }`
+		return `${ data }.${ Base64.encode(await this.algorithm.sign(new TextEncoder().encode(data)), "url") }`
 	}
 }

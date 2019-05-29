@@ -1,11 +1,12 @@
 import { crypto } from "./crypto"
-import { TextEncoder, TextDecoder } from "text-encoder"
 import * as Base64 from "./Base64"
 import { Payload } from "./Payload"
+import { TextEncoder } from "./TextEncoder"
+import { TextDecoder } from "./TextDecoder"
 
 export class PropertyCrypto {
-	protected readonly encoder = new TextEncoder("utf-8")
-	protected readonly decoder = new TextDecoder("utf-8")
+	protected readonly encoder = new TextEncoder()
+	protected readonly decoder = new TextDecoder()
 	private properties: string[]
 	constructor(private secret: string, ...properties: string[]) {
 		this.properties = properties
