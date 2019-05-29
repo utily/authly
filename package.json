@@ -54,11 +54,9 @@
   "clean": "rm -rf dist node_modules coverage"
  },
  "dependencies": {
-  "base64-url": "^2.2.1",
   "node-webcrypto-ossl": "^1.0.45"
  },
  "devDependencies": {
-  "@types/base64-url": "^2.2.0",
   "@types/jest": "^24.0.13",
   "@types/node": "^12.0.2",
   "babel-core": "^6.26.3",
