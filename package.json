@@ -16,7 +16,7 @@
  "main": "dist/index.js",
  "typings": "dist/index.d.ts",
  "browser": {
-  "crypto": "crypto.browser"
+  "./dist/crypto": "./dist/crypto.browser"
  },
  "git": {
   "tagName": "v${version}"
