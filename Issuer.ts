@@ -1,4 +1,3 @@
-import * as base64Url from "base64-url"
 import * as Algorithm from "./Algorithm"
 import { Actor } from "./Actor"
 import * as Base64 from "./Base64"
@@ -38,7 +37,7 @@ export class Issuer extends Actor {
 		if (issuedAt)
 			payload.iat = typeof(issuedAt) == "number" ? issuedAt : issuedAt.getTime()
 		payload = await this.cryptos.reduce(async (p, c) => c.encrypt(await p), Promise.resolve(payload))
-		const data = `${ base64Url.encode(JSON.stringify(this.header)) }.${ base64Url.encode(JSON.stringify(payload)) }`
+		const data = `${ Base64.encode(new TextEncoder().encode(JSON.stringify(this.header))) }.${ Base64.encode(new TextEncoder().encode(JSON.stringify(payload))) }`
 		return `${ data }.${ Base64.encode(await this.algorithm.sign(new TextEncoder().encode(data)), "url") }`
 	}
 }

@@ -2,8 +2,6 @@
 	"compilerOptions": {
 		"target": "es6",
 		"module": "commonjs",
-		"baseUrl": ".",
-		"paths": { "*": ["types/*"] },
 		"noImplicitAny": true,
 		"removeComments": true,
 		"preserveConstEnums": true,
