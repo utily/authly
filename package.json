@@ -54,7 +54,7 @@
   "clean": "rm -rf dist node_modules coverage"
  },
  "dependencies": {
-  "node-webcrypto-ossl": "^1.0.46"
+  "node-webcrypto-ossl": "^1.0.45"
  },
  "devDependencies": {
   "@types/jest": "^24.0.13",
