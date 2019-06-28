@@ -2,16 +2,16 @@
  "name": "authly",
  "version": "0.0.17",
  "description": "Tokenized authentication using JSON Web Tokens with support for encrypted token properties.",
- "author": "Certitrade",
+ "author": "PayFunc",
  "license": "MIT",
  "repository": {
   "type": "git",
-  "url": "git+https://github.com/certitrade/authly"
+  "url": "git+https://github.com/payfunc/authly"
  },
  "bugs": {
-  "url": "https://github.com/certitrade/authly/issues"
+  "url": "https://github.com/payfunc/authly/issues"
  },
- "homepage": "https://github.com/certitrade/authly#readme",
+ "homepage": "https://github.com/payfunc/authly#readme",
  "private": false,
  "main": "dist/index.js",
  "typings": "dist/index.d.ts",
@@ -54,17 +54,17 @@
   "clean": "rm -rf dist node_modules coverage"
  },
  "dependencies": {
-  "node-webcrypto-ossl": "1.0.45"
+  "node-webcrypto-ossl": "1.0.48"
  },
  "devDependencies": {
-  "@types/jest": "^24.0.13",
-  "@types/node": "^10.14.9",
+  "@types/jest": "^24.0.15",
+  "@types/node": "^12.0.10",
   "babel-core": "^6.26.3",
   "babel-jest": "^24.8.0",
   "jest": "^24",
   "ts-jest": "^24.0.2",
-  "typescript": "^3.5.1",
-  "typescript-tslint-plugin": "^0.5.0",
+  "typescript": "^3.5.2",
+  "typescript-tslint-plugin": "^0.5.2",
   "watch": "^1.0.2"
  }
 }
