@@ -2,6 +2,7 @@ import { Actor } from "./Actor"
 import * as Algorithm from "./Algorithm"
 import * as Base64 from "./Base64"
 import { Issuer } from "./Issuer"
+import { Password } from "./Password"
 import { Payload } from "./Payload"
 import { PropertyCrypto } from "./PropertyCrypto"
 import { TextDecoder } from "./TextDecoder"
@@ -14,6 +15,7 @@ export {
 	Algorithm,
 	Base64,
 	Issuer,
+	Password,
 	Payload,
 	PropertyCrypto,
 	TextDecoder,
