@@ -4,8 +4,11 @@ import * as Base64 from "./Base64"
 import { Issuer } from "./Issuer"
 import { Payload } from "./Payload"
 import { PropertyCrypto } from "./PropertyCrypto"
+import { TextDecoder } from "./TextDecoder"
+import { TextEncoder } from "./TextEncoder"
 import { Token } from "./Token"
 import { Verifier } from "./Verifier"
+
 
 export {
 	Actor,
@@ -14,6 +17,8 @@ export {
 	Issuer,
 	Payload,
 	PropertyCrypto,
+	TextDecoder,
+	TextEncoder,
 	Token,
 	Verifier,
 }
