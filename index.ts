@@ -9,7 +9,6 @@ import { TextEncoder } from "./TextEncoder"
 import { Token } from "./Token"
 import { Verifier } from "./Verifier"
 
-
 export {
 	Actor,
 	Algorithm,
