@@ -1,6 +1,8 @@
 # authly
 Tokenized authentication using JSON Web Tokens.
 
-Prerequisites
-make
-g++
+## Prerequisites
+To build the dependecies you need to have the following installed:
+```
+sudo apt install make g++
+```
