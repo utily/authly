@@ -32,7 +32,7 @@ export class Verifier extends Actor {
 			result = JSON.parse(new TextDecoder().decode(Base64.decode(splitted[1]))) as Payload
 			if (this.algorithms) {
 				const algorithm = this.algorithms[header.alg]
-				result = algorithm && await algorithm.verify(new TextEncoder().encode(`${ splitted[0] }.${ splitted[1] }`), Base64.decode(splitted[2], "url")) ? result : undefined
+				result = algorithm && await algorithm.verify(`${ splitted[0] }.${ splitted[1] }`, splitted[2]) ? result : undefined
 			}
 			const now = Date.now()
 			result = result &&
