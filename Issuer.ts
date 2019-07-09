@@ -38,6 +38,6 @@ export class Issuer extends Actor {
 			payload.iat = typeof(issuedAt) == "number" ? issuedAt : issuedAt.getTime()
 		payload = await this.cryptos.reduce(async (p, c) => c.encrypt(await p), Promise.resolve(payload))
 		const data = `${ Base64.encode(new TextEncoder().encode(JSON.stringify(this.header))) }.${ Base64.encode(new TextEncoder().encode(JSON.stringify(payload))) }`
-		return `${ data }.${ Base64.encode(await this.algorithm.sign(new TextEncoder().encode(data)), "url") }`
+		return `${ data }.${ await this.algorithm.sign(data) }`
 	}
 }
