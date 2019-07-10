@@ -1,6 +1,5 @@
 export type Password = string | Password.Hash
 import { crypto } from "./crypto"
-import { TextEncoder } from "./TextEncoder"
 import * as Base64 from "./Base64"
 import * as Algorithm from "./Algorithm"
 

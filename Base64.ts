@@ -1,10 +1,14 @@
+import { TextEncoder } from "./TextEncoder"
+
 const tables: { [standard: string]: string } = {
 	standard: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
 	url: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_",
 }
 export type Standard = "standard" | "url"
 // tslint:disable: no-bitwise
-export function encode(value: Uint8Array, standard: Standard = "standard"): string {
+export function encode(value: Uint8Array | string, standard: Standard = "standard", padding: "" | "=" | "-" = ""): string {
+	if (typeof(value) == "string")
+		value = new TextEncoder().encode(value)
 	const table = tables[standard]
 	const result: string[] = []
 	for (let c = 0; c < value.length; c += 3) {
@@ -16,9 +20,12 @@ export function encode(value: Uint8Array, standard: Standard = "standard"): stri
 		result.push(table[((c1 & 15) << 2) | (c2 >>> 6)])
 		result.push(table[c2 & 63])
 	}
-	return result.join("").substr(0, Math.ceil(value.length / 3 * 4))
+	const length = Math.ceil(value.length / 3 * 4)
+	return result.join("").substr(0, length) + padding.repeat(result.length - length)
 }
 export function decode(value: string, standard: Standard = "standard"): Uint8Array {
+	while (value.endsWith("=") && value.length > 0)
+		value = value.substr(0, value.length - 1)
 	const table = tables[standard]
 	const data = value.split("").map(c => table.indexOf(c))
 	const result = new Uint8Array(Math.floor(data.length / 4 * 3))
