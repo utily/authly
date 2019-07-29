@@ -9,6 +9,7 @@ import { TextDecoder } from "./TextDecoder"
 import { TextEncoder } from "./TextEncoder"
 import { Token } from "./Token"
 import { Verifier } from "./Verifier"
+import { Identifier } from "./Identifier"
 
 export {
 	Actor,
@@ -22,4 +23,5 @@ export {
 	TextEncoder,
 	Token,
 	Verifier,
+	Identifier,
 }
