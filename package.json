@@ -48,6 +48,7 @@
   "dev": "watch 'npm run build' .",
   "lint": "tslint --config tslint.json --project .",
   "build": "tsc -p .",
+  "pretest": "npm run build",
   "test": "jest",
   "test:watch": "watch jest",
   "prepare": "npm run build",

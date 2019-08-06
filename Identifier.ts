@@ -13,8 +13,8 @@ export namespace Identifier {
 	export function toBinary(identifier: Identifier): Uint8Array {
 		return Base64.decode(identifier, "url")		
 	}
-	export function generate(length: number): Identifier {
-		return fromBinary(crypto.getRandomValues(new Uint8Array(Math.ceil(length / 4 * 3)))).substr(0, length)
+	export function generate(length: Lengths): Identifier {
+		return fromBinary(crypto.getRandomValues(new Uint8Array(length / 4 * 3)))
 	}
 	export function fromHexadecimal(identifier: string): Identifier {
 		if (identifier.length % 2 == 1)
@@ -32,5 +32,15 @@ export namespace Identifier {
 		if (length)
 			result = result.slice(0, length)
 		return result.join("")
+	}
+	export const lengths = [4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60, 64, 68, 72, 76, 80, 84, 88, 92, 96, 100, 104, 108, 112, 116, 120, 124, 128] as Lengths[]
+	export type Lengths = 4 | 8 | 12 | 16 | 20 | 24 | 28 | 32 | 36 | 40 | 44 | 48 | 52 | 56 | 60 | 64 | 68 | 72 | 76 | 80 | 84 | 88 | 92 | 96 | 100 | 104 | 108 | 112 | 116 | 120 | 124 | 128
+	export namespace Lengths {
+		export function is(value: Lengths | any): value is Lengths {
+			return typeof(value) == "number" &&
+				value >= 4 &&
+				value <=128 &&
+				(value & 252) == value
+		}
 	}
 }
