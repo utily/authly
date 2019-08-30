@@ -32,7 +32,9 @@ export class PropertyCrypto {
 			}
 		return result
 	}
-	static create(secret: string, ...properties: string[]): PropertyCrypto | undefined {
+	static create(secret: string, ...properties: string[]): PropertyCrypto
+	static create(secret: string | undefined, ...properties: string[]): PropertyCrypto | undefined
+	static create(secret: string | undefined, ...properties: string[]): PropertyCrypto | undefined {
 		return secret && new PropertyCrypto(secret, ...properties) || undefined
 	}
 }

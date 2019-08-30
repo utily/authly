@@ -1,7 +1,7 @@
 import { PropertyCrypto } from "./PropertyCrypto"
 
 describe("PropertyCrypto", () => {
-	const crypto = new PropertyCrypto("secret", "encrypted")
+	const crypto = PropertyCrypto.create("secret", "encrypted")
 	it("encrypt", async () => {
 		const encrypted = await crypto.encrypt({ iss: "issuer", iat: 123456789, encrypted: { property: "value", number: 1337 } })
 		expect(encrypted).toEqual({
