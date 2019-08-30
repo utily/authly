@@ -1,15 +1,15 @@
 import { Password } from "./Password"
-import * as Algorithm from "./Algorithm"
+import { Algorithm } from "./Algorithm"
 
 describe("Password", () => {
 	const hash = {
-		hash: "iYEer0irUbg9Iv8DgPAsn2hMe_e4sSLt6Ll3RU482v4SDQ7rqoJBEQYJJX9RANmbUBwoI63S4PG35roLyAUD2A",
+		hash: "Zaa_9Y8lypNcKhNewi62hpeSlsBLoMcoFT3jY6pqi8KhwKOi6sFcM7bc3eOjvfcw9T8KZJ3jv2jMKWCfWbpnsQ",
 		salt: "salt",
 	}
 	it("hash", async () => {
-		expect(await Password.hash(new Algorithm.HS512("secret-pepper"), "password", "salt")).toEqual(hash)
+		expect(await Password.hash(Algorithm.HS512("secret-pepper"), "password", "salt")).toEqual(hash)
 	})
 	it("verify", async () => {
-		expect(await Password.verify(new Algorithm.HS512("secret-pepper"), hash, "password")).toBeTruthy()
+		expect(await Password.verify(Algorithm.HS512("secret-pepper"), hash, "password")).toBeTruthy()
 	})
 })

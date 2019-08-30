@@ -1,5 +1,5 @@
 import { Actor } from "./Actor"
-import * as Algorithm from "./Algorithm"
+import { Algorithm } from "./Algorithm"
 import * as Base64 from "./Base64"
 import { Issuer } from "./Issuer"
 import { Password } from "./Password"

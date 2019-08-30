@@ -1,7 +1,7 @@
 export type Password = string | Password.Hash
 import { crypto } from "./crypto"
 import * as Base64 from "./Base64"
-import * as Algorithm from "./Algorithm"
+import { Algorithm } from "./Algorithm"
 
 export namespace Password {
 	export function is(value: any | Password): value is Password {
@@ -11,7 +11,7 @@ export namespace Password {
 			typeof(value.salt) == "string"
 		)
 	}
-	export async function hash(algorithm: Algorithm.Base, password: string, salt?: string): Promise<Hash> {
+	export async function hash(algorithm: Algorithm, password: string, salt?: string): Promise<Hash> {
 		if (!salt)
 			salt = Base64.encode(crypto.getRandomValues(new Uint8Array(64)))
 		return {
@@ -20,7 +20,7 @@ export namespace Password {
 		}
 	}
 	// tslint:disable-next-line:no-shadowed-variable
-	export async function verify(algorithm: Algorithm.Base, hash: Hash, password: string): Promise<boolean> {
+	export async function verify(algorithm: Algorithm, hash: Hash, password: string): Promise<boolean> {
 		return (await Password.hash(algorithm, password, hash.salt)).hash == hash.hash
 	}
 	export interface Hash {

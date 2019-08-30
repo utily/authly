@@ -1,4 +1,5 @@
-import * as Algorithm from "./Algorithm"
+import { Algorithm } from "./Algorithm"
+
 export interface Header {
 	alg: Algorithm.Name
 	typ: "JWT"
