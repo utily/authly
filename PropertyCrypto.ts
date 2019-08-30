@@ -8,7 +8,7 @@ export class PropertyCrypto {
 	protected readonly encoder = new TextEncoder()
 	protected readonly decoder = new TextDecoder()
 	private properties: string[]
-	constructor(private secret: string, ...properties: string[]) {
+	private constructor(private secret: string, ...properties: string[]) {
 		this.properties = properties
 	}
 	encrypt(payload: Payload): Promise<Payload> {
@@ -31,5 +31,10 @@ export class PropertyCrypto {
 				result[property] = postprocess(processed)
 			}
 		return result
+	}
+	static create(secret: string, ...properties: string[]): PropertyCrypto
+	static create(secret: string | undefined, ...properties: string[]): PropertyCrypto | undefined
+	static create(secret: string | undefined, ...properties: string[]): PropertyCrypto | undefined {
+		return secret && new PropertyCrypto(secret, ...properties) || undefined
 	}
 }

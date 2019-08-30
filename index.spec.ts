@@ -1,13 +1,15 @@
-import * as authly from "."
+import * as authly from "./index"
 
-describe("authly", () =>{
+describe("authly", () => {
 	it("none", async () => {
-		const algorithm = new authly.Algorithm.None()
-		const issuer = new authly.Issuer("issuer", algorithm)
+		const algorithm = authly.Algorithm.none()
+		const issuer = authly.Issuer.create("issuer", algorithm)
+		expect(issuer).toBeTruthy()
 		issuer.audience = [ "verifier", "audience"]
 		const token = await issuer.sign({ test: "test" }, new Date("1970-01-01T13:37:42.000Z"))
 		expect(token).toEqual("eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpc3MiOiJpc3N1ZXIiLCJpYXQiOjQ5MDYyMDAwLCJhdWQiOlsidmVyaWZpZXIiLCJhdWRpZW5jZSJdLCJ0ZXN0IjoidGVzdCJ9.")
-		const verifier = new authly.Verifier("audience", algorithm)
+		const verifier = authly.Verifier.create("audience", algorithm)!
+		expect(verifier).toBeTruthy()
 		expect(await verifier.verify(token)).toEqual({
 			iss: "issuer",
 			aud: [ "verifier", "audience" ],
@@ -16,12 +18,12 @@ describe("authly", () =>{
 		})
 	})
 	it("HS256", async () => {
-		const algorithm = new authly.Algorithm.HS256(authly.Base64.decode("secret-key", "url"))
-		const issuer = new authly.Issuer("issuer", algorithm)
+		const algorithm = authly.Algorithm.HS256("secret-key")
+		const issuer = authly.Issuer.create("issuer", algorithm)
 		issuer.audience = [ "verifier", "audience"]
 		const token = await issuer.sign({ test: "test" }, new Date("1970-01-01T13:37:42.000Z"))
 		expect(token).toEqual("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJpc3N1ZXIiLCJpYXQiOjQ5MDYyMDAwLCJhdWQiOlsidmVyaWZpZXIiLCJhdWRpZW5jZSJdLCJ0ZXN0IjoidGVzdCJ9.7zOG5XjdMk6r4YhddJPEvDi2PFYjQrYVJ4stYJpRcgg")
-		const verifier = new authly.Verifier("audience", algorithm)
+		const verifier = authly.Verifier.create("audience", algorithm)
 		expect(await verifier.verify(token)).toEqual({
 			iss: "issuer",
 			aud: [ "verifier", "audience" ],
@@ -30,7 +32,7 @@ describe("authly", () =>{
 		})
 	})
 	it("RS256", async () => {
-		const algorithm = new authly.Algorithm.RS256(
+		const algorithm = authly.Algorithm.RS256(
 			"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnzyis1ZjfNB0bBgKFMSv" +
 			"vkTtwlvBsaJq7S5wA+kzeVOVpVWwkWdVha4s38XM/pa/yr47av7+z3VTmvDRyAHc" +
 			"aT92whREFpLv9cj5lTeJSibyr/Mrm/YtjCZVWgaOYIhwrXwKLqPr/11inWsAkfIy" +
@@ -63,7 +65,7 @@ describe("authly", () =>{
 			"3YfRAoGAUxL/Eu5yvMK8SAt/dJK6FedngcM3JEFNplmtLYVLWhkIlNRGDwkg3I5K" +
 			"y18Ae9n7dHVueyslrb6weq7dTkYDi3iOYRW8HRkIQh06wEdbxt0shTzAJvvCQfrB" +
 			"jg/3747WSsf/zBTcHihTRBdAv6OmdhV4/dD5YBfLAkLrd+mX7iE=")
-		const issuer = new authly.Issuer("issuer", algorithm)
+		const issuer = authly.Issuer.create("issuer", algorithm)
 		issuer.audience = [ "verifier", "audience"]
 		const token = await issuer.sign({ test: "test" }, new Date("1970-01-01T13:37:42.000Z"))
 		expect(token).toEqual(
@@ -74,7 +76,8 @@ describe("authly", () =>{
 			"oo6uRAz8x6myNvC7sx_2_PAR9BA_5oXuVo0QgLpJ4ektqVGbnzwYwU4WjdOJsrNtzHD" +
 			"Nf2o1x8GY2oTXfOFQyKx0m6vipiVulnXwWiytRBE-v6xijJC1Ja-wT6C4Je1VqS8ru8" +
 			"ij7ciqV7c4FWuBoN8WWalW-z9P-LfmQzw3Md21OnTVl4AevLLPNgojRmF9lpysR-ozcd_RNjQX9XvA")
-		const verifier = new authly.Verifier("audience", algorithm)
+		const verifier = authly.Verifier.create("audience", algorithm)!
+		expect(verifier).toBeTruthy()
 		expect(await verifier.verify(token)).toEqual({
 			iss: "issuer",
 			aud: [ "verifier", "audience" ],
@@ -84,7 +87,7 @@ describe("authly", () =>{
 	})
 	it("any", async () => {
 		const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJpc3N1ZXIiLCJpYXQiOjQ5MDYyMDAwLCJhdWQiOlsidmVyaWZpZXIiLCJhdWRpZW5jZSJdLCJ0ZXN0IjoidGVzdCJ9.7zOG5XjdMk6r4YhddJPEvDi2PFYjQrYVJ4stYJpRcgg"
-		const verifier = new authly.Verifier("audience")
+		const verifier = authly.Verifier.create("audience")
 		expect(await verifier.verify(token)).toEqual({
 			iss: "issuer",
 			aud: [ "verifier", "audience" ],
@@ -93,12 +96,13 @@ describe("authly", () =>{
 		})
 	})
 	it("HS256 + property encryption", async () => {
-		const algorithm = new authly.Algorithm.HS256(authly.Base64.decode("secret-key", "url"))
-		const issuer = new authly.Issuer("issuer", algorithm).add(new authly.PropertyCrypto("property-key", "secret"))
+		const algorithm = authly.Algorithm.HS256("secret-key")
+		const issuer = authly.Issuer.create("issuer", algorithm)!.add("property-key", "secret")
 		issuer.audience = [ "verifier", "audience"]
 		const token = await issuer.sign({ test: "test", secret: { number: 1337, string: "The power of Attraction." } }, new Date("1970-01-01T13:37:42.000Z"))
 		expect(token).toEqual("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJpc3N1ZXIiLCJpYXQiOjQ5MDYyMDAwLCJhdWQiOlsidmVyaWZpZXIiLCJhdWRpZW5jZSJdLCJ0ZXN0IjoidGVzdCIsInNlY3JldCI6IlcxUXhNdml2dFd0YXVrZV9JYmhYMFZXUkJ1a0tjZlF3aWI4dk5QTjNqelY0eGZxZEpld1BpS2FIY2luTXh4Q2VpNTI1In0.K6MiLzuJ_T1Pv5AM5k_DeIJk9L2KK5RrOGjMQOyLeqE")
-		const verifier = new authly.Verifier("audience", algorithm)
+		const verifier = authly.Verifier.create("audience", algorithm)!
+		expect(verifier).toBeTruthy()
 		expect(await verifier.verify(token)).toEqual({
 			iss: "issuer",
 			aud: [ "verifier", "audience" ],
@@ -106,7 +110,7 @@ describe("authly", () =>{
 			test: "test",
 			secret: "W1QxMvivtWtauke_IbhX0VWRBukKcfQwib8vNPN3jzV4xfqdJewPiKaHcinMxxCei525",
 		})
-		expect(await verifier.add(new authly.PropertyCrypto("property-key", "secret")).verify(token)).toEqual({
+		expect(await verifier.add("property-key", "secret").verify(token)).toEqual({
 			iss: "issuer",
 			aud: [ "verifier", "audience" ],
 			iat: 49062000,
