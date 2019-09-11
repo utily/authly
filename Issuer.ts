@@ -34,9 +34,9 @@ export class Issuer extends Actor<Issuer> {
 		const data = `${ Base64.encode(new TextEncoder().encode(JSON.stringify(this.header))) }.${ Base64.encode(new TextEncoder().encode(JSON.stringify(payload))) }`
 		return `${ data }.${ await this.algorithm.sign(data) }`
 	}
-	static create(issuer: string, algorithm?: Algorithm): Issuer
+	static create(issuer: string, algorithm: Algorithm): Issuer
 	static create(issuer: string, algorithm: Algorithm | undefined): Issuer | undefined
-	static create(issuer: string, algorithm: Algorithm | undefined = Algorithm.none()): Issuer | undefined {
+	static create(issuer: string, algorithm: Algorithm | undefined): Issuer | undefined {
 		return algorithm && new Issuer(issuer, algorithm) || undefined
 	}
 }
