@@ -3,7 +3,7 @@ import * as authly from "./index"
 describe("authly", () => {
 	it("none", async () => {
 		const algorithm = authly.Algorithm.none()
-		const issuer = authly.Issuer.create("issuer", algorithm)
+		const issuer = authly.Issuer.create("issuer", algorithm)!
 		expect(issuer).toBeTruthy()
 		issuer.audience = [ "verifier", "audience"]
 		const token = await issuer.sign({ test: "test" }, new Date("1970-01-01T13:37:42.000Z"))
@@ -65,7 +65,8 @@ describe("authly", () => {
 			"3YfRAoGAUxL/Eu5yvMK8SAt/dJK6FedngcM3JEFNplmtLYVLWhkIlNRGDwkg3I5K" +
 			"y18Ae9n7dHVueyslrb6weq7dTkYDi3iOYRW8HRkIQh06wEdbxt0shTzAJvvCQfrB" +
 			"jg/3747WSsf/zBTcHihTRBdAv6OmdhV4/dD5YBfLAkLrd+mX7iE=")
-		const issuer = authly.Issuer.create("issuer", algorithm)
+		const issuer = authly.Issuer.create("issuer", algorithm)!
+		expect(issuer).toBeTruthy()
 		issuer.audience = [ "verifier", "audience"]
 		const token = await issuer.sign({ test: "test" }, new Date("1970-01-01T13:37:42.000Z"))
 		expect(token).toEqual(
