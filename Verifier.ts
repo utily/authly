@@ -21,21 +21,29 @@ export class Verifier extends Actor<Verifier> {
 		let result: Payload | undefined
 		if (token) {
 			const splitted = token.split(".", 3)
-			const header: Header = JSON.parse(new TextDecoder().decode(Base64.decode(splitted[0])))
-			result = JSON.parse(new TextDecoder().decode(Base64.decode(splitted[1]))) as Payload
-			if (this.algorithms) {
-				const algorithm = this.algorithms[header.alg]
-				result = algorithm && await algorithm.verify(`${ splitted[0] }.${ splitted[1] }`, splitted[2]) ? result : undefined
-			}
-			const now = Date.now()
-			result = result &&
-				(result.exp == undefined || result.exp > now) &&
-				(result.iat == undefined || result.iat <= now) &&
-				this.verifyAudience(result.aud) ?
-				result : undefined
+			if (splitted.length < 2)
+				result = undefined
+			else {
+				try {
+					const header: Header = JSON.parse(new TextDecoder().decode(Base64.decode(splitted[0])))
+					result = JSON.parse(new TextDecoder().decode(Base64.decode(splitted[1]))) as Payload
+					if (this.algorithms) {
+						const algorithm = this.algorithms[header.alg]
+						result = splitted.length == 3 && algorithm && await algorithm.verify(`${ splitted[0] }.${ splitted[1] }`, splitted[2]) ? result : undefined
+					}
+				} catch {
+					result = undefined
+				}
+				const now = Date.now()
+				result = result &&
+					(result.exp == undefined || result.exp > now) &&
+					(result.iat == undefined || result.iat <= now) &&
+					this.verifyAudience(result.aud) ?
+					result : undefined
 		}
-		if (result)
-			result = await this.cryptos.reduce(async (p, c) => c.decrypt(await p), Promise.resolve(result))
+			if (result)
+				result = await this.cryptos.reduce(async (p, c) => c.decrypt(await p), Promise.resolve(result))
+		}
 		return result
 	}
 	private verifyAudience(audience: undefined | string | string[]): boolean {
