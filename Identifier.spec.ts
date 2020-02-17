@@ -39,7 +39,12 @@ describe("Identifier", () => {
 
 	it("toHexadecimal length 4", () => expect(authly.Identifier.toHexadecimal("tgAg")).toEqual("b60020"))
 	it("fromHexadecimal length 4", () => expect(authly.Identifier.fromHexadecimal("b60020")).toEqual("tgAg"))
+	it("toHexadecimal test", () => expect(authly.Identifier.toHexadecimal("test")).toEqual("b5eb2d"))
+	it("fromHexadecimal test", () => expect(authly.Identifier.fromHexadecimal("b5eb2d")).toEqual("test"))
+	it("toHexadecimal demo", () => expect(authly.Identifier.toHexadecimal("demo")).toEqual("75e9a8"))
+	it("fromHexadecimal demo", () => expect(authly.Identifier.fromHexadecimal("75e9a8")).toEqual("demo"))
+	it("toHexadecimal QYklGX_K", () => expect(authly.Identifier.toHexadecimal("QYklGX_K")).toEqual("418925197fca"))
+	it("fromHexadecimal QYklGX_K", () => expect(authly.Identifier.fromHexadecimal("418925197fca")).toEqual("QYklGX_K"))
 	it("toHexadecimal length 6", () => expect(authly.Identifier.toHexadecimal("DvQecA")).toEqual("0ef41e70"))
 	it("fromHexadecimal length 6", () => expect(authly.Identifier.fromHexadecimal("0ef41e70")).toEqual("DvQecA"))
 })
-

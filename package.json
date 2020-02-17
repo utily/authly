@@ -11,7 +11,7 @@
  "bugs": {
   "url": "https://github.com/payfunc/authly/issues"
  },
- "homepage": "https://github.com/payfunc/authly#readme",
+ "homepage": "https://payfunc.com/open-source/authly",
  "private": false,
  "main": "dist/index.js",
  "typings": "dist/index.d.ts",
@@ -58,15 +58,15 @@
   "node-webcrypto-ossl": "1.0.48"
  },
  "devDependencies": {
-  "@types/jest": "^24.0.18",
-  "@types/node": "^12.7.5",
+  "@types/jest": "^25.1.2",
+  "@types/node": "^13.7.1",
   "babel-core": "^6.26.3",
-  "babel-jest": "^24.9.0",
-  "jest": "^24",
-  "ts-jest": "^24.0.2",
-  "tslint": "^5.20.0",
-  "typescript": "^3.6.3",
-  "typescript-tslint-plugin": "^0.5.4",
+  "babel-jest": "^25.1.0",
+  "jest": "^25",
+  "ts-jest": "^25.2.0",
+  "tslint": "^6.0.0",
+  "typescript": "^3.7.5",
+  "typescript-tslint-plugin": "^0.5.5",
   "watch": "^1.0.2"
  }
 }
