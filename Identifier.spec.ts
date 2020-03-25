@@ -3,7 +3,7 @@ import * as authly from "./index"
 describe("Identifier", () => {
 	it("generate", () => expect(authly.Identifier.is(authly.Identifier.generate(12))).toBeTruthy())
 	it("generate lengths", () => {
-		for (const length of authly.Identifier.lengths) {
+		for (const length of authly.Identifier.length) {
 			const identifier = authly.Identifier.generate(length)
 			expect(identifier).toHaveLength(length)
 			expect(authly.Identifier.fromBinary(authly.Identifier.toBinary(identifier))).toEqual(identifier)
@@ -11,6 +11,8 @@ describe("Identifier", () => {
 		}
 	})
 	it("is random", () => expect(authly.Identifier.is(authly.Identifier.generate(64))).toBeTruthy())
+	it("is random length", () => expect(authly.Identifier.is(authly.Identifier.generate(64), 64)).toBeTruthy())
+	it("is not length", () => expect(authly.Identifier.is(authly.Identifier.generate(64), 32)).toBeFalsy())
 	it("is", () => expect(authly.Identifier.is("aAzZ09-_")).toBeTruthy())
 	it("is all", () => expect(authly.Identifier.is("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_")).toBeTruthy())
 	it("is not !", () => expect(authly.Identifier.is("hej!0123")).toBeFalsy())
