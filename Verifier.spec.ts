@@ -53,4 +53,14 @@ describe("Verifier", () => {
 		expect(verifier && await verifier.verify(base64url)).toBeTruthy()
 		expect(verifier && await verifier.verify(base64std)).toBeTruthy()
 	})
+	it("Verifying both standard base64 encoded and url base 64 encoded jwt with old and new issuers (no '/').", async () => {
+		const json = {
+			"prop": "some value not including equal character",
+		}
+		const jwtUrl = validIssuer && await validIssuer.sign(json, 1570094329996)
+		const jwtStandard = validIssuer && await validIssuer.sign(json, 1570094329996, true)
+		expect(jwtUrl).toEqual(jwtStandard)
+		expect(verifier && await verifier.verify(jwtUrl)).toBeTruthy()
+		expect(verifier && await verifier.verify(jwtStandard)).toBeTruthy()
+	})
 })
