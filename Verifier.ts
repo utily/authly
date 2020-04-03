@@ -20,14 +20,14 @@ export class Verifier extends Actor<Verifier> {
 	async verify(token: string | Token | undefined): Promise<Payload | undefined> {
 		let result: Payload | undefined
 		if (token) {
-			// token = token.replace("+", "-").replace("/", "_") // For backwards compatibility.
 			const splitted = token.split(".", 3)
 			if (splitted.length < 2)
 				result = undefined
 			else {
 				try {
-					const header: Header = JSON.parse(new TextDecoder().decode(Base64.decode(splitted[0], "url")))
-					result = JSON.parse(new TextDecoder().decode(Base64.decode(splitted[1], "url"))) as Payload
+					const oldDecoder = splitted[0].includes("/") || splitted[0].includes("+") || splitted[1].includes("/") || splitted[1].includes("+") // For backwards compatibility. splitted[2] correctly encoded.
+					const header: Header = JSON.parse(new TextDecoder().decode(Base64.decode(splitted[0], oldDecoder ? "standard" : "url")))
+					result = JSON.parse(new TextDecoder().decode(Base64.decode(splitted[1], oldDecoder ? "standard" : "url"))) as Payload
 					if (this.algorithms) {
 						const algorithm = this.algorithms[header.alg]
 						result = splitted.length == 3 && algorithm && await algorithm.verify(`${ splitted[0] }.${ splitted[1] }`, splitted[2]) ? result : undefined

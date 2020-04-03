@@ -26,12 +26,14 @@ export class Issuer extends Actor<Issuer> {
 	private constructor(issuer: string, readonly algorithm: Algorithm) {
 		super(issuer)
 	}
-	async sign(payload: Payload, issuedAt?: Date | number): Promise<Token> {
+	async sign(payload: Payload, issuedAt?: Date | number, standard?: boolean): Promise<Token> {
+	// async sign(payload: Payload, issuedAt?: Date | number): Promise<Token> {
 		payload = { ...this.payload, ...payload }
 		if (issuedAt)
 			payload.iat = typeof(issuedAt) == "number" ? issuedAt : issuedAt.getTime()
 		payload = await this.cryptos.reduce(async (p, c) => c.encrypt(await p), Promise.resolve(payload))
-		const data = `${ Base64.encode(new TextEncoder().encode(JSON.stringify(this.header)), "url") }.${ Base64.encode(new TextEncoder().encode(JSON.stringify(payload)), "url") }`
+		const data = `${ Base64.encode(new TextEncoder().encode(JSON.stringify(this.header)), standard ? "standard" : "url") }.${ Base64.encode(new TextEncoder().encode(JSON.stringify(payload)), standard ? "standard" : "url") }`
+		// const data = `${ Base64.encode(new TextEncoder().encode(JSON.stringify(this.header)), "url") }.${ Base64.encode(new TextEncoder().encode(JSON.stringify(payload)), "url") }`
 		return `${ data }.${ await this.algorithm.sign(data) }`
 	}
 	private static get issuedAt(): number {
