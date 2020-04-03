@@ -25,7 +25,7 @@ export class Verifier extends Actor<Verifier> {
 				result = undefined
 			else {
 				try {
-					const oldDecoder = splitted[0].includes("/") || splitted[0].includes("+") || splitted[1].includes("/") || splitted[1].includes("+") // For backwards compatibility. splitted[2] correctly encoded.
+					const oldDecoder = token.includes("/") || token.includes("+") // For backwards compatibility.
 					const header: Header = JSON.parse(new TextDecoder().decode(Base64.decode(splitted[0], oldDecoder ? "standard" : "url")))
 					result = JSON.parse(new TextDecoder().decode(Base64.decode(splitted[1], oldDecoder ? "standard" : "url"))) as Payload
 					if (this.algorithms) {
