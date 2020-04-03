@@ -25,8 +25,9 @@ export class Verifier extends Actor<Verifier> {
 				result = undefined
 			else {
 				try {
-					const header: Header = JSON.parse(new TextDecoder().decode(Base64.decode(splitted[0])))
-					result = JSON.parse(new TextDecoder().decode(Base64.decode(splitted[1]))) as Payload
+					const oldDecoder = token.includes("/") || token.includes("+") // For backwards compatibility.
+					const header: Header = JSON.parse(new TextDecoder().decode(Base64.decode(splitted[0], oldDecoder ? "standard" : "url")))
+					result = JSON.parse(new TextDecoder().decode(Base64.decode(splitted[1], oldDecoder ? "standard" : "url"))) as Payload
 					if (this.algorithms) {
 						const algorithm = this.algorithms[header.alg]
 						result = splitted.length == 3 && algorithm && await algorithm.verify(`${ splitted[0] }.${ splitted[1] }`, splitted[2]) ? result : undefined
