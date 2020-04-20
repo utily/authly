@@ -1,4 +1,4 @@
-import { fromShim } from "./FromShim"
+import "./shim"
 import { Actor } from "./Actor"
 import { Algorithm } from "./Algorithm"
 import * as Base64 from "./Base64"
@@ -11,8 +11,6 @@ import { TextEncoder } from "./TextEncoder"
 import { Token } from "./Token"
 import { Verifier } from "./Verifier"
 import { Identifier } from "./Identifier"
-
-fromShim()
 
 export {
 	Actor,
