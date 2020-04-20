@@ -1,1 +1,1 @@
-import "./TypedArray-from"
+import "/TypedArray-from"
