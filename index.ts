@@ -1,3 +1,4 @@
+import "./shim"
 import { Actor } from "./Actor"
 import { Algorithm } from "./Algorithm"
 import * as Base64 from "./Base64"
