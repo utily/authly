@@ -1,1 +1,1 @@
-export const crypto = (self.crypto || (self as unknown as { msCrypto: any }).msCrypto)
+export const crypto = (self.crypto || window.crypto || (window as unknown as { msCrypto: any }).msCrypto)
