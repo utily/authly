@@ -29,20 +29,25 @@ export class Issuer extends Actor<Issuer> {
 	async sign(payload: Payload, issuedAt?: Date | number): Promise<Token> {
 		payload = { ...this.payload, ...payload }
 		if (issuedAt)
-			payload.iat = typeof(issuedAt) == "number" ? issuedAt : issuedAt.getTime()
+			payload.iat = typeof issuedAt == "number" ? issuedAt : issuedAt.getTime()
 		payload = await this.cryptos.reduce(async (p, c) => c.encrypt(await p), Promise.resolve(payload))
-		const data = `${ Base64.encode(new TextEncoder().encode(JSON.stringify(this.header)), "url") }.${ Base64.encode(new TextEncoder().encode(JSON.stringify(payload)), "url") }`
-		return `${ data }.${ await this.algorithm.sign(data) }`
+		const data = `${Base64.encode(new TextEncoder().encode(JSON.stringify(this.header)), "url")}.${Base64.encode(
+			new TextEncoder().encode(JSON.stringify(payload)),
+			"url"
+		)}`
+		return `${data}.${await this.algorithm.sign(data)}`
 	}
 	private static get issuedAt(): number {
-		return Issuer.defaultIssuedAt == undefined ? Date.now() :
-			typeof(Issuer.defaultIssuedAt) == "number" ? Issuer.defaultIssuedAt :
-			Issuer.defaultIssuedAt.getTime()
+		return Issuer.defaultIssuedAt == undefined
+			? Date.now()
+			: typeof Issuer.defaultIssuedAt == "number"
+			? Issuer.defaultIssuedAt
+			: Issuer.defaultIssuedAt.getTime()
 	}
 	static defaultIssuedAt: undefined | Date | number
 	static create(issuer: string, algorithm: Algorithm): Issuer
 	static create(issuer: string, algorithm: Algorithm | undefined): Issuer | undefined
 	static create(issuer: string, algorithm: Algorithm | undefined): Issuer | undefined {
-		return algorithm && new Issuer(issuer, algorithm) || undefined
+		return (algorithm && new Issuer(issuer, algorithm)) || undefined
 	}
 }

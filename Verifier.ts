@@ -26,29 +26,44 @@ export class Verifier extends Actor<Verifier> {
 			else {
 				try {
 					const oldDecoder = token.includes("/") || token.includes("+") // For backwards compatibility.
-					const header: Header = JSON.parse(new TextDecoder().decode(Base64.decode(splitted[0], oldDecoder ? "standard" : "url")))
-					result = JSON.parse(new TextDecoder().decode(Base64.decode(splitted[1], oldDecoder ? "standard" : "url"))) as Payload
+					const header: Header = JSON.parse(
+						new TextDecoder().decode(Base64.decode(splitted[0], oldDecoder ? "standard" : "url"))
+					)
+					result = JSON.parse(
+						new TextDecoder().decode(Base64.decode(splitted[1], oldDecoder ? "standard" : "url"))
+					) as Payload
 					if (this.algorithms) {
 						const algorithm = this.algorithms[header.alg]
-						result = splitted.length == 3 && algorithm && await algorithm.verify(`${ splitted[0] }.${ splitted[1] }`, splitted[2]) ? result : undefined
+						result =
+							splitted.length == 3 &&
+							algorithm &&
+							(await algorithm.verify(`${splitted[0]}.${splitted[1]}`, splitted[2]))
+								? result
+								: undefined
 					}
 				} catch {
 					result = undefined
 				}
 				const now = Date.now()
-				result = result &&
+				result =
+					result &&
 					(result.exp == undefined || result.exp > now) &&
 					(result.iat == undefined || result.iat <= now) &&
-					this.verifyAudience(result.aud) ?
-					result : undefined
-		}
+					this.verifyAudience(result.aud)
+						? result
+						: undefined
+			}
 			if (result)
 				result = await this.cryptos.reduce(async (p, c) => c.decrypt(await p), Promise.resolve(result))
 		}
 		return result
 	}
 	private verifyAudience(audience: undefined | string | string[]): boolean {
-		return audience == undefined || typeof(audience) == "string" && audience == this.id || Array.isArray(audience) && audience.some(a => a == this.id)
+		return (
+			audience == undefined ||
+			(typeof audience == "string" && audience == this.id) ||
+			(Array.isArray(audience) && audience.some(a => a == this.id))
+		)
 	}
 	async authenticate(authorization: string): Promise<Payload | undefined> {
 		return authorization && authorization.startsWith("Bearer ") ? this.verify(authorization.substr(7)) : undefined
@@ -56,6 +71,10 @@ export class Verifier extends Actor<Verifier> {
 	static create(audience: string, ...algorithms: Algorithm[]): Verifier
 	static create(audience: string, ...algorithms: (Algorithm | undefined)[]): Verifier | undefined
 	static create(audience: string, ...algorithms: (Algorithm | undefined)[]): Verifier | undefined {
-		return (algorithms.length == 0 || algorithms.some(a => !!a)) && new Verifier(audience, ...algorithms.filter(a => !!a) as Algorithm[]) || undefined
+		return (
+			((algorithms.length == 0 || algorithms.some(a => !!a)) &&
+				new Verifier(audience, ...(algorithms.filter(a => !!a) as Algorithm[]))) ||
+			undefined
+		)
 	}
 }

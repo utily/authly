@@ -5,9 +5,12 @@ const tables: { [standard: string]: string } = {
 	url: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_",
 }
 export type Standard = "standard" | "url"
-// tslint:disable: no-bitwise
-export function encode(value: Uint8Array | string, standard: Standard = "standard", padding: "" | "=" | "-" = ""): string {
-	if (typeof(value) == "string")
+export function encode(
+	value: Uint8Array | string,
+	standard: Standard = "standard",
+	padding: "" | "=" | "-" = ""
+): string {
+	if (typeof value == "string")
 		value = new TextEncoder().encode(value)
 	const table = tables[standard]
 	const result: string[] = []
@@ -16,11 +19,11 @@ export function encode(value: Uint8Array | string, standard: Standard = "standar
 		const c1 = c + 1 < value.length ? value[c + 1] : 0
 		const c2 = c + 2 < value.length ? value[c + 2] : 0
 		result.push(table[c0 >>> 2])
-		result.push(table[(c0 & 3) << 4 | (c1 >>> 4)])
+		result.push(table[((c0 & 3) << 4) | (c1 >>> 4)])
 		result.push(table[((c1 & 15) << 2) | (c2 >>> 6)])
 		result.push(table[c2 & 63])
 	}
-	const length = Math.ceil(value.length / 3 * 4)
+	const length = Math.ceil((value.length / 3) * 4)
 	return result.join("").substr(0, length) + padding.repeat(result.length - length)
 }
 export function decode(value: string, standard: Standard = "standard"): Uint8Array {
@@ -28,7 +31,7 @@ export function decode(value: string, standard: Standard = "standard"): Uint8Arr
 		value = value.substr(0, value.length - 1)
 	const table = tables[standard]
 	const data = value.split("").map(c => table.indexOf(c))
-	const result = new Uint8Array(Math.floor(data.length / 4 * 3))
+	const result = new Uint8Array(Math.floor((data.length / 4) * 3))
 	for (let c = 0; c < result.length; c += 3) {
 		const d0 = data.shift() || 0
 		const d1 = data.shift() || 0
