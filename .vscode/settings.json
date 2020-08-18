@@ -9,6 +9,7 @@
 		"node_modules": true,
 		"*.code-workspace": true
 	},
+	"files.insertFinalNewline": true,
 	"editor.tabSize": 2,
 	"editor.detectIndentation": false,
 	"editor.insertSpaces": false,
