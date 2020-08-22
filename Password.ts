@@ -5,10 +5,9 @@ import { Algorithm } from "./Algorithm"
 
 export namespace Password {
 	export function is(value: any | Password): value is Password {
-		return typeof(value) == "string" || (
-			typeof(value) == "object" &&
-			typeof(value.hash) == "string" &&
-			typeof(value.salt) == "string"
+		return (
+			typeof value == "string" ||
+			(typeof value == "object" && typeof value.hash == "string" && typeof value.salt == "string")
 		)
 	}
 	export async function hash(algorithm: Algorithm, password: string, salt?: string): Promise<Hash> {
@@ -19,7 +18,6 @@ export namespace Password {
 			salt,
 		}
 	}
-	// tslint:disable-next-line:no-shadowed-variable
 	export async function verify(algorithm: Algorithm, hash: Hash, password: string): Promise<boolean> {
 		return (await Password.hash(algorithm, password, hash.salt)).hash == hash.hash
 	}
@@ -28,11 +26,8 @@ export namespace Password {
 		salt: string
 	}
 	export namespace Hashed {
-		// tslint:disable-next-line:no-shadowed-variable
 		export function is(value: any | Hash): value is Hash {
-			return typeof(value) == "object" &&
-				typeof(value.hash) == "string" &&
-				typeof(value.salt) == "string"
+			return typeof value == "object" && typeof value.hash == "string" && typeof value.salt == "string"
 		}
 	}
 }
