@@ -17,7 +17,7 @@
 	},
 	"rules": {
 		"prettierx/options": [
-			2,
+			1,
 			{
 				"singleQuote": false
 			}
