@@ -1,5 +1,5 @@
 import { Algorithm } from "./Algorithm"
-import * as Base64 from "../Base64"
+import { Base64 } from "cryptly"
 
 export abstract class Symmetric extends Algorithm {
 	async verifyBinary(data: Uint8Array, signature: Uint8Array): Promise<boolean> {

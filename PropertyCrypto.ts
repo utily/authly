@@ -1,8 +1,8 @@
 import { crypto } from "./crypto"
-import * as Base64 from "./Base64"
+import { Base64 } from "cryptly"
 import { Payload } from "./Payload"
-import { TextEncoder } from "./TextEncoder"
-import { TextDecoder } from "./TextDecoder"
+import { TextEncoder } from "cryptly"
+import { TextDecoder } from "cryptly"
 
 export class PropertyCrypto {
 	protected readonly encoder = new TextEncoder()

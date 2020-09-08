@@ -1,10 +1,10 @@
 import { Algorithm } from "./Algorithm"
 import { Actor } from "./Actor"
-import * as Base64 from "./Base64"
+import { Base64 } from "cryptly"
 import { Header } from "./Header"
 import { Payload } from "./Payload"
 import { Token } from "./Token"
-import { TextEncoder } from "./TextEncoder"
+import { TextEncoder } from "cryptly"
 
 export class Issuer extends Actor<Issuer> {
 	audience?: string | string[]

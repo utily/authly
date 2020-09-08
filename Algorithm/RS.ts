@@ -1,7 +1,7 @@
 import { crypto } from "../crypto"
 import { Algorithm, register } from "./Algorithm"
 import { Name } from "./Name"
-import * as Base64 from "../Base64"
+import { Base64 } from "cryptly"
 
 export class RS extends Algorithm {
 	get name(): Name {

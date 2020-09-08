@@ -1,6 +1,6 @@
-import { TextEncoder } from "../TextEncoder"
+import { TextEncoder } from "cryptly"
 import { Name as AlgorithmName } from "./Name"
-import * as Base64 from "../Base64"
+import { Base64 } from "cryptly"
 
 export abstract class Algorithm {
 	abstract get name(): AlgorithmName

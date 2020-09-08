@@ -1,5 +1,5 @@
 import { crypto } from "./crypto"
-import * as Base64 from "./Base64"
+import { Base64 } from "cryptly"
 
 export type Identifier = string
 
