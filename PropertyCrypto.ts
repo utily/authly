@@ -1,8 +1,5 @@
-import { crypto } from "./crypto"
-import { Base64 } from "cryptly"
+import { Base64, Digest, TextEncoder, TextDecoder } from "cryptly"
 import { Payload } from "./Payload"
-import { TextEncoder } from "cryptly"
-import { TextDecoder } from "cryptly"
 
 export class PropertyCrypto {
 	protected readonly encoder = new TextEncoder()
@@ -46,7 +43,7 @@ export class PropertyCrypto {
 		if (result[property[0]])
 			if (property.length == 1) {
 				const data = preprocess(payload[property[0]])
-				const key = new Uint8Array(await crypto.subtle.digest("SHA-512", this.encoder.encode(secret)))
+				const key = await new Digest("SHA-512").digest(this.encoder.encode(secret))
 				const processed = new Uint8Array(data.length)
 				for (let index = 0; index < data.length; index++)
 					processed[index] = data[index] ^ key[index]

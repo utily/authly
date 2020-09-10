@@ -1,10 +1,9 @@
+import { Base64, TextDecoder } from "cryptly"
 import { Algorithm } from "./Algorithm"
 import { Actor } from "./Actor"
-import { Base64 } from "cryptly"
 import { Header } from "./Header"
 import { Payload } from "./Payload"
 import { Token } from "./Token"
-import { TextDecoder } from "cryptly"
 
 export class Verifier extends Actor<Verifier> {
 	readonly algorithms: { [algorithm: string]: Algorithm } | undefined
