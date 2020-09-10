@@ -56,10 +56,7 @@
 		"clean": "rm -rf dist node_modules coverage"
 	},
 	"dependencies": {
-		"eslint": "^7.7.0",
-		"eslint-plugin-prettierx": "github:nilssonemma/eslint-plugin-prettierx#master",
-		"node-webcrypto-ossl": "2.1.0",
-		"prettierx": "github:simonmika/prettierx#newline-before-clause"
+		"cryptly": "0.0.8"
 	},
 	"devDependencies": {
 		"@types/jest": "^26.0.0",
@@ -72,6 +69,8 @@
 		"jest": "^26",
 		"ts-jest": "^26.1.0",
 		"typescript": "^3.9.5",
-		"watch": "^1.0.2"
+		"watch": "^1.0.2",
+		"prettierx": "github:simonmika/prettierx#newline-before-clause",
+		"eslint-plugin-prettierx": "github:nilssonemma/eslint-plugin-prettierx#master"
 	}
 }

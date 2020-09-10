@@ -1,16 +1,12 @@
+import { Base64, Password, TextDecoder, TextEncoder, Identifier } from "cryptly"
 import "./shim"
 import { Actor } from "./Actor"
 import { Algorithm } from "./Algorithm"
-import * as Base64 from "./Base64"
 import { Issuer } from "./Issuer"
-import { Password } from "./Password"
 import { Payload } from "./Payload"
 import { PropertyCrypto } from "./PropertyCrypto"
-import { TextDecoder } from "./TextDecoder"
-import { TextEncoder } from "./TextEncoder"
 import { Token } from "./Token"
 import { Verifier } from "./Verifier"
-import { Identifier } from "./Identifier"
 
 export {
 	Actor,
