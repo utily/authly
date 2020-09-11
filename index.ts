@@ -5,6 +5,7 @@ import { Algorithm } from "./Algorithm"
 import { Issuer } from "./Issuer"
 import { Payload } from "./Payload"
 import { PropertyCrypto } from "./PropertyCrypto"
+import { PropertyRenamer } from "./PropertyRenamer"
 import { Token } from "./Token"
 import { Verifier } from "./Verifier"
 
@@ -16,6 +17,7 @@ export {
 	Password,
 	Payload,
 	PropertyCrypto,
+	PropertyRenamer,
 	TextDecoder,
 	TextEncoder,
 	Token,

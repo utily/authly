@@ -105,4 +105,27 @@ describe("authly", () => {
 			secret: { number: 1337, string: "The power of Attraction." },
 		})
 	})
+	it("HS256 + property encryption + renamer", async () => {
+		const algorithm = authly.Algorithm.HS256("secret-key")
+		const issuer = authly.Issuer.create("issuer", algorithm).add({ toEncrypt: "secret" }).add("property-key", "secret")
+		issuer.audience = ["verifier", "audience"]
+		const token = await issuer.sign({
+			test: [{ test: "test" }],
+			toEncrypt: { number: 1337, string: "The power of Attraction." },
+		})
+		const verifier = authly.Verifier.create("audience", algorithm)
+		expect(verifier).toBeTruthy()
+		expect(
+			await verifier
+				.add({ issuer: "iss", testing: "test", toEncrypt: "secret" })
+				.add("property-key", "secret")
+				.verify(token)
+		).toEqual({
+			issuer: "issuer",
+			aud: ["verifier", "audience"],
+			iat: 49062000,
+			testing: [{ testing: "test" }],
+			toEncrypt: { number: 1337, string: "The power of Attraction." },
+		})
+	})
 })
