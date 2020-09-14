@@ -24,7 +24,6 @@ export class Algorithm {
 	static create(name: AlgorithmName, ...keys: (string | Uint8Array)[]): Algorithm | undefined {
 		let result: Signer | undefined
 		switch (name) {
-			/*
 			case "ES256":
 				result = Signer.create("ECDSA", "SHA-256", keys[0], keys[1])
 				break
@@ -43,7 +42,6 @@ export class Algorithm {
 			case "PS512":
 				result = Signer.create("RSA-PSS", "SHA-512", keys[0], keys[1])
 				break
-				*/
 			case "HS256":
 				result = Signer.create("HMAC", "SHA-256", keys[0])
 				break
