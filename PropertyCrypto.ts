@@ -8,14 +8,14 @@ export class PropertyCrypto {
 	private constructor(private secret: string, ...properties: string[]) {
 		this.properties = properties.map(p => p.split("."))
 	}
-	encrypt(payload: Payload): Promise<Payload> {
+	apply(payload: Payload): Promise<Payload> {
 		return this.process(
 			payload,
 			value => this.encoder.encode(JSON.stringify(value)),
 			value => Base64.encode(value, "url")
 		)
 	}
-	decrypt(payload: Payload): Promise<Payload> {
+	reverse(payload: Payload): Promise<Payload> {
 		return this.process(
 			payload,
 			value => (typeof value == "string" ? Base64.decode(value, "url") : new Uint8Array()),

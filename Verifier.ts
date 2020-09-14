@@ -53,7 +53,7 @@ export class Verifier extends Actor<Verifier> {
 						: undefined
 			}
 			if (result)
-				result = await this.cryptos.reduce(async (p, c) => c.decrypt(await p), Promise.resolve(result))
+				result = await this.cryptos.reduceRight(async (p, c) => c.reverse(await p), Promise.resolve(result))
 		}
 		return result
 	}
