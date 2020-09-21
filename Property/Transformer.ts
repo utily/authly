@@ -1,4 +1,4 @@
-import { Payload } from "./Payload"
+import { Payload } from "../Payload"
 
 export interface Transformer {
 	apply: (payload: Payload) => Promise<Payload> | Payload

@@ -1,7 +1,7 @@
-import { PropertyCrypto } from "./PropertyCrypto"
+import { Crypto } from "./Crypto"
 
 describe("PropertyCrypto", () => {
-	const crypto = PropertyCrypto.create("secret", "encrypted", "things.encrypted")
+	const crypto = Crypto.create("secret", "encrypted", "things.encrypted")
 	it("encrypt", async () => {
 		const encrypted = await crypto.apply({
 			iss: "issuer",

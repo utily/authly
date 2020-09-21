@@ -1,4 +1,4 @@
-import { PropertyRenamer } from "./PropertyRenamer"
+import { Renamer } from "./Renamer"
 
 const transformObject = { foo: "Some", inside: { foo: "Value", inside: { foo: "here" } } }
 const transformedObject = {
@@ -11,11 +11,11 @@ const transformedObject = {
 	},
 }
 const transformMap = { foo: "bar", inside: "outside" }
-const propertyRenamer = new PropertyRenamer(transformMap)
+const propertyRenamer = new Renamer(transformMap)
 const nestedObject = { foo: [{ foo: "bar" }, { inside: "outside" }] }
 const transformedNestedObject = { bar: [{ bar: "bar" }, { outside: "outside" }] }
 
-describe("PropertyRenamer", () => {
+describe("Renamer", () => {
 	it("forward Transform", () => {
 		expect(propertyRenamer.apply(transformObject)).toEqual(transformedObject)
 	})

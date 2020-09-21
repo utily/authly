@@ -1,7 +1,7 @@
 import { Base64, Digest, TextEncoder, TextDecoder } from "cryptly"
-import { Payload } from "./Payload"
+import { Payload } from "../Payload"
 
-export class PropertyCrypto {
+export class Crypto {
 	protected readonly encoder = new TextEncoder()
 	protected readonly decoder = new TextDecoder()
 	private properties: string[][]
@@ -58,9 +58,9 @@ export class PropertyCrypto {
 				)
 		return result
 	}
-	static create(secret: string, ...properties: string[]): PropertyCrypto
-	static create(secret: string | undefined, ...properties: string[]): PropertyCrypto | undefined
-	static create(secret: string | undefined, ...properties: string[]): PropertyCrypto | undefined {
-		return (secret && new PropertyCrypto(secret, ...properties)) || undefined
+	static create(secret: string, ...properties: string[]): Crypto
+	static create(secret: string | undefined, ...properties: string[]): Crypto | undefined
+	static create(secret: string | undefined, ...properties: string[]): Crypto | undefined {
+		return (secret && new Crypto(secret, ...properties)) || undefined
 	}
 }

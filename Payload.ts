@@ -9,5 +9,5 @@ export namespace Payload {
 	export interface Data {
 		[claim: string]: Value | Value[] | undefined
 	}
-	export type Value = string | number | Data
+	export type Value = string | number | Data | Value[]
 }
