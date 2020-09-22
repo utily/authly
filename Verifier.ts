@@ -80,6 +80,7 @@ export class Verifier extends Actor<Verifier> {
 			: undefined
 	}
 
+	static create(): Verifier
 	static create(...algorithms: Algorithm[]): Verifier
 	static create(...algorithms: (Algorithm | undefined)[]): Verifier | undefined
 	static create(...algorithms: (Algorithm | undefined)[]): Verifier | undefined {
