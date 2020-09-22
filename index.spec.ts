@@ -12,7 +12,7 @@ describe("authly", () => {
 			expect(token).toEqual(
 				"eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpc3MiOiJpc3N1ZXIiLCJpYXQiOjQ5MDYyMDAwLCJhdWQiOlsidmVyaWZpZXIiLCJhdWRpZW5jZSJdLCJ0ZXN0IjoidGVzdCJ9."
 			)
-			const verifier = authly.Verifier.create("audience", algorithm)
+			const verifier = authly.Verifier.create(algorithm)
 			expect(verifier).toBeTruthy()
 			if (verifier) {
 				expect(await verifier.verify(token)).toEqual({
@@ -32,7 +32,7 @@ describe("authly", () => {
 		expect(token).toEqual(
 			"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJpc3N1ZXIiLCJpYXQiOjQ5MDYyMDAwLCJhdWQiOlsidmVyaWZpZXIiLCJhdWRpZW5jZSJdLCJ0ZXN0IjoidGVzdCJ9.7zOG5XjdMk6r4YhddJPEvDi2PFYjQrYVJ4stYJpRcgg"
 		)
-		const verifier = authly.Verifier.create("audience", algorithm)
+		const verifier = authly.Verifier.create(algorithm)
 		if (verifier) {
 			expect(await verifier.verify(token)).toEqual({
 				iss: "issuer",
@@ -55,7 +55,7 @@ describe("authly", () => {
 			expect(token).toEqual(
 				"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJpc3N1ZXIiLCJpYXQiOjQ5MDYyMDAwLCJhdWQiOlsidmVyaWZpZXIiLCJhdWRpZW5jZSJdLCJ0ZXN0IjoidGVzdCJ9.kcIpE5fHTTV2qfyyNKEca045osICnt0X6GxkKyagZQAw4pCKQURb4prZV4DiqiEP5J66-Ev74QidMITk6zJFgTsv57krduQ9cMnD9-Qpyh6QnQJSRKke98IXZDMo8kfI8poo6uRAz8x6myNvC7sx_2_PAR9BA_5oXuVo0QgLpJ4ektqVGbnzwYwU4WjdOJsrNtzHDNf2o1x8GY2oTXfOFQyKx0m6vipiVulnXwWiytRBE-v6xijJC1Ja-wT6C4Je1VqS8ru8ij7ciqV7c4FWuBoN8WWalW-z9P-LfmQzw3Md21OnTVl4AevLLPNgojRmF9lpysR-ozcd_RNjQX9XvA"
 			)
-			const verifier = authly.Verifier.create("audience", algorithm)
+			const verifier = authly.Verifier.create(algorithm)
 			expect(verifier).toBeTruthy()
 			if (verifier) {
 				expect(await verifier.verify(token)).toEqual({
@@ -70,7 +70,7 @@ describe("authly", () => {
 	it("any", async () => {
 		const token =
 			"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJpc3N1ZXIiLCJpYXQiOjQ5MDYyMDAwLCJhdWQiOlsidmVyaWZpZXIiLCJhdWRpZW5jZSJdLCJ0ZXN0IjoidGVzdCJ9.7zOG5XjdMk6r4YhddJPEvDi2PFYjQrYVJ4stYJpRcgg"
-		const verifier = authly.Verifier.create("audience")
+		const verifier = authly.Verifier.create()
 		if (verifier) {
 			expect(await verifier.verify(token)).toEqual({
 				iss: "issuer",
@@ -82,13 +82,13 @@ describe("authly", () => {
 	})
 	it("HS256 + property encryption", async () => {
 		const algorithm = authly.Algorithm.HS256("secret-key")
-		const issuer = authly.Issuer.create("issuer", algorithm).add("property-key", "secret")
+		const issuer = authly.Issuer.create("issuer", algorithm).add(["property-key", "secret"])
 		issuer.audience = ["verifier", "audience"]
 		const token = await issuer.sign({ test: "test", secret: { number: 1337, string: "The power of Attraction." } })
 		expect(token).toEqual(
 			"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJpc3N1ZXIiLCJpYXQiOjQ5MDYyMDAwLCJhdWQiOlsidmVyaWZpZXIiLCJhdWRpZW5jZSJdLCJ0ZXN0IjoidGVzdCIsInNlY3JldCI6IlcxUXhNdml2dFd0YXVrZV9JYmhYMFZXUkJ1a0tjZlF3aWI4dk5QTjNqelY0eGZxZEpld1BpS2FIY2luTXh4Q2VpNTI1In0.K6MiLzuJ_T1Pv5AM5k_DeIJk9L2KK5RrOGjMQOyLeqE"
 		)
-		const verifier = authly.Verifier.create("audience", algorithm)
+		const verifier = authly.Verifier.create(algorithm)
 		expect(verifier).toBeTruthy()
 		expect(await verifier.verify(token)).toEqual({
 			iss: "issuer",
@@ -97,7 +97,7 @@ describe("authly", () => {
 			test: "test",
 			secret: "W1QxMvivtWtauke_IbhX0VWRBukKcfQwib8vNPN3jzV4xfqdJewPiKaHcinMxxCei525",
 		})
-		expect(await verifier.add("property-key", "secret").verify(token)).toEqual({
+		expect(await verifier.add(["property-key", "secret"]).verify(token)).toEqual({
 			iss: "issuer",
 			aud: ["verifier", "audience"],
 			iat: 49062000,
@@ -107,18 +107,20 @@ describe("authly", () => {
 	})
 	it("HS256 + property encryption + renamer", async () => {
 		const algorithm = authly.Algorithm.HS256("secret-key")
-		const issuer = authly.Issuer.create("issuer", algorithm).add({ toEncrypt: "secret" }).add("property-key", "secret")
+		const issuer = authly.Issuer.create("issuer", algorithm)
+			.add({ toEncrypt: "secret" })
+			.add(["property-key", "secret"])
 		issuer.audience = ["verifier", "audience"]
 		const token = await issuer.sign({
 			test: [{ test: "test" }],
 			toEncrypt: { number: 1337, string: "The power of Attraction." },
 		})
-		const verifier = authly.Verifier.create("audience", algorithm)
+		const verifier = authly.Verifier.create(algorithm)
 		expect(verifier).toBeTruthy()
 		expect(
 			await verifier
 				.add({ issuer: "iss", testing: "test", toEncrypt: "secret" })
-				.add("property-key", "secret")
+				.add(["property-key", "secret"])
 				.verify(token)
 		).toEqual({
 			issuer: "issuer",

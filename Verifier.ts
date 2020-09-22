@@ -7,7 +7,7 @@ import { Token } from "./Token"
 
 export class Verifier extends Actor<Verifier> {
 	readonly algorithms: { [algorithm: string]: Algorithm } | undefined
-	private constructor(readonly audience: string[], ...algorithms: Algorithm[]) {
+	private constructor(...algorithms: Algorithm[]) {
 		super()
 		if (algorithms.length > 0) {
 			this.algorithms = {}
@@ -16,7 +16,7 @@ export class Verifier extends Actor<Verifier> {
 		} else
 			this.algorithms = undefined
 	}
-	async verify(token: string | Token | undefined): Promise<Payload | undefined> {
+	async verify(token: string | Token | undefined, ...audience: string[]): Promise<Payload | undefined> {
 		let result: Payload | undefined
 		if (token) {
 			const splitted = token.split(".", 3)
@@ -44,11 +44,20 @@ export class Verifier extends Actor<Verifier> {
 					result = undefined
 				}
 				const now = Date.now()
+				if (result) {
+					//Legacy problem, transform epoch in ms to epoch in s
+					if (result.iat && result.iat > 1577836800000) {
+						result.iat = Math.floor(result.iat / 1000)
+					}
+					if (result.exp && result.exp > 1577836800000) {
+						result.exp = Math.floor(result.exp / 1000)
+					}
+				}
 				result =
 					result &&
 					(result.exp == undefined || result.exp > now) &&
 					(result.iat == undefined || result.iat <= now) &&
-					this.verifyAudience(result.aud)
+					this.verifyAudience(result.aud, audience)
 						? result
 						: undefined
 			}
@@ -57,27 +66,26 @@ export class Verifier extends Actor<Verifier> {
 		}
 		return result
 	}
-	private verifyAudience(audience: undefined | string | string[]): boolean {
+	private verifyAudience(audience: undefined | string | string[], allowed: string[]): boolean {
 		return (
 			audience == undefined ||
-			this.audience == [] ||
-			(typeof audience == "string" && this.audience.some(a => a == audience)) ||
-			(Array.isArray(audience) && audience.some(a => this.audience.some(ta => ta == a)))
+			allowed.length == 0 ||
+			(typeof audience == "string" && allowed.some(a => a == audience)) ||
+			(Array.isArray(audience) && audience.some(a => allowed.some(ta => ta == a)))
 		)
 	}
-	async authenticate(authorization: string): Promise<Payload | undefined> {
-		return authorization && authorization.startsWith("Bearer ") ? this.verify(authorization.substr(7)) : undefined
+	async authenticate(authorization: string, ...audience: string[]): Promise<Payload | undefined> {
+		return authorization && authorization.startsWith("Bearer ")
+			? this.verify(authorization.substr(7), ...audience)
+			: undefined
 	}
 
-	static create(audience?: string | string[], ...algorithms: Algorithm[]): Verifier
-	static create(audience?: string | string[], ...algorithms: (Algorithm | undefined)[]): Verifier | undefined
-	static create(audience?: string | string[], ...algorithms: (Algorithm | undefined)[]): Verifier | undefined {
+	static create(...algorithms: Algorithm[]): Verifier
+	static create(...algorithms: (Algorithm | undefined)[]): Verifier | undefined
+	static create(...algorithms: (Algorithm | undefined)[]): Verifier | undefined {
 		return (
 			((algorithms.length == 0 || algorithms.some(a => !!a)) &&
-				new Verifier(
-					audience ? (Array.isArray(audience) ? audience : [audience]) : [],
-					...(algorithms.filter(a => !!a) as Algorithm[])
-				)) ||
+				new Verifier(...(algorithms.filter(a => !!a) as Algorithm[]))) ||
 			undefined
 		)
 	}

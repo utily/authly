@@ -38,7 +38,7 @@ export class Issuer extends Actor<Issuer> {
 	}
 	private static get issuedAt(): number {
 		return Issuer.defaultIssuedAt == undefined
-			? Date.now()
+			? Math.floor(Date.now() / 1000)
 			: typeof Issuer.defaultIssuedAt == "number"
 			? Issuer.defaultIssuedAt
 			: Issuer.defaultIssuedAt.getTime()

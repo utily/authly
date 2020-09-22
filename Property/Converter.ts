@@ -1,8 +1,8 @@
-import { Conversion } from "./Conversion"
+import { Creatable } from "./Creatable"
 import { Payload } from "../Payload"
 
 export class Converter {
-	constructor(readonly conversionMap: { [key: string]: Conversion }) {}
+	constructor(readonly conversionMap: Creatable.Converter) {}
 
 	apply(payload: Payload): Payload {
 		return this.convert(payload, true)
