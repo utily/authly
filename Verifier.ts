@@ -7,8 +7,8 @@ import { Token } from "./Token"
 
 export class Verifier extends Actor<Verifier> {
 	readonly algorithms: { [algorithm: string]: Algorithm } | undefined
-	private constructor(audience: string, ...algorithms: Algorithm[]) {
-		super(audience)
+	private constructor(readonly audience: string[], ...algorithms: Algorithm[]) {
+		super()
 		if (algorithms.length > 0) {
 			this.algorithms = {}
 			for (const algorithm of algorithms)
@@ -60,19 +60,24 @@ export class Verifier extends Actor<Verifier> {
 	private verifyAudience(audience: undefined | string | string[]): boolean {
 		return (
 			audience == undefined ||
-			(typeof audience == "string" && audience == this.id) ||
-			(Array.isArray(audience) && audience.some(a => a == this.id))
+			this.audience == [] ||
+			(typeof audience == "string" && this.audience.some(a => a == audience)) ||
+			(Array.isArray(audience) && audience.some(a => this.audience.some(ta => ta == a)))
 		)
 	}
 	async authenticate(authorization: string): Promise<Payload | undefined> {
 		return authorization && authorization.startsWith("Bearer ") ? this.verify(authorization.substr(7)) : undefined
 	}
-	static create(audience: string, ...algorithms: Algorithm[]): Verifier
-	static create(audience: string, ...algorithms: (Algorithm | undefined)[]): Verifier | undefined
-	static create(audience: string, ...algorithms: (Algorithm | undefined)[]): Verifier | undefined {
+
+	static create(audience?: string | string[], ...algorithms: Algorithm[]): Verifier
+	static create(audience?: string | string[], ...algorithms: (Algorithm | undefined)[]): Verifier | undefined
+	static create(audience?: string | string[], ...algorithms: (Algorithm | undefined)[]): Verifier | undefined {
 		return (
 			((algorithms.length == 0 || algorithms.some(a => !!a)) &&
-				new Verifier(audience, ...(algorithms.filter(a => !!a) as Algorithm[]))) ||
+				new Verifier(
+					audience ? (Array.isArray(audience) ? audience : [audience]) : [],
+					...(algorithms.filter(a => !!a) as Algorithm[])
+				)) ||
 			undefined
 		)
 	}

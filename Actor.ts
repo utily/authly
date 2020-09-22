@@ -1,7 +1,7 @@
 import * as Property from "./Property"
 export class Actor<T extends Actor<T>> {
 	protected readonly transformers: Property.Transformer[] = []
-	constructor(readonly id: string) {}
+	constructor(readonly id?: string) {}
 	add(secret: string, ...properties: string[]): T
 	add(forwardTransformMap: Property.RenameMap): T
 	add(conversionMap: { [key: string]: Property.Conversion }): T
