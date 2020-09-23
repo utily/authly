@@ -8,18 +8,24 @@ export class Crypto {
 	private constructor(private secret: string, ...properties: string[]) {
 		this.properties = properties.map(p => p.split("."))
 	}
-	apply(payload: Payload): Promise<Payload> {
-		return this.process(
-			payload,
-			value => this.encoder.encode(JSON.stringify(value)),
-			value => Base64.encode(value, "url")
+	async apply(payload: Payload | undefined): Promise<Payload | undefined> {
+		return (
+			payload &&
+			this.process(
+				payload,
+				value => this.encoder.encode(JSON.stringify(value)),
+				value => Base64.encode(value, "url")
+			)
 		)
 	}
-	reverse(payload: Payload): Promise<Payload> {
-		return this.process(
-			payload,
-			value => (typeof value == "string" ? Base64.decode(value, "url") : new Uint8Array()),
-			value => JSON.parse(this.decoder.decode(value))
+	async reverse(payload: Payload | undefined): Promise<Payload | undefined> {
+		return (
+			payload &&
+			this.process(
+				payload,
+				value => (typeof value == "string" ? Base64.decode(value, "url") : new Uint8Array()),
+				value => JSON.parse(this.decoder.decode(value))
+			)
 		)
 	}
 	private async process(
@@ -42,12 +48,17 @@ export class Crypto {
 		const result = { ...payload }
 		if (result[property[0]])
 			if (property.length == 1) {
-				const data = preprocess(payload[property[0]])
-				const key = await new Digest("SHA-512").digest(this.encoder.encode(secret))
-				const processed = new Uint8Array(data.length)
-				for (let index = 0; index < data.length; index++)
-					processed[index] = data[index] ^ key[index]
-				result[property[0]] = postprocess(processed)
+				try {
+					const data = preprocess(payload[property[0]])
+					const key = await new Digest("SHA-512").digest(this.encoder.encode(secret))
+					const processed = new Uint8Array(data.length)
+					for (let index = 0; index < data.length; index++)
+						processed[index] = data[index] ^ key[index]
+					result[property[0]] = postprocess(processed)
+				} catch (e) {
+					console.log("Crypto failed at Property: " + property[0])
+					console.log(payload[property[0]])
+				}
 			} else
 				result[property[0]] = await this.processProperty(
 					result[property[0]] as Payload,

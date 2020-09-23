@@ -1,20 +1,23 @@
 import * as authly from "./index"
 
 describe("Verifier", () => {
-	const verifier = authly.Verifier.create("audience", authly.Algorithm.HS256("secret"))
+	const verifier = authly.Verifier.create<authly.Payload>(
+		authly.Algorithm.HS256("nothing"),
+		authly.Algorithm.HS256("secret")
+	)
 	const validIssuer = authly.Issuer.create("audience", authly.Algorithm.HS256("secret"))
-	const noneVerifier = authly.Verifier.create("audience", authly.Algorithm.none())
+	const noneVerifier = authly.Verifier.create(authly.Algorithm.none())
 	const noneIssuer = authly.Issuer.create("audience", authly.Algorithm.none())
 	authly.Issuer.defaultIssuedAt = 1570094329996
-	it("undefined", async () => expect(await verifier.verify(undefined)).toEqual(undefined))
-	it("not a token", async () => expect(await verifier.verify("not a token")).toEqual(undefined))
-	it("not.a.token", async () => expect(await verifier.verify("not.a.token")).toEqual(undefined))
+	it("undefined", async () => expect(await verifier.verify(undefined, "audience")).toEqual(undefined))
+	it("not a token", async () => expect(await verifier.verify("not a token", "audience")).toEqual(undefined))
+	it("not.a.token", async () => expect(await verifier.verify("not.a.token", "audience")).toEqual(undefined))
 	it("token without signature", async () =>
-		expect(await verifier.verify(noneIssuer && (await noneIssuer.sign({ alpha: "a" })))).toEqual(undefined))
+		expect(await verifier.verify(noneIssuer && (await noneIssuer.sign({ alpha: "a" })), "audience")).toEqual(undefined))
 	it("token with valid signature", async () =>
-		expect(await verifier.verify(validIssuer && (await validIssuer.sign({ alpha: "a" })))).toEqual({
+		expect(await verifier.verify(validIssuer && (await validIssuer.sign({ alpha: "a" })), "audience")).toEqual({
 			alpha: "a",
-			iat: 1570094329996,
+			iat: 1570094329,
 			iss: "audience",
 		}))
 	it("Verifying both standard base64 encoded and url base 64 encoded jwt.", async () => {
@@ -29,8 +32,8 @@ describe("Verifier", () => {
 			"eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpc3MiOiJhdWRpZW5jZSIsImlhdCI6MTU3MDA5NDMyOTk5NiwidXJsIjoiaHR0cHM6Ly9leGFtcGxlLmNvbT9wYXJhbTE9MTIzIiwidXJsMiI6Imh0dHBzOi8vZXhhbXBsZS5jb20/cGFyYW0xPTMyMSJ9."
 		expect(jwt).toEqual(base64url)
 		expect(jwt).not.toEqual(base64std)
-		expect(noneVerifier && (await noneVerifier.verify(base64url))).toBeTruthy()
-		expect(noneVerifier && (await noneVerifier.verify(base64std))).toBeTruthy()
+		expect(noneVerifier && (await noneVerifier.verify(base64url, "audience"))).toBeTruthy()
+		expect(noneVerifier && (await noneVerifier.verify(base64std, "audience"))).toBeTruthy()
 	})
 	it("Verifying both standard base64 encoded and url base 64 encoded jwt.", async () => {
 		const json = {
@@ -45,7 +48,7 @@ describe("Verifier", () => {
 			"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdWRpZW5jZSIsImlhdCI6MTU3MDA5NDMyOTk5NiwidXJsIjoiaHR0cHM6Ly9leGFtcGxlLmNvbT9wYXJhbTE9MTIzIiwidXJsMiI6Imh0dHBzOi8vZXhhbXBsZS5jb20/cGFyYW0xPTMyMSJ9.v4jQ4w1rr5AYr0U_bAUv5Swn41NIuENvykhyt52NpX8"
 		expect(jwt).toEqual(base64url)
 		expect(jwt).not.toEqual(base64std)
-		expect(verifier && (await verifier.verify(base64url))).toBeTruthy()
-		expect(verifier && (await verifier.verify(base64std))).toBeTruthy()
+		expect(verifier && (await verifier.verify(base64url, "audience"))).toBeTruthy()
+		expect(verifier && (await verifier.verify(base64std, "audience"))).toBeTruthy()
 	})
 })

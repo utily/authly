@@ -4,10 +4,11 @@ export class Actor<T extends Actor<T>> {
 	constructor(readonly id?: string) {}
 	//Add more overloads
 	add(...argument: Property.Creatable[]): T
-	add(...argument: Property.Transformer[]): T
-	add(...argument: (Property.Creatable | Property.Transformer)[]): T {
-		argument.forEach(value =>
-			this.transformers.push(Property.Creatable.is(value) ? this.creatableToTransformer(value) : value)
+	add(...argument: (Property.Transformer | undefined)[]): T
+	add(...argument: (Property.Creatable | Property.Transformer | undefined)[]): T {
+		argument.forEach(
+			value =>
+				value && this.transformers.push(Property.Creatable.is(value) ? this.creatableToTransformer(value) : value)
 		)
 		return (this as unknown) as T
 	}

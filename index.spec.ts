@@ -109,7 +109,7 @@ describe("authly", () => {
 		const algorithm = authly.Algorithm.HS256("secret-key")
 		const issuer = authly.Issuer.create("issuer", algorithm)
 			.add({ toEncrypt: "secret" })
-			.add(["property-key", "secret"])
+			.add(["property-key", "secret", "test"])
 		issuer.audience = ["verifier", "audience"]
 		const token = await issuer.sign({
 			test: [{ test: "test" }],
@@ -120,7 +120,7 @@ describe("authly", () => {
 		expect(
 			await verifier
 				.add({ issuer: "iss", testing: "test", toEncrypt: "secret" })
-				.add(["property-key", "secret"])
+				.add(["property-key", "secret", "test"])
 				.verify(token)
 		).toEqual({
 			issuer: "issuer",

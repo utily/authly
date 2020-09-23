@@ -1,44 +1,36 @@
 import { Creatable } from "./Creatable"
 import { Payload } from "../Payload"
 
+/** TODO test empty conversionmap */
 export class Converter {
 	constructor(readonly conversionMap: Creatable.Converter) {}
 
-	apply(payload: Payload): Payload {
-		return this.convert(payload, true)
+	apply(payload: Payload | undefined): Payload | undefined {
+		return payload && this.convert(payload, true)
 	}
-	reverse(payload: Payload): Payload {
-		return this.convert(payload, false)
+	reverse(payload: Payload | undefined): Payload | undefined {
+		return payload && this.convert(payload, false)
 	}
+
 	private convert(payload: Payload, forward: boolean): Payload {
-		const result: Payload = {}
-		for (const key in payload) {
-			if (key in this.conversionMap) {
-				result[key] = this.resolve(
-					payload[key],
-					forward,
-					forward ? this.conversionMap[key].forward : this.conversionMap[key].backward
-				)
-			} else
-				result[key] = this.resolve(payload[key], forward)
+		for (const key in this.conversionMap) {
+			const fnction = forward ? this.conversionMap[key].forward : this.conversionMap[key].backward
+			const property: string[] = key.split(".")
+			payload = this.convertProperty(payload, property, fnction)
 		}
-		return result
+		return payload
 	}
-	private resolve(
-		payload: Payload.Value | undefined,
-		forward: boolean,
-		fnction?: (value: Payload.Value) => Payload.Value
-	): Payload.Value {
-		let result: any
-		if (Array.isArray(payload)) {
-			result = []
-			payload.forEach(value => {
-				result.push(this.resolve(value, forward, fnction))
-			})
-		} else {
-			result =
-				typeof payload == "object" ? this.convert(payload, forward) : fnction && payload ? fnction(payload) : payload
-		}
+	private convertProperty(
+		payload: Payload,
+		property: string[],
+		fnction: (value: Payload.Value) => Payload.Value
+	): Payload {
+		const result = { ...payload }
+		if (result[property[0]])
+			result[property[0]] =
+				property.length == 1
+					? fnction(result[property[0]] as Payload)
+					: this.convertProperty(result[property[0]] as Payload, property.slice(1), fnction)
 		return result
 	}
 }
