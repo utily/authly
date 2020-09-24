@@ -29,7 +29,7 @@ export class Issuer extends Actor<Issuer> {
 		payload = { ...this.payload, ...payload }
 		if (issuedAt)
 			payload.iat = typeof issuedAt == "number" ? issuedAt : issuedAt.getTime()
-		payload = await this.cryptos.reduce(async (p, c) => c.apply(await p), Promise.resolve(payload))
+		payload = await this.transformers.reduce(async (p, c) => c.apply(await p), Promise.resolve(payload))
 		const data = `${Base64.encode(new TextEncoder().encode(JSON.stringify(this.header)), "url")}.${Base64.encode(
 			new TextEncoder().encode(JSON.stringify(payload)),
 			"url"

@@ -4,10 +4,8 @@ import { Actor } from "./Actor"
 import { Algorithm } from "./Algorithm"
 import { Issuer } from "./Issuer"
 import { Payload } from "./Payload"
-import { PropertyCrypto } from "./PropertyCrypto"
-import { PropertyRenamer } from "./PropertyRenamer"
+import * as Property from "./Property"
 import { Token } from "./Token"
-import { Transformer } from "./Transformer"
 import { Verifier } from "./Verifier"
 
 export {
@@ -17,12 +15,10 @@ export {
 	Issuer,
 	Password,
 	Payload,
-	PropertyCrypto,
-	PropertyRenamer,
+	Property,
 	TextDecoder,
 	TextEncoder,
 	Token,
-	Transformer,
 	Verifier,
 	Identifier,
 }

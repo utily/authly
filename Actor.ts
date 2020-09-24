@@ -1,23 +1,19 @@
-import { PropertyRenamer } from "./PropertyRenamer"
-import { PropertyCrypto } from "./PropertyCrypto"
-import { Transformer } from "./Transformer"
+import * as Property from "./Property"
 export class Actor<T extends Actor<T>> {
-	protected readonly cryptos: Transformer[] = []
+	protected readonly transformers: Property.Transformer[] = []
 	constructor(readonly id: string) {}
 	add(secret: string, ...properties: string[]): T
-	add(forwardTransformMap: { [key: string]: string }): T
-	add(argument: string | { [key: string]: string }, ...properties: string[]): T {
-		switch (typeof argument) {
-			case "string":
-				const crypto = PropertyCrypto.create(argument, ...properties)
-				if (crypto)
-					this.cryptos.push(crypto)
-				break
-			case "object":
-				if (argument != {})
-					this.cryptos.push(new PropertyRenamer(argument))
-				break
-		}
+	add(forwardTransformMap: Property.RenameMap): T
+	add(conversionMap: { [key: string]: Property.Conversion }): T
+	add(argument: string | Property.RenameMap | { [key: string]: Property.Conversion }, ...properties: string[]): T {
+		if (typeof argument == "string") {
+			const crypto = Property.Crypto.create(argument, ...properties)
+			if (crypto)
+				this.transformers.push(crypto)
+		} else
+			this.transformers.push(
+				Property.RenameMap.is(argument) ? new Property.Renamer(argument) : new Property.Converter(argument)
+			)
 		return (this as unknown) as T
 	}
 }

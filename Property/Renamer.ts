@@ -1,10 +1,11 @@
-import { Payload } from "./Payload"
+import { Payload } from "../Payload"
 
-export class PropertyRenamer {
+export class Renamer {
 	private backwardTransformMap: { [key: string]: string }
 	constructor(readonly forwardTransformMap: { [key: string]: string }) {
 		this.createBackwardTransformMap()
 	}
+
 	private createBackwardTransformMap() {
 		const result: { [key: string]: string } = {}
 		for (const key in this.forwardTransformMap) {
@@ -13,30 +14,31 @@ export class PropertyRenamer {
 		this.backwardTransformMap = result ? result : {}
 	}
 	apply(payload: Payload): Payload {
-		return this.remap(payload, this.forwardTransformMap)
+		return this.remap(payload, true)
 	}
 	reverse(payload: Payload): Payload {
-		return this.remap(payload, this.backwardTransformMap)
+		return this.remap(payload, false)
 	}
-	remap(payload: Payload, transformMap: { [key: string]: string }): Payload {
+	private remap(payload: Payload, forward: boolean): Payload {
+		const transformMap = forward ? this.forwardTransformMap : this.backwardTransformMap
 		const result: Payload = {}
 		for (const key in payload) {
 			if (key in transformMap) {
-				result[transformMap[key]] = this.resolve(payload[key], transformMap)
+				result[transformMap[key]] = this.resolve(payload[key], forward)
 			} else
-				result[key] = this.resolve(payload[key], transformMap)
+				result[key] = this.resolve(payload[key], forward)
 		}
 		return result
 	}
-	private resolve<T>(payload: T, transformMap: { [key: string]: string }): T {
+	private resolve<T>(payload: T, forward: boolean): T {
 		let result: any
 		if (Array.isArray(payload)) {
 			result = []
 			payload.forEach(value => {
-				result.push(this.resolve(value, transformMap))
+				result.push(this.resolve(value, forward))
 			})
 		} else {
-			result = typeof payload == "object" ? this.remap((payload as unknown) as Payload, transformMap) : payload
+			result = typeof payload == "object" ? this.remap((payload as unknown) as Payload, forward) : payload
 		}
 		return result as T
 	}
