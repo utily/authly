@@ -1,6 +1,6 @@
 {
 	"name": "authly",
-	"version": "0.0.44",
+	"version": "0.0.45",
 	"description": "Tokenized authentication using JSON Web Tokens with support for encrypted token properties.",
 	"author": "PayFunc",
 	"license": "MIT",
