@@ -39,19 +39,19 @@ const transformedObject = {
 const converter = new Converter(conversionMap)
 
 describe("Converter", () => {
-	it("Empty Transformmap", () => {
+	it("Empty Transformmap", async () => {
 		const converter = new Converter({})
-		expect(converter.apply(transformObject)).toEqual(transformObject)
+		expect(await converter.apply(transformObject)).toEqual(transformObject)
 	})
-	it("Transform Forward", () => {
-		expect(converter.apply(transformObject)).toEqual(transformedObject)
-	})
-
-	it("Transform Backwards", () => {
-		expect(converter.reverse(transformedObject)).toEqual(transformObject)
+	it("Transform Forward", async () => {
+		expect(await converter.apply(transformObject)).toEqual(transformedObject)
 	})
 
-	it("Transform Both Ways", () => {
-		expect(converter.reverse(converter.apply(transformObject))).toEqual(transformObject)
+	it("Transform Backwards", async () => {
+		expect(await converter.reverse(transformedObject)).toEqual(transformObject)
+	})
+
+	it("Transform Both Ways", async () => {
+		expect(await converter.reverse(await converter.apply(transformObject))).toEqual(transformObject)
 	})
 })

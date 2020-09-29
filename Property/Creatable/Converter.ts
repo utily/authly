@@ -1,8 +1,8 @@
 import { Payload } from "../../Payload"
 export interface Converter {
 	[key: string]: {
-		forward: (value: Payload.Value) => Payload.Value
-		backward: (value: Payload.Value) => Payload.Value
+		forward: (value: Payload.Value) => Payload.Value | undefined | Promise<Payload.Value | undefined>
+		backward: (value: Payload.Value) => Payload.Value | undefined | Promise<Payload.Value | undefined>
 	}
 }
 
