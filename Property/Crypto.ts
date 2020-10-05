@@ -48,17 +48,12 @@ export class Crypto {
 		const result = { ...payload }
 		if (result[property[0]])
 			if (property.length == 1) {
-				try {
-					const data = preprocess(payload[property[0]])
-					const key = await new Digest("SHA-512").digest(this.encoder.encode(secret))
-					const processed = new Uint8Array(data.length)
-					for (let index = 0; index < data.length; index++)
-						processed[index] = data[index] ^ key[index]
-					result[property[0]] = postprocess(processed)
-				} catch (e) {
-					console.log("Crypto failed at Property: " + property[0])
-					console.log(payload[property[0]])
-				}
+				const data = preprocess(payload[property[0]])
+				const key = await new Digest("SHA-512").digest(this.encoder.encode(secret))
+				const processed = new Uint8Array(data.length)
+				for (let index = 0; index < data.length; index++)
+					processed[index] = data[index] ^ key[index]
+				result[property[0]] = postprocess(processed)
 			} else
 				result[property[0]] = await this.processProperty(
 					result[property[0]] as Payload,

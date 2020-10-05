@@ -46,15 +46,11 @@ export class Verifier<T extends Payload> extends Actor<Verifier<T>> {
 				} catch {
 					result = undefined
 				}
-				if (result) {
-					//Legacy problem, transform epoch in ms to epoch in s
-				}
 				result = result && this.verifyAudience(result.aud, audience) ? result : undefined
 			}
 			if (result)
 				result = await this.transformers.reduceRight(async (p, c) => c.reverse(await p), Promise.resolve(result))
 			if (result) {
-				// TODO make Pretty maybe find a new place
 				const now = Math.floor(Date.now() / 1000)
 				if (result?.iat && result.iat > 1000000000000)
 					result.iat = Math.floor(result.iat / 1000)
