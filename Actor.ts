@@ -1,19 +1,22 @@
 import * as Property from "./Property"
 export class Actor<T extends Actor<T>> {
 	protected readonly transformers: Property.Transformer[] = []
-	constructor(readonly id: string) {}
-	add(secret: string, ...properties: string[]): T
-	add(forwardTransformMap: Property.RenameMap): T
-	add(conversionMap: { [key: string]: Property.Conversion }): T
-	add(argument: string | Property.RenameMap | { [key: string]: Property.Conversion }, ...properties: string[]): T {
-		if (typeof argument == "string") {
-			const crypto = Property.Crypto.create(argument, ...properties)
-			if (crypto)
-				this.transformers.push(crypto)
-		} else
-			this.transformers.push(
-				Property.RenameMap.is(argument) ? new Property.Renamer(argument) : new Property.Converter(argument)
-			)
+	constructor(readonly id?: string) {}
+
+	add(...argument: Property.Creatable[]): T
+	add(...argument: (Property.Transformer | undefined)[]): T
+	add(...argument: (Property.Creatable | Property.Transformer | undefined)[]): T {
+		argument.forEach(
+			value =>
+				value && this.transformers.push(Property.Creatable.is(value) ? this.creatableToTransformer(value) : value)
+		)
 		return (this as unknown) as T
+	}
+	private creatableToTransformer(creatable: Property.Creatable): Property.Transformer {
+		return Property.Creatable.Converter.is(creatable)
+			? new Property.Converter(creatable)
+			: Property.Creatable.Crypto.is(creatable)
+			? Property.Crypto.create(creatable[0], ...creatable.slice(1))
+			: new Property.Renamer(creatable)
 	}
 }

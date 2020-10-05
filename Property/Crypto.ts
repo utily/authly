@@ -8,18 +8,24 @@ export class Crypto {
 	private constructor(private secret: string, ...properties: string[]) {
 		this.properties = properties.map(p => p.split("."))
 	}
-	apply(payload: Payload): Promise<Payload> {
-		return this.process(
-			payload,
-			value => this.encoder.encode(JSON.stringify(value)),
-			value => Base64.encode(value, "url")
+	async apply(payload: Payload | undefined): Promise<Payload | undefined> {
+		return (
+			payload &&
+			this.process(
+				payload,
+				value => this.encoder.encode(JSON.stringify(value)),
+				value => Base64.encode(value, "url")
+			)
 		)
 	}
-	reverse(payload: Payload): Promise<Payload> {
-		return this.process(
-			payload,
-			value => (typeof value == "string" ? Base64.decode(value, "url") : new Uint8Array()),
-			value => JSON.parse(this.decoder.decode(value))
+	async reverse(payload: Payload | undefined): Promise<Payload | undefined> {
+		return (
+			payload &&
+			this.process(
+				payload,
+				value => (typeof value == "string" ? Base64.decode(value, "url") : new Uint8Array()),
+				value => JSON.parse(this.decoder.decode(value))
+			)
 		)
 	}
 	private async process(
