@@ -2,7 +2,7 @@ import * as Property from "./Property"
 export class Actor<T extends Actor<T>> {
 	protected readonly transformers: Property.Transformer[] = []
 	constructor(readonly id?: string) {}
-	//Add more overloads
+
 	add(...argument: Property.Creatable[]): T
 	add(...argument: (Property.Transformer | undefined)[]): T
 	add(...argument: (Property.Creatable | Property.Transformer | undefined)[]): T {

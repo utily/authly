@@ -1,7 +1,4 @@
 import { Payload } from "../Payload"
-/*
- * TODO Change Renamer same way as Converter
- */
 
 export interface Transformer {
 	apply: (payload: Payload | undefined) => Promise<Payload | undefined> | Payload | undefined

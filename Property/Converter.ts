@@ -1,7 +1,6 @@
 import { Creatable } from "./Creatable"
 import { Payload } from "../Payload"
 
-/** TODO test empty conversionmap */
 export class Converter {
 	constructor(readonly conversionMap: Creatable.Converter) {}
 
