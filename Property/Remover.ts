@@ -15,7 +15,6 @@ export class Remover {
 		this.toRemove.forEach(str => {
 			const property: string[] = str.split(".")
 			result = this.removeProperty(result, property)
-			console.log(result)
 		})
 		return result
 	}
