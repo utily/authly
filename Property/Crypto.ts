@@ -1,5 +1,6 @@
 import { Base64, Digest, TextEncoder, TextDecoder } from "cryptly"
 import { Payload } from "../Payload"
+import { Remover } from "./Remover"
 
 export class Crypto {
 	protected readonly encoder = new TextEncoder()
@@ -65,8 +66,8 @@ export class Crypto {
 		return result
 	}
 	static create(secret: string, ...properties: string[]): Crypto
-	static create(secret: string | undefined, ...properties: string[]): Crypto | undefined
-	static create(secret: string | undefined, ...properties: string[]): Crypto | undefined {
-		return (secret && new Crypto(secret, ...properties)) || undefined
+	static create(secret: string | undefined, ...properties: string[]): Crypto | Remover | undefined
+	static create(secret: string | undefined, ...properties: string[]): Crypto | Remover | undefined {
+		return secret ? new Crypto(secret, ...properties) : Remover.create(properties)
 	}
 }
