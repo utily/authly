@@ -39,7 +39,7 @@ export class Verifier<T extends Payload> extends Actor<Verifier<T>> {
 						result =
 							splitted.length == 3 &&
 							algorithm &&
-							(await algorithm.some(async a => await a.verify(`${splitted[0]}.${splitted[1]}`, splitted[2])))
+							algorithm.some(async a => await a.verify(`${splitted[0]}.${splitted[1]}`, splitted[2]))
 								? result
 								: undefined
 					}
@@ -47,19 +47,20 @@ export class Verifier<T extends Payload> extends Actor<Verifier<T>> {
 					result = undefined
 				}
 				result = result && this.verifyAudience(result.aud, audience) ? result : undefined
-			}
-			if (result)
-				result = await this.transformers.reduceRight(async (p, c) => c.reverse(await p), Promise.resolve(result))
-			if (result) {
-				const now = Math.floor(Date.now() / 1000)
-				if (result?.iat && result.iat > 1000000000000)
-					result.iat = Math.floor(result.iat / 1000)
-				if (result?.exp && result.exp > 1000000000000)
-					result.exp = Math.floor(result.exp / 1000)
-				result =
-					(result.exp == undefined || result.exp > now) && (result.iat == undefined || result.iat <= now)
-						? result
-						: undefined
+				if (result)
+					(result.token = token),
+						(result = await this.transformers.reduceRight(async (p, c) => c.reverse(await p), Promise.resolve(result)))
+				if (result) {
+					const now = Math.floor(Date.now() / 1000)
+					if (result?.iat && result.iat > 1000000000000)
+						result.iat = Math.floor(result.iat / 1000)
+					if (result?.exp && result.exp > 1000000000000)
+						result.exp = Math.floor(result.exp / 1000)
+					result =
+						(result.exp == undefined || result.exp > now) && (result.iat == undefined || result.iat <= now)
+							? result
+							: undefined
+				}
 			}
 		}
 		return result as T | undefined
