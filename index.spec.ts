@@ -20,6 +20,7 @@ describe("authly", () => {
 					aud: ["verifier", "audience"],
 					iat: 49062000,
 					test: "test",
+					token,
 				})
 			}
 		}
@@ -39,6 +40,7 @@ describe("authly", () => {
 				aud: ["verifier", "audience"],
 				iat: 49062000,
 				test: "test",
+				token,
 			})
 		}
 	})
@@ -63,6 +65,7 @@ describe("authly", () => {
 					aud: ["verifier", "audience"],
 					iat: 49062000,
 					test: "test",
+					token,
 				})
 			}
 		}
@@ -77,6 +80,7 @@ describe("authly", () => {
 				aud: ["verifier", "audience"],
 				iat: 49062000,
 				test: "test",
+				token,
 			})
 		}
 	})
@@ -96,6 +100,7 @@ describe("authly", () => {
 			iat: 49062000,
 			test: "test",
 			secret: "W1QxMvivtWtauke_IbhX0VWRBukKcfQwib8vNPN3jzV4xfqdJewPiKaHcinMxxCei525",
+			token,
 		})
 		expect(await verifier.add(["property-key", "secret"]).verify(token)).toEqual({
 			iss: "issuer",
@@ -103,6 +108,7 @@ describe("authly", () => {
 			iat: 49062000,
 			test: "test",
 			secret: { number: 1337, string: "The power of Attraction." },
+			token,
 		})
 	})
 	it("HS256 + property encryption + renamer", async () => {
@@ -128,6 +134,7 @@ describe("authly", () => {
 			iat: 49062000,
 			testing: [{ testing: "test" }],
 			toEncrypt: { number: 1337, string: "The power of Attraction." },
+			token,
 		})
 	})
 })

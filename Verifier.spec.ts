@@ -19,6 +19,7 @@ describe("Verifier", () => {
 			alpha: "a",
 			iat: 1570094329,
 			iss: "audience",
+			token: expect.any(String),
 		}))
 	it("Verifying both standard base64 encoded and url base 64 encoded jwt.", async () => {
 		const json = {
