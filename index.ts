@@ -1,4 +1,4 @@
-import { Base64, Password, TextDecoder, TextEncoder, Identifier } from "cryptly"
+import { Base64, Identifier, Password, TextDecoder, TextEncoder } from "cryptly"
 import "./shim"
 import { Actor } from "./Actor"
 import { Algorithm } from "./Algorithm"

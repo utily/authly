@@ -1,5 +1,5 @@
-import { Symmetric as NameSymmetric } from "./Symmetric"
 import { Asymmetric as NameAsymmetric } from "./Asymmetric"
+import { Symmetric as NameSymmetric } from "./Symmetric"
 
 export type Name = "none" | NameSymmetric | NameAsymmetric
 

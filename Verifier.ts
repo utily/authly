@@ -1,6 +1,6 @@
 import { Base64, TextDecoder } from "cryptly"
-import { Algorithm } from "./Algorithm"
 import { Actor } from "./Actor"
+import { Algorithm } from "./Algorithm"
 import { Header } from "./Header"
 import { Payload } from "./Payload"
 import { Token } from "./Token"
