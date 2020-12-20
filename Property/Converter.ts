@@ -1,5 +1,5 @@
-import { Creatable } from "./Creatable"
 import { Payload } from "../Payload"
+import { Creatable } from "./Creatable"
 
 export class Converter {
 	constructor(readonly conversionMap: Creatable.Converter) {}
