@@ -1,7 +1,7 @@
 {
 	"compilerOptions": {
 		"target": "es6",
-		"module": "commonjs",
+		"module": "es6",
 		"noImplicitAny": true,
 		"removeComments": true,
 		"preserveConstEnums": true,
@@ -12,6 +12,8 @@
 		"outDir": "dist",
 		"moduleResolution": "node",
 		"resolveJsonModule": true,
+		"esModuleInterop":true,
+		"allowJs": true,
 		"plugins": [
 			{
 				"name": "typescript-tslint-plugin",

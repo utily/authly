@@ -30,6 +30,12 @@
 				"tsConfig": "tsconfig.test.json"
 			}
 		},
+		"transform": {
+			"^.+\\.(j|t)sx?$": "ts-jest"
+		},
+		"transformIgnorePatterns": [
+			"<rootDir>/node_modules/(?!cryptly/.*)"
+		],
 		"testEnvironment": "node",
 		"testRegex": "((\\.|/)(test|spec))(\\.|\\/.+)(jsx?|tsx?)$",
 		"testPathIgnorePatterns": [
@@ -56,7 +62,7 @@
 		"clean": "rm -rf dist node_modules coverage"
 	},
 	"dependencies": {
-		"cryptly": "0.0.10"
+		"cryptly": "payfunc/cryptly#cloud-webworker"
 	},
 	"devDependencies": {
 		"@types/jest": "^26.0.0",
