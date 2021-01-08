@@ -1,6 +1,6 @@
 {
 	"name": "authly",
-	"version": "0.1.6",
+	"version": "0.2.0",
 	"description": "Tokenized authentication using JSON Web Tokens with support for encrypted token properties.",
 	"author": "PayFunc",
 	"license": "MIT",
@@ -62,7 +62,7 @@
 		"clean": "rm -rf dist node_modules coverage"
 	},
 	"dependencies": {
-		"cryptly": "payfunc/cryptly#cloud-webworker"
+		"cryptly": "^0.1.2"
 	},
 	"devDependencies": {
 		"@types/jest": "^26.0.0",
