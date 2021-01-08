@@ -1,6 +1,6 @@
 {
 	"name": "authly",
-	"version": "0.1.6",
+	"version": "0.2.0",
 	"description": "Tokenized authentication using JSON Web Tokens with support for encrypted token properties.",
 	"author": "PayFunc",
 	"license": "MIT",
@@ -30,6 +30,12 @@
 				"tsConfig": "tsconfig.test.json"
 			}
 		},
+		"transform": {
+			"^.+\\.(j|t)sx?$": "ts-jest"
+		},
+		"transformIgnorePatterns": [
+			"<rootDir>/node_modules/(?!cryptly/.*)"
+		],
 		"testEnvironment": "node",
 		"testRegex": "((\\.|/)(test|spec))(\\.|\\/.+)(jsx?|tsx?)$",
 		"testPathIgnorePatterns": [
@@ -56,7 +62,7 @@
 		"clean": "rm -rf dist node_modules coverage"
 	},
 	"dependencies": {
-		"cryptly": "0.0.10"
+		"cryptly": "^0.1.2"
 	},
 	"devDependencies": {
 		"@types/jest": "^26.0.0",
