@@ -52,8 +52,8 @@ workflows:
       - build:
           filters:
             branches:
-              ignore: master
+              ignore: master-0.1
       - deploy:
           filters:
             branches:
-              only: master
+              only: master-0.1
