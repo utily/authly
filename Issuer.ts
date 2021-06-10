@@ -28,7 +28,7 @@ export class Issuer<T extends Payload> extends Actor<Issuer<T>> {
 	async sign(payload: T, issuedAt?: Date | number): Promise<Token | undefined> {
 		payload = { ...this.payload, ...payload }
 		if (issuedAt)
-			payload.iat = typeof issuedAt == "number" ? issuedAt : issuedAt.getTime()
+			payload.iat = typeof issuedAt == "number" ? issuedAt : issuedAt.getTime() / 1000
 		const transformed = await this.transformers.reduce(async (p, c) => c.apply(await p), Promise.resolve(payload))
 		const data =
 			transformed &&
@@ -43,7 +43,7 @@ export class Issuer<T extends Payload> extends Actor<Issuer<T>> {
 			? Math.floor(Date.now() / 1000)
 			: typeof Issuer.defaultIssuedAt == "number"
 			? Issuer.defaultIssuedAt
-			: Math.floor(Issuer.defaultIssuedAt.getTime())
+			: Math.floor(Issuer.defaultIssuedAt.getTime() / 1000)
 	}
 	static defaultIssuedAt: undefined | Date | number
 	static create<T extends Payload>(issuer: string, algorithm: Algorithm): Issuer<T>
