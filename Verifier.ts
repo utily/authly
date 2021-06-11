@@ -48,10 +48,6 @@ export class Verifier<T extends Payload> extends Actor<Verifier<T>> {
 				}
 				result = result && this.verifyAudience(result.aud, audience) ? result : undefined
 				if (result) {
-					result.token = token
-					result = await this.transformers.reduceRight(async (p, c) => c.reverse(await p), Promise.resolve(result))
-				}
-				if (result) {
 					const now = Math.floor(Date.now() / 1000)
 					if (result?.iat && result.iat > 1000000000000)
 						result.iat = Math.floor(result.iat / 1000)
@@ -61,6 +57,10 @@ export class Verifier<T extends Payload> extends Actor<Verifier<T>> {
 						(result.exp == undefined || result.exp > now) && (result.iat == undefined || result.iat <= now)
 							? result
 							: undefined
+				}
+				if (result) {
+					result.token = token
+					result = await this.transformers.reduceRight(async (p, c) => c.reverse(await p), Promise.resolve(result))
 				}
 			}
 		}

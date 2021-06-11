@@ -10,7 +10,7 @@ describe("authly", () => {
 			issuer.audience = ["verifier", "audience"]
 			const token = await issuer.sign({ test: "test" })
 			expect(token).toEqual(
-				"eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpc3MiOiJpc3N1ZXIiLCJpYXQiOjQ5MDYyMDAwLCJhdWQiOlsidmVyaWZpZXIiLCJhdWRpZW5jZSJdLCJ0ZXN0IjoidGVzdCJ9."
+				"eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpc3MiOiJpc3N1ZXIiLCJpYXQiOjQ5MDYyLCJhdWQiOlsidmVyaWZpZXIiLCJhdWRpZW5jZSJdLCJ0ZXN0IjoidGVzdCJ9."
 			)
 			const verifier = authly.Verifier.create(algorithm)
 			expect(verifier).toBeTruthy()
@@ -18,7 +18,7 @@ describe("authly", () => {
 				expect(await verifier.verify(token)).toEqual({
 					iss: "issuer",
 					aud: ["verifier", "audience"],
-					iat: 49062000,
+					iat: 49062,
 					test: "test",
 					token,
 				})
@@ -31,14 +31,14 @@ describe("authly", () => {
 		issuer.audience = ["verifier", "audience"]
 		const token = await issuer.sign({ test: "test" })
 		expect(token).toEqual(
-			"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJpc3N1ZXIiLCJpYXQiOjQ5MDYyMDAwLCJhdWQiOlsidmVyaWZpZXIiLCJhdWRpZW5jZSJdLCJ0ZXN0IjoidGVzdCJ9.7zOG5XjdMk6r4YhddJPEvDi2PFYjQrYVJ4stYJpRcgg"
+			"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJpc3N1ZXIiLCJpYXQiOjQ5MDYyLCJhdWQiOlsidmVyaWZpZXIiLCJhdWRpZW5jZSJdLCJ0ZXN0IjoidGVzdCJ9.BxRECvB1umtdTIs7FsiCPcw7y-nPob2rCK-nC4WHwew"
 		)
 		const verifier = authly.Verifier.create(algorithm)
 		if (verifier) {
 			expect(await verifier.verify(token)).toEqual({
 				iss: "issuer",
 				aud: ["verifier", "audience"],
-				iat: 49062000,
+				iat: 49062,
 				test: "test",
 				token,
 			})
@@ -55,7 +55,7 @@ describe("authly", () => {
 			issuer.audience = ["verifier", "audience"]
 			const token = await issuer.sign({ test: "test" }, new Date("1970-01-01T13:37:42.000Z"))
 			expect(token).toEqual(
-				"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJpc3N1ZXIiLCJpYXQiOjQ5MDYyMDAwLCJhdWQiOlsidmVyaWZpZXIiLCJhdWRpZW5jZSJdLCJ0ZXN0IjoidGVzdCJ9.kcIpE5fHTTV2qfyyNKEca045osICnt0X6GxkKyagZQAw4pCKQURb4prZV4DiqiEP5J66-Ev74QidMITk6zJFgTsv57krduQ9cMnD9-Qpyh6QnQJSRKke98IXZDMo8kfI8poo6uRAz8x6myNvC7sx_2_PAR9BA_5oXuVo0QgLpJ4ektqVGbnzwYwU4WjdOJsrNtzHDNf2o1x8GY2oTXfOFQyKx0m6vipiVulnXwWiytRBE-v6xijJC1Ja-wT6C4Je1VqS8ru8ij7ciqV7c4FWuBoN8WWalW-z9P-LfmQzw3Md21OnTVl4AevLLPNgojRmF9lpysR-ozcd_RNjQX9XvA"
+				"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJpc3N1ZXIiLCJpYXQiOjQ5MDYyLCJhdWQiOlsidmVyaWZpZXIiLCJhdWRpZW5jZSJdLCJ0ZXN0IjoidGVzdCJ9.J5j1sp_C0X2jFzf9M2viSDKsOUNUyoLB6z4lBNButfkngnRNRSGh-5P-_6igbLQA5wRBwInlRTXwLj7LZtyldJ8ZPMEhOX5VPunSL3vGfw-7gk1Rc6c2CrjkvXKEhoQJxY0NqIZxAwAkrUB3Lpu3JmvouVpPdgf6VzQbtm0M4Zmk9Z6hu3peNSHvd6v49O8wI0SKFFdOKwbsgMTpPi8tA0tYr_C9lCE2l5V1Uf-7FSJatjckxQVtgg-wiZAp69g_pdAHt1xSiosViJIrZnhhz6FhrGr4E3TyIGxViF_hSk2UPp9ny8m7VOSMU5nYtKwydF5KXm57RNffCXM95dRV5w"
 			)
 			const verifier = authly.Verifier.create(algorithm)
 			expect(verifier).toBeTruthy()
@@ -63,7 +63,7 @@ describe("authly", () => {
 				expect(await verifier.verify(token)).toEqual({
 					iss: "issuer",
 					aud: ["verifier", "audience"],
-					iat: 49062000,
+					iat: 49062,
 					test: "test",
 					token,
 				})
@@ -72,13 +72,13 @@ describe("authly", () => {
 	})
 	it("any", async () => {
 		const token =
-			"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJpc3N1ZXIiLCJpYXQiOjQ5MDYyMDAwLCJhdWQiOlsidmVyaWZpZXIiLCJhdWRpZW5jZSJdLCJ0ZXN0IjoidGVzdCJ9.7zOG5XjdMk6r4YhddJPEvDi2PFYjQrYVJ4stYJpRcgg"
+			"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJpc3N1ZXIiLCJpYXQiOjQ5MDYyLCJhdWQiOlsidmVyaWZpZXIiLCJhdWRpZW5jZSJdLCJ0ZXN0IjoidGVzdCJ9.BxRECvB1umtdTIs7FsiCPcw7y-nPob2rCK-nC4WHwew"
 		const verifier = authly.Verifier.create()
 		if (verifier) {
 			expect(await verifier.verify(token)).toEqual({
 				iss: "issuer",
 				aud: ["verifier", "audience"],
-				iat: 49062000,
+				iat: 49062,
 				test: "test",
 				token,
 			})
@@ -90,22 +90,22 @@ describe("authly", () => {
 		issuer.audience = ["verifier", "audience"]
 		const token = await issuer.sign({ test: "test", secret: { number: 1337, string: "The power of Attraction." } })
 		expect(token).toEqual(
-			"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJpc3N1ZXIiLCJpYXQiOjQ5MDYyMDAwLCJhdWQiOlsidmVyaWZpZXIiLCJhdWRpZW5jZSJdLCJ0ZXN0IjoidGVzdCIsInNlY3JldCI6IlcxUXhNdml2dFd0YXVrZV9JYmhYMFZXUkJ1a0tjZlF3aWI4dk5QTjNqelY0eGZxZEpld1BpS2FIY2luTXh4Q2VpNTI1In0.K6MiLzuJ_T1Pv5AM5k_DeIJk9L2KK5RrOGjMQOyLeqE"
+			"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJpc3N1ZXIiLCJpYXQiOjQ5MDYyLCJhdWQiOlsidmVyaWZpZXIiLCJhdWRpZW5jZSJdLCJ0ZXN0IjoidGVzdCIsInNlY3JldCI6ImliQTV2OFVVUmNuYWp2THBENEdVd0pQNndDdjQtWVVLZmcySlRBOFl5OHU4czc0RXZtaXphLTJKV05YRlQwSUZDN21WIn0.FB01HRV7j12FW6Y-8GZbamFM5i29hXu80ueXXrMShZk"
 		)
 		const verifier = authly.Verifier.create(algorithm)
 		expect(verifier).toBeTruthy()
 		expect(await verifier.verify(token)).toEqual({
 			iss: "issuer",
 			aud: ["verifier", "audience"],
-			iat: 49062000,
+			iat: 49062,
 			test: "test",
-			secret: "W1QxMvivtWtauke_IbhX0VWRBukKcfQwib8vNPN3jzV4xfqdJewPiKaHcinMxxCei525",
+			secret: "ibA5v8UURcnajvLpD4GUwJP6wCv4-YUKfg2JTA8Yy8u8s74Evmiza-2JWNXFT0IFC7mV",
 			token,
 		})
 		expect(await verifier.add(["property-key", "secret"]).verify(token)).toEqual({
 			iss: "issuer",
 			aud: ["verifier", "audience"],
-			iat: 49062000,
+			iat: 49062,
 			test: "test",
 			secret: { number: 1337, string: "The power of Attraction." },
 			token,
@@ -131,7 +131,7 @@ describe("authly", () => {
 		).toEqual({
 			issuer: "issuer",
 			aud: ["verifier", "audience"],
-			iat: 49062000,
+			iat: 49062,
 			testing: [{ testing: "test" }],
 			toEncrypt: { number: 1337, string: "The power of Attraction." },
 			token,
