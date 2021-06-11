@@ -62,8 +62,8 @@ export class Verifier<T extends Payload> extends Actor<Verifier<T>> {
 		return result as T | undefined
 	}
 	private verifyAudience(audience: undefined | string | string[], allowed: string[]): boolean {
+		audience = audience ?? ""
 		return (
-			audience == undefined ||
 			allowed.length == 0 ||
 			(typeof audience == "string" && allowed.some(a => a == audience)) ||
 			(Array.isArray(audience) && audience.some(a => allowed.some(ta => ta == a)))
