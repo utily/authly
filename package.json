@@ -27,7 +27,7 @@
 	"jest": {
 		"globals": {
 			"ts-jest": {
-				"tsConfig": "tsconfig.test.json"
+				"tsconfig": "tsconfig.test.json"
 			}
 		},
 		"testEnvironment": "node",
@@ -59,19 +59,19 @@
 		"cryptly": "0.0.10"
 	},
 	"devDependencies": {
-		"@types/jest": "^26.0.0",
+		"@babel/core": "^7.0.3",
+		"@types/jest": "^27.4.0",
 		"@types/node": "^14.0.13",
-		"@typescript-eslint/eslint-plugin": "^3.7.1",
-		"@typescript-eslint/parser": "^3.7.1",
-		"babel-core": "^6.26.3",
-		"babel-jest": "^26.0.1",
+		"@typescript-eslint/eslint-plugin": "^5.9.0",
+		"@typescript-eslint/parser": "^5.9.0",
+		"babel-jest": "^27.4.5",
 		"eslint": "^7.7.0",
-		"eslint-plugin-prettierx": "github:nilssonemma/eslint-plugin-prettierx#master",
+		"eslint-plugin-prettierx": "github:robinnedergard/eslint-plugin-prettierx#master",
 		"eslint-plugin-simple-import-sort": "^7.0.0",
-		"jest": "^26",
-		"prettierx": "github:simonmika/prettierx#newline-before-clause",
-		"ts-jest": "^26.1.0",
-		"typescript": "^3.9.5",
-		"watch": "^1.0.2"
+		"jest": "^27",
+		"prettierx": "github:robinnedergard/prettierx#newline-before-clause-sync",
+		"ts-jest": "^27.1.2",
+		"typescript": "^4.5.4",
+		"watch": "0.13.0"
 	}
 }
