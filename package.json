@@ -1,6 +1,6 @@
 {
   "name": "authly",
-  "version": "0.3.0",
+  "version": "2.0.0",
   "description": "Tokenized authentication using JSON Web Tokens with support for encrypted token properties.",
   "author": "PayFunc",
   "license": "MIT",
@@ -61,8 +61,12 @@
     "prepare": "npm run build",
     "clean": "rm -rf dist node_modules coverage"
   },
+  "engines": {
+    "npm": ">=7.0.0",
+    "node": ">=16.0.0"
+  },
   "dependencies": {
-    "cryptly": "payfunc/cryptly#node-update"
+    "cryptly": "2.1.0"
   },
   "devDependencies": {
     "@types/jest": "^27.0.3",
