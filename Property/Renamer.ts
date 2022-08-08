@@ -36,7 +36,7 @@ export class Renamer implements Transformer {
 			result = []
 			payload.forEach(value => result.push(this.resolve(value, forward)))
 		} else
-			result = typeof payload == "object" ? this.remap((payload as unknown) as Payload, forward) : payload
+			result = typeof payload == "object" ? this.remap(payload as unknown as Payload, forward) : payload
 		return result as T
 	}
 }
