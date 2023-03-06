@@ -45,7 +45,7 @@ describe("authly", () => {
 			})
 		}
 	})
-	// kid is support with issuer. verifier ignores it.
+	// kid is support with issuer. Verifier ignores it.
 	it("HS256 with kid", async () => {
 		const algorithm = authly.Algorithm.HS256("secret-key")
 		algorithm.kid = "myKeyId1234"
@@ -53,8 +53,20 @@ describe("authly", () => {
 		issuer.audience = ["verifier", "audience"]
 		const token = await issuer.sign({ test: "test" })
 		expect(token).toEqual(
+			// This JWT includes the kid-property:
 			"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im15S2V5SWQxMjM0In0.eyJpc3MiOiJpc3N1ZXIiLCJpYXQiOjQ5MDYyLCJhdWQiOlsidmVyaWZpZXIiLCJhdWRpZW5jZSJdLCJ0ZXN0IjoidGVzdCJ9.-ZfQqhBgYFRc1c2xxexXx-RV26I6fNLUHsL1pY_n5KI"
 		)
+		const verifier = authly.Verifier.create(algorithm)
+		expect(verifier).toBeTruthy()
+		if (verifier) {
+			expect(await verifier.verify(token)).toEqual({
+				iss: "issuer",
+				aud: ["verifier", "audience"],
+				iat: 49062,
+				test: "test",
+				token,
+			})
+		}
 	})
 	it("RS256", async () => {
 		const algorithm = authly.Algorithm.RS256(
