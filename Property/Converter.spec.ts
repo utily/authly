@@ -1,8 +1,10 @@
 import { Converter } from "./Converter"
+import { Creatable } from "./Creatable"
 
 const insideObject = { num: [10, 29, 7], foo: ["here", "test"] }
 
-const conversionMap = {
+// TODO: Fix type Creatable.Converter
+const conversionMap: Creatable.Converter = {
 	foo: {
 		forward: (value: string) => value + "transformed",
 		backward: (value: string) => value.replace("transformed", ""),
@@ -23,7 +25,8 @@ const conversionMap = {
 		forward: (value: { num: number[]; foo: string[] }) => "NotObject",
 		backward: (value: string) => insideObject,
 	},
-}
+} as unknown as Creatable.Converter
+
 const transformObject = {
 	foo: "Some",
 	num: 3,
