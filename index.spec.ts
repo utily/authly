@@ -34,6 +34,7 @@ describe("authly", () => {
 			"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJpc3N1ZXIiLCJpYXQiOjQ5MDYyLCJhdWQiOlsidmVyaWZpZXIiLCJhdWRpZW5jZSJdLCJ0ZXN0IjoidGVzdCJ9.BxRECvB1umtdTIs7FsiCPcw7y-nPob2rCK-nC4WHwew"
 		)
 		const verifier = authly.Verifier.create(algorithm)
+		expect(verifier).toBeTruthy()
 		if (verifier) {
 			expect(await verifier.verify(token)).toEqual({
 				iss: "issuer",
@@ -43,6 +44,17 @@ describe("authly", () => {
 				token,
 			})
 		}
+	})
+	// kid is support with issuer. verifier ignores it.
+	it("HS256 with kid", async () => {
+		const algorithm = authly.Algorithm.HS256("secret-key")
+		algorithm.kid = "myKeyId1234"
+		const issuer = authly.Issuer.create("issuer", algorithm)
+		issuer.audience = ["verifier", "audience"]
+		const token = await issuer.sign({ test: "test" })
+		expect(token).toEqual(
+			"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im15S2V5SWQxMjM0In0.eyJpc3MiOiJpc3N1ZXIiLCJpYXQiOjQ5MDYyLCJhdWQiOlsidmVyaWZpZXIiLCJhdWRpZW5jZSJdLCJ0ZXN0IjoidGVzdCJ9.-ZfQqhBgYFRc1c2xxexXx-RV26I6fNLUHsL1pY_n5KI"
+		)
 	})
 	it("RS256", async () => {
 		const algorithm = authly.Algorithm.RS256(
@@ -74,6 +86,7 @@ describe("authly", () => {
 		const token =
 			"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJpc3N1ZXIiLCJpYXQiOjQ5MDYyLCJhdWQiOlsidmVyaWZpZXIiLCJhdWRpZW5jZSJdLCJ0ZXN0IjoidGVzdCJ9.BxRECvB1umtdTIs7FsiCPcw7y-nPob2rCK-nC4WHwew"
 		const verifier = authly.Verifier.create()
+		expect(verifier).toBeTruthy()
 		if (verifier) {
 			expect(await verifier.verify(token)).toEqual({
 				iss: "issuer",

@@ -12,6 +12,7 @@ export class Issuer<T extends Payload> extends Actor<Issuer<T>> {
 		return {
 			alg: this.algorithm.name,
 			typ: "JWT",
+			...(this.algorithm.kid && { kid: this.algorithm.kid }),
 		}
 	}
 	get payload(): Payload {
