@@ -162,4 +162,52 @@ describe("authly", () => {
 			token,
 		})
 	})
+	it("googleapis", async () => {
+		// Testing and demonstrating
+		// https://developers.google.com/identity/protocols/oauth2/service-account#jwt-auth
+
+		// Service accounts, for creating and downloading keys:
+		// https://console.cloud.google.com/iam-admin/serviceaccounts
+		const privateKey = {
+			type: "service_account",
+			project_id: "prefab-backbone-377710",
+			private_key_id: "aa7174439209aa9bf615ee1296f4e54b379990c6",
+			private_key:
+				"-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDYvrpFP/2WEYXr\nLZNsnWtsPs3HbLYNQa7h/8BrM+NJ0JHZk1IQzWa/yRyfH4P5Zyet9APBwnJq6YCY\nG/CINhlo0H+5Ep+oZCw/ZivS93rgGP7iT0I1eeWvplAvfiFiOu8PsyeFWJm7oSAT\nr+HY/+61PZzZAfAvFxYmKQWYHMsitxyLP0IFsNcpMNYC35z532yYqMTIMjIk6f51\ntEwSPWak8LEOYjSskPZ0Y+XMtfKyOb5Nj8NiQ2o6oNlx/IJVC6bjkk/3U7dPN+dN\nSFVaAZ/tKKYgk7WLGEXlXcIxUlrATlZRlKRhr1HX5i2xvxzssYQE3BaHHp7LroGE\n7Qr4uifhAgMBAAECggEAGYGOWYZfgOi0ffm5ytMWmGEmpaR3IwW6/wjx+5uaUG4t\nL7G8u1H0mLahud8DUJbxTjD0PTm07bxnP98v1dOp91Hr6dtVcwNAysArAZNSgCso\n2Xhyxei/nQVBE+mvo4fkaJBQYwqLYs9h/zcYKIlrraPfwJDQEzaQCnMS37Tpub6j\nuUvI1jv6eAQWNygzaLyzO+3vglCws2BMNGyeLzTXogFTngE9v3MbVEuRCAY+BEPf\naWexidpMQ1oEsCch0r5ROU25AEXKmiumXjcHI+k58xywC2BvNREQLq0BW3zuMlVf\nszzogVRFWCVXnmcdRnSMbARwSHhbwHvU8xPpmsLxsQKBgQDuYOTC3/wFDOY/sfdq\nHfZ7hsV70dMmyu2TQBoRvnn7l+Jo3ALMp5wLF0cQecg2WNiMUxpw4bnJGQV/DfME\nFSbzysunlOHBCOwrKgVduspS7CuFHVs3tVsKf/8pE8sVvL5wHjhhNpuoLw1/XALm\nKRo5y31/PX2A6Yo3d5Kmk9rUKQKBgQDoxHCENXAm/vRRFPyHG3kDPUAFy17FHGUL\nHST3dJ29dcR2gga4ZoS/b05uSXN0yGJGxgAESY6pqltHduwPKXD4UZj2560LB8Zk\nwDj9Lxdfcs5nPZOKLLtGCxWFQd3AElsgxqNp8HBXv3p+IRC2JLsJHKtu6yNapm5u\nHtFUDGzs+QKBgQDIAixvBhgi9KvMDbqWIwXIp0/TkD4mcmXcAxDcioE3BD1H1jHT\nHV7kP2e0/zlpwCoRszigNgT4IjJmZIHejxDbxPATb+vrV10w6lUOS8euw9HQIs2C\ndHwq1zJ0eNMRLghrci/EAVmhR7l/fug/zYTfsUlfFWzUWR9LYtx9P9l/4QKBgA62\n9GH3OtrMPUeu6vPjkbfZtGVpYNlXHTAhrIeUMLCcdEoFmEUp/fRYJf4k2I6maEgP\nFksvFzy0j0aqRuwCc6jPB7t8E91hpXITEMc4peKb0F6Ibv5KK6CW7Mpaypjs0CP3\nSrdUwtVZPnYgwvywv74ouNGvPbHqWYrOme8VRgGJAoGBAJhlN2g3YWjA3gAhmUUo\npNfzPTgjmYZZbRzH/G5DzquAn8rUMA3ua4LAYiu+9TM9cEz/Lhr9bX941x+K/wzk\nde+njoJTNUmI1wUjP7dMr6/UpnpSU1te0SkNd43DoJuwPGDTMuO9ZNjZAHhtwx0x\nPcc7DRpAxb8c86aCqxVhNWlN\n-----END PRIVATE KEY-----\n",
+			client_email: "utily-cloudly-analytics-dev@prefab-backbone-377710.iam.gserviceaccount.com",
+			client_id: "116287929807825169678",
+			auth_uri: "https://accounts.google.com/o/oauth2/auth",
+			token_uri: "https://oauth2.googleapis.com/token",
+			auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
+			client_x509_cert_url:
+				"https://www.googleapis.com/robot/v1/metadata/x509/utily-cloudly-analytics-dev%40prefab-backbone-377710.iam.gserviceaccount.com",
+		}
+
+		// The downloaded key from google has the private_key in PEM-format, transform it:
+		const base64key = (
+			(privateKey.private_key.match(
+				/(?:^|-+\s*BEGIN PRIVATE KEY\s*-+\s*)([A-Za-z0-9+/\s]+={0,3})(?:\s*-+\s*END PRIVATE KEY\s*-+|$)/s
+			) ?? [])[1] ?? ""
+		).replace(/\s/g, "")
+
+		// No public key is needed:
+		const key = authly.Algorithm.RS256(undefined, base64key)
+		expect(key).toBeTruthy()
+		if (key) {
+			// Attach kid in key to be attach to header of JWT:
+			key.kid = privateKey.private_key_id
+			const issuer = authly.Issuer.create(privateKey.client_email, key)
+			// Always exactly an hour:
+			issuer.duration = 3600
+
+			const token = await issuer.sign({
+				iss: privateKey.client_email,
+				sub: privateKey.client_email,
+				aud: "https://bigquery.googleapis.com/",
+			})
+			expect(token).toEqual(
+				"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImFhNzE3NDQzOTIwOWFhOWJmNjE1ZWUxMjk2ZjRlNTRiMzc5OTkwYzYifQ.eyJpc3MiOiJ1dGlseS1jbG91ZGx5LWFuYWx5dGljcy1kZXZAcHJlZmFiLWJhY2tib25lLTM3NzcxMC5pYW0uZ3NlcnZpY2VhY2NvdW50LmNvbSIsImlhdCI6NDkwNjIsImV4cCI6NTI2NjIsInN1YiI6InV0aWx5LWNsb3VkbHktYW5hbHl0aWNzLWRldkBwcmVmYWItYmFja2JvbmUtMzc3NzEwLmlhbS5nc2VydmljZWFjY291bnQuY29tIiwiYXVkIjoiaHR0cHM6Ly9iaWdxdWVyeS5nb29nbGVhcGlzLmNvbS8ifQ.cMbWO8u41HnwOKiMi-XaNxm9k185r6aFYSD0_a1aVG_hEaZcu8Y4o3dFMcdQCG2NLR-YopZKq4Q2MezOVAryP_FgIsBCsk42y7wktH9i-W0fchy_dtTl2bo_--Au7XxVAzr93LDV3sXusK03Uv3hsdwe4XvC_PUjPtU2KjAZ1fKv442bUMuORzTeGEvOJQP3CpGDfodM5567lKguXUSi7FqDQMHO00dSDxVopJLNRVSAqmx6dcSNdYKHJ4V7inffQn_KjDSVJeyoygBvYrui7ja_xcFGeHilsTV1zENnwP1Yt_LhO8XksrakvgZXxuypx8iGuoTo7-ufcrCuYzqulg"
+			)
+		}
+	})
 })
