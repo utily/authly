@@ -45,7 +45,7 @@ describe("authly", () => {
 			})
 		}
 	})
-	// kid is support with issuer. Verifier ignores it.
+	// kid is supported by issuer. Verifier ignores it.
 	it("HS256 with kid", async () => {
 		const algorithm = authly.Algorithm.HS256("secret-key")
 		algorithm.kid = "myKeyId1234"

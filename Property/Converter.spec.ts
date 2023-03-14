@@ -3,7 +3,6 @@ import { Creatable } from "./Creatable"
 
 const insideObject = { num: [10, 29, 7], foo: ["here", "test"] }
 
-// TODO: Fix type Creatable.Converter
 const conversionMap: Creatable.Converter = {
 	foo: {
 		forward: (value: string) => value + "transformed",
@@ -22,10 +21,10 @@ const conversionMap: Creatable.Converter = {
 		backward: (value: string) => value.replace("different", ""),
 	},
 	"inside.inside": {
-		forward: (value: { num: number[]; foo: string[] }) => "NotObject",
+		forward: ((value: { num: number[]; foo: string[] }) => "NotObject") as Creatable.Converter[string]["backward"],
 		backward: (value: string) => insideObject,
 	},
-} as unknown as Creatable.Converter
+}
 
 const transformObject = {
 	foo: "Some",
