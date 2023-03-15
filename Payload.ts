@@ -1,13 +1,14 @@
 export interface Payload extends Payload.Data {
-	sub?: string // subject
-	iss?: string // issuer
-	aud?: string | string[] // audience
-	exp?: number // expires at
-	iat?: number // issued at
+	/** subject */ sub?: string
+	/** issuer */ iss?: string
+	/** audience */ aud?: string | string[]
+	/** expires at */ exp?: number
+	/** issued at */ iat?: number
 }
+
 export namespace Payload {
 	export interface Data {
 		[claim: string]: Value | Value[] | undefined
 	}
-	export type Value = boolean | string | number | Data | Value[]
+	export type Value = boolean | string | number | Data | boolean[] | string[] | number[] | Data[] | Value[]
 }
