@@ -79,7 +79,6 @@ export class Verifier<T extends Payload> extends Actor<Verifier<T>> {
 			? this.verify(authorization.substr(7), ...audience)
 			: undefined
 	}
-
 	static create<T extends Payload>(): Verifier<T>
 	static create<T extends Payload>(...algorithms: Algorithm[]): Verifier<T>
 	static create<T extends Payload>(...algorithms: (Algorithm | undefined)[]): Verifier<T> | undefined

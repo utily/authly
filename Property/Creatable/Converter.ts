@@ -1,8 +1,15 @@
 import { Payload } from "../../Payload"
+
+type MaybePromise<T> = T | Promise<T>
+
+type ConverterFunction<V extends Payload.Value> = V extends any
+	? (value: V) => MaybePromise<Payload.Value | undefined>
+	: never
+
 export interface Converter {
 	[key: string]: {
-		forward: (value: Payload.Value) => Payload.Value | undefined | Promise<Payload.Value | undefined>
-		backward: (value: Payload.Value) => Payload.Value | undefined | Promise<Payload.Value | undefined>
+		forward: ConverterFunction<Payload.Value>
+		backward: ConverterFunction<Payload.Value>
 	}
 }
 

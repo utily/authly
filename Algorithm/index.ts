@@ -1,7 +1,14 @@
 import { Signer } from "cryptly"
+import { Header } from "../Header"
 import { Name as AlgorithmName } from "./Name"
 
 export class Algorithm {
+	/**
+	 * Key Id
+	 *
+	 * If set, the property will be included in JWT-header by the Issuer.
+	 */
+	public kid?: Header["kid"]
 	private constructor(readonly name: AlgorithmName, private readonly signer: Signer) {}
 
 	async sign(data: Uint8Array): Promise<Uint8Array>
