@@ -1,4 +1,4 @@
-import { Base64, Identifier, Password, TextDecoder, TextEncoder } from "cryptly"
+import { Base16, Base64, Identifier, Password, TextDecoder, TextEncoder } from "cryptly"
 import "./shim"
 import { Actor } from "./Actor"
 import { Algorithm } from "./Algorithm"
@@ -11,6 +11,7 @@ import { Verifier } from "./Verifier"
 export {
 	Actor,
 	Algorithm,
+	Base16,
 	Base64,
 	Issuer,
 	Password,
