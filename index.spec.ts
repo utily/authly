@@ -1,5 +1,8 @@
+import { isoly } from "isoly"
 import * as authly from "./index"
+import { Creatable } from "./Property"
 authly.Issuer.defaultIssuedAt = new Date("1970-01-01T13:37:42.000Z")
+authly.Verifier.staticNow = new Date("1970-01-01T14:07:42.000Z")
 
 describe("authly", () => {
 	it("none", async () => {
@@ -160,6 +163,56 @@ describe("authly", () => {
 			testing: [{ testing: "test" }],
 			toEncrypt: { number: 1337, string: "The power of Attraction." },
 			token,
+		})
+	})
+	it("HS256 + renamer + converter", async () => {
+		const transformers: (authly.Property.Transformer | Creatable.Converter)[] = [
+			{
+				issued: {
+					forward: (value: string) => isoly.DateTime.epoch(value, "seconds"), // "forward" is never used, since Issuer creates the iat-value.
+					backward: (value: number) => isoly.DateTime.create(value),
+				},
+				expires: {
+					forward: (value: string) => isoly.DateTime.epoch(value, "seconds"), // "forward" is never used, since Issuer creates the exp-value.
+					backward: (value: number) => isoly.DateTime.create(value),
+				},
+				permissions: {
+					forward: (value: string[]) => value.map(v => v.charCodeAt(0)),
+					backward: (value: number[]) => value.map(v => String.fromCharCode(v)),
+				},
+			},
+			new authly.Property.Renamer({
+				issuer: "iss",
+				audience: "aud",
+				issued: "iat",
+				expires: "exp",
+				email: "sub",
+				permissions: "per",
+				active: "act",
+			}),
+		]
+		const algorithm = authly.Algorithm.HS256("secret-key")
+		const issuer = authly.Issuer.create("myIssuer", algorithm).add(...transformers)
+		issuer.audience = "myAudience"
+		issuer.duration = 3600
+		const token = await issuer.sign({
+			email: "authly@smoothly.example.com",
+			permissions: ["A", "B"],
+			active: true,
+		})
+		const verifier = authly.Verifier.create(algorithm).add(...transformers)
+		expect(verifier).toBeTruthy()
+		expect(await verifier.verify(token)).toEqual({
+			issuer: "myIssuer",
+			audience: "myAudience",
+			email: "authly@smoothly.example.com",
+			expires: "1970-01-01T14:37:42.000Z",
+			issued: "1970-01-01T13:37:42.000Z",
+			permissions: ["A", "B"],
+			active: true,
+			// This jwt look like this: {iss:"myIssuer", iat:49062, aud:"myAudience", exp:52662, sub:"authly@smoothly.example.com", per:[65,66], act:true}
+			token:
+				"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJteUlzc3VlciIsImlhdCI6NDkwNjIsImF1ZCI6Im15QXVkaWVuY2UiLCJleHAiOjUyNjYyLCJzdWIiOiJhdXRobHlAc21vb3RobHkuZXhhbXBsZS5jb20iLCJwZXIiOls2NSw2Nl0sImFjdCI6dHJ1ZX0.E_LeF6gyItQWGE7QU92GCtW1a3Jy3RfhRP1QySFNb3A",
 		})
 	})
 	it("googleapis", async () => {
