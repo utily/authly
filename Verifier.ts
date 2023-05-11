@@ -48,7 +48,7 @@ export class Verifier<T extends Payload> extends Actor<Verifier<T>> {
 				}
 				result = result && this.verifyAudience(result.aud, audience) ? result : undefined
 				if (result) {
-					const now = Math.floor(Date.now() / 1000)
+					const now = Verifier.now
 					if (result?.iat && result.iat > 1000000000000)
 						result.iat = Math.floor(result.iat / 1000)
 					if (result?.exp && result.exp > 1000000000000)
@@ -79,6 +79,14 @@ export class Verifier<T extends Payload> extends Actor<Verifier<T>> {
 			? this.verify(authorization.substr(7), ...audience)
 			: undefined
 	}
+	private static get now(): number {
+		return Verifier.staticNow == undefined
+			? Math.floor(Date.now() / 1000)
+			: typeof Verifier.staticNow == "number"
+			? Verifier.staticNow
+			: Math.floor(Verifier.staticNow.getTime() / 1000)
+	}
+	static staticNow: undefined | Date | number
 	static create<T extends Payload>(): Verifier<T>
 	static create<T extends Payload>(...algorithms: Algorithm[]): Verifier<T>
 	static create<T extends Payload>(...algorithms: (Algorithm | undefined)[]): Verifier<T> | undefined

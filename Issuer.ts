@@ -7,9 +7,7 @@ import { Token } from "./Token"
 
 export class Issuer<T extends Payload> extends Actor<Issuer<T>> {
 	audience?: string | string[]
-	/**
-	 * Duration in seconds
-	 */
+	/** Duration in seconds */
 	duration?: number
 	get header(): Header {
 		return {
