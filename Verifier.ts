@@ -20,31 +20,22 @@ export class Verifier<T extends Payload> extends Actor<Verifier<T>> {
 			this.algorithms = undefined
 	}
 	async verify(token: string | Token | undefined, ...audience: string[]): Promise<T | undefined> {
-		let result: Payload | undefined
+		let result: Payload | undefined = undefined
 		if (token) {
 			const splitted = token.split(".", 3)
-			if (splitted.length < 2)
-				result = undefined
-			else {
+			if (splitted.length == 3) {
 				try {
 					const oldDecoder = token.includes("/") || token.includes("+") // For backwards compatibility.
 					const header: Header = JSON.parse(
 						new TextDecoder().decode(Base64.decode(splitted[0], oldDecoder ? "standard" : "url"))
 					)
-					result = JSON.parse(
-						new TextDecoder().decode(Base64.decode(splitted[1], oldDecoder ? "standard" : "url"))
-					) as Payload
-					if (this.algorithms) {
-						const algorithm = this.algorithms[header.alg]
-						result =
-							splitted.length == 3 &&
-							algorithm &&
-							algorithm.some(async a => await a.verify(`${splitted[0]}.${splitted[1]}`, splitted[2]))
-								? result
-								: undefined
+					if (await this.verifySignature(header, splitted)) {
+						result = JSON.parse(
+							new TextDecoder().decode(Base64.decode(splitted[1], oldDecoder ? "standard" : "url"))
+						) as Payload
 					}
 				} catch {
-					result = undefined
+					// Keep result undefined
 				}
 				result = result && this.verifyAudience(result.aud, audience) ? result : undefined
 				if (result) {
@@ -65,6 +56,21 @@ export class Verifier<T extends Payload> extends Actor<Verifier<T>> {
 			}
 		}
 		return result as T | undefined
+	}
+	private async verifySignature(header: Header, splitted: string[]) {
+		let result = false
+		if (this.algorithms) {
+			const algorithms = this.algorithms[header.alg]
+			for (const currentAlgorithm of algorithms) {
+				if (await currentAlgorithm.verify(`${splitted[0]}.${splitted[1]}`, splitted[2])) {
+					result = true
+					break
+				}
+			}
+		} else {
+			result = true // This verifier is used without signature-checking
+		}
+		return result
 	}
 	private verifyAudience(audience: undefined | string | string[], allowed: string[]): boolean {
 		return (
