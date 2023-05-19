@@ -80,9 +80,15 @@ export class Verifier<T extends Payload> extends Actor<Verifier<T>> {
 			(Array.isArray(audience) && audience.some(a => allowed.some(ta => ta == a)))
 		)
 	}
+	/**
+	 * Verifies with an HTTP request's "Authorization" header value.
+	 * @param authorization A string in the format `Bearer ${Token}`
+	 * @param audience If 'aud' is present, returns payload only if it matches any of the provided values.
+	 * @returns A promise with the payload if valid or undefined.
+	 */
 	async authenticate(authorization: string | Token | undefined, ...audience: string[]): Promise<T | undefined> {
 		return authorization && authorization.startsWith("Bearer ")
-			? this.verify(authorization.substr(7), ...audience)
+			? this.verify(authorization.substring(7), ...audience)
 			: undefined
 	}
 	private static get now(): number {

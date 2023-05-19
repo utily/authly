@@ -52,4 +52,49 @@ describe("Verifier", () => {
 		expect(verifier && (await verifier.verify(base64url, "audience"))).toBeTruthy()
 		expect(verifier && (await verifier.verify(base64std, "audience"))).toBeTruthy()
 	})
+	it("verifier.authenticate", async () => {
+		const verifier = authly.Verifier.create(authly.Algorithm.HS256("secret"))
+		const tokenWithOutAud =
+			"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOmZhbHNlLCJpYXQiOjE1MTYyMzkwMjJ9.PnPG46OTl2k5BY3e7gkqP_I4mZyTWya6DrLS97ZLQYM"
+		expect(await verifier.authenticate(`Bearer ${tokenWithOutAud}`)).toEqual({
+			sub: "1234567890",
+			name: "John Doe",
+			admin: false,
+			iat: 1516239022,
+			token: tokenWithOutAud,
+		})
+		expect(await verifier.authenticate(`Bearer ${tokenWithOutAud}`, "otherAudience")).toEqual({
+			sub: "1234567890",
+			name: "John Doe",
+			admin: false,
+			iat: 1516239022,
+			token: tokenWithOutAud,
+		})
+
+		const tokenWithAud =
+			"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiYXVkIjoibXlBdWRpZW5jZSIsIm5hbWUiOiJKb2huIERvZSIsImFkbWluIjp0cnVlLCJpYXQiOjE1MTYyMzkwMjJ9.TNLiTO8u6869MstuZ4ODGT6Xijj3mJJnb0U78jWIh0E"
+		expect(await verifier.authenticate(`Bearer ${tokenWithAud}`, "myAudience")).toEqual({
+			admin: true,
+			aud: "myAudience",
+			iat: 1516239022,
+			name: "John Doe",
+			sub: "1234567890",
+			token: tokenWithAud,
+		})
+		expect(await verifier.authenticate(`Bearer ${tokenWithAud}`, "otherAudience", "myAudience")).toEqual({
+			admin: true,
+			aud: "myAudience",
+			iat: 1516239022,
+			name: "John Doe",
+			sub: "1234567890",
+			token: tokenWithAud,
+		})
+		expect(await verifier.authenticate(`Bearer ${tokenWithAud}`, "otherAudience")).toBeUndefined()
+		// Changed payload:
+		expect(
+			await verifier.authenticate(
+				"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.PnPG46OTl2k5BY3e7gkqP_I4mZyTWya6DrLS97ZLQYM"
+			)
+		).toBeUndefined()
+	})
 })
