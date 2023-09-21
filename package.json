@@ -25,13 +25,13 @@
 		"release": true
 	},
 	"jest": {
-		"globals": {
-			"ts-jest": {
-				"tsconfig": "tsconfig.test.json"
-			}
-		},
 		"transform": {
-			"^.+\\.(j|t)sx?$": "ts-jest"
+			"^.+\\.(j|t)sx?$": [
+				"ts-jest",
+				{
+					"tsconfig": "./tsconfig.test.json"
+				}
+			]
 		},
 		"transformIgnorePatterns": [
 			"<rootDir>/node_modules/(?!cryptly/.*)"
@@ -46,9 +46,7 @@
 			"**/*.{ts,tsx,js,jsx}",
 			"!**/node_modules/**",
 			"!**/dist/**"
-		],
-		"preset": "ts-jest",
-		"testMatch": null
+		]
 	},
 	"scripts": {
 		"dev": "watch 'npm run build' .",
@@ -62,7 +60,8 @@
 		"clean": "rm -rf dist node_modules coverage"
 	},
 	"dependencies": {
-		"cryptly": "^0.1.11"
+		"cryptly": "0.0.10",
+		"isoly": "0.0.48"
 	},
 	"devDependencies": {
 		"@types/jest": "^26.0.0",

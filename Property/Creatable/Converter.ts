@@ -19,7 +19,7 @@ export namespace Converter {
 		return (
 			typeof value == "object" &&
 			Object.values(value).every(
-				v =>
+				(v: any) =>
 					v &&
 					typeof v == "object" &&
 					"forward" in v &&

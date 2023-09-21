@@ -8,7 +8,7 @@ export class Actor<T extends Actor<T>> {
 			value =>
 				value && this.transformers.push(Property.Creatable.is(value) ? this.creatableToTransformer(value) : value)
 		)
-		return this as unknown as T
+		return (this as unknown) as T
 	}
 
 	private creatableToTransformer(creatable: Property.Creatable): Property.Transformer {
