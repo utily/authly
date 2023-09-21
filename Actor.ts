@@ -3,8 +3,6 @@ export class Actor<T extends Actor<T>> {
 	protected readonly transformers: Property.Transformer[] = []
 	constructor(readonly id?: string) {}
 
-	add(...argument: Property.Creatable[]): T
-	add(...argument: (Property.Transformer | undefined)[]): T
 	add(...argument: (Property.Creatable | Property.Transformer | undefined)[]): T {
 		argument.forEach(
 			value =>
@@ -12,6 +10,7 @@ export class Actor<T extends Actor<T>> {
 		)
 		return (this as unknown) as T
 	}
+
 	private creatableToTransformer(creatable: Property.Creatable): Property.Transformer {
 		return Property.Creatable.Converter.is(creatable)
 			? new Property.Converter(creatable)

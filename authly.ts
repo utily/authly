@@ -23,4 +23,3 @@ export {
 	Verifier,
 	Identifier,
 }
-export * as authly from "./authly"

@@ -20,35 +20,26 @@ export class Verifier<T extends Payload> extends Actor<Verifier<T>> {
 			this.algorithms = undefined
 	}
 	async verify(token: string | Token | undefined, ...audience: string[]): Promise<T | undefined> {
-		let result: Payload | undefined
+		let result: Payload | undefined = undefined
 		if (token) {
 			const splitted = token.split(".", 3)
-			if (splitted.length < 2)
-				result = undefined
-			else {
+			if (splitted.length == 3) {
 				try {
 					const oldDecoder = token.includes("/") || token.includes("+") // For backwards compatibility.
 					const header: Header = JSON.parse(
 						new TextDecoder().decode(Base64.decode(splitted[0], oldDecoder ? "standard" : "url"))
 					)
-					result = JSON.parse(
-						new TextDecoder().decode(Base64.decode(splitted[1], oldDecoder ? "standard" : "url"))
-					) as Payload
-					if (this.algorithms) {
-						const algorithm = this.algorithms[header.alg]
-						result =
-							splitted.length == 3 &&
-							algorithm &&
-							algorithm.some(async a => await a.verify(`${splitted[0]}.${splitted[1]}`, splitted[2]))
-								? result
-								: undefined
+					if (await this.verifySignature(header, splitted)) {
+						result = JSON.parse(
+							new TextDecoder().decode(Base64.decode(splitted[1], oldDecoder ? "standard" : "url"))
+						) as Payload
 					}
 				} catch {
-					result = undefined
+					// Keep result undefined
 				}
 				result = result && this.verifyAudience(result.aud, audience) ? result : undefined
 				if (result) {
-					const now = Math.floor(Date.now() / 1000)
+					const now = Verifier.now
 					if (result?.iat && result.iat > 1000000000000)
 						result.iat = Math.floor(result.iat / 1000)
 					if (result?.exp && result.exp > 1000000000000)
@@ -66,6 +57,21 @@ export class Verifier<T extends Payload> extends Actor<Verifier<T>> {
 		}
 		return result as T | undefined
 	}
+	private async verifySignature(header: Header, splitted: string[]) {
+		let result = false
+		if (this.algorithms) {
+			const algorithms = this.algorithms[header.alg]
+			for (const currentAlgorithm of algorithms) {
+				if (await currentAlgorithm.verify(`${splitted[0]}.${splitted[1]}`, splitted[2])) {
+					result = true
+					break
+				}
+			}
+		} else {
+			result = true // This verifier is used without signature-checking
+		}
+		return result
+	}
 	private verifyAudience(audience: undefined | string | string[], allowed: string[]): boolean {
 		return (
 			audience == undefined ||
@@ -79,7 +85,14 @@ export class Verifier<T extends Payload> extends Actor<Verifier<T>> {
 			? this.verify(authorization.substr(7), ...audience)
 			: undefined
 	}
-
+	private static get now(): number {
+		return Verifier.staticNow == undefined
+			? Math.floor(Date.now() / 1000)
+			: typeof Verifier.staticNow == "number"
+			? Verifier.staticNow
+			: Math.floor(Verifier.staticNow.getTime() / 1000)
+	}
+	static staticNow: undefined | Date | number
 	static create<T extends Payload>(): Verifier<T>
 	static create<T extends Payload>(...algorithms: Algorithm[]): Verifier<T>
 	static create<T extends Payload>(...algorithms: (Algorithm | undefined)[]): Verifier<T> | undefined

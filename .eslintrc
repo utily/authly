@@ -28,7 +28,7 @@
 			{
 				"vars": "all",
 				"args": "none",
-				"varsIgnorePattern": "h"
+				"varsIgnorePattern": "^h$"
 			}
 		],
 		"@typescript-eslint/explicit-module-boundary-types": "off",
@@ -55,11 +55,6 @@
 						"servly",
 						"servly-azure",
 						"smoothly",
-						"@payfunc/model-card",
-						"@payfunc/model",
-						"@payfunc/cli-card",
-						"@payfunc/component",
-						"@payfunc/service",
 						"^\\u0000",
 						"^@?\\w",
 						"^",
