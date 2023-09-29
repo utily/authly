@@ -25,7 +25,7 @@ export class Converter {
 		fnction: (value: Payload.Value) => Payload.Value | Promise<Payload.Value | undefined> | undefined
 	): Promise<Payload> {
 		const result = { ...payload }
-		if (result[property[0]])
+		if (result[property[0]] != undefined)
 			result[property[0]] =
 				property.length == 1
 					? await fnction(result[property[0]] as Payload)

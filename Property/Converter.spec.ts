@@ -65,4 +65,15 @@ describe("Converter", () => {
 	it("Transform Both Ways", async () => {
 		expect(await converter.reverse(await converter.apply(transformObject))).toEqual(transformObject)
 	})
+	it("empty string <---> empty object", async () => {
+		// this conversion is possible with utily/flagly
+		const map: Creatable.Converter = {
+			flagly: {
+				backward: (value: Record<string, unknown>): string => "",
+				forward: (value: string): Record<string, undefined> => ({}),
+			},
+		}
+		const converter = new Converter(map)
+		expect(await converter.apply({ flagly: "" })).toEqual({ flagly: {} })
+	})
 })
