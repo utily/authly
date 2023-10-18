@@ -25,7 +25,8 @@
 		}
 	},
 	"browser": {
-		"./dist/crypto": "./dist/crypto.browser"
+		"./dist/mjs/crypto": "./dist/mjs/crypto.browser",
+		"./dist/cjs/crypto": "./dist/cjs/crypto.browser"
 	},
 	"git": {
 		"tagName": "v${version}"
@@ -70,7 +71,7 @@
 		"node": ">=16.0.0"
 	},
 	"dependencies": {
-		"cryptly": "3.1.1"
+		"cryptly": "3.1.2"
 	},
 	"devDependencies": {
 		"@types/jest": "^29.5.2",
