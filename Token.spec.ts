@@ -1,4 +1,4 @@
-import * as authly from "./index"
+import { authly } from "./index"
 
 describe("token", () => {
 	it("is", () =>

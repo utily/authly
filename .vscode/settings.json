@@ -2,6 +2,7 @@
 	// Update search.exclude if you add a pattern to files.exclude
 	"files.exclude": {
 		".*": true,
+		".sh": true,
 		"*.json": true,
 		"CODEOWNERS": true,
 		"dist": true,
@@ -14,6 +15,7 @@
 	// Make it possible to open excluded files with Ctrl + P
 	"search.exclude": {
 		".*": false,
+		".sh": false,
 		"*.json": false,
 		"CODEOWNERS": false,
 		"dist": false,
