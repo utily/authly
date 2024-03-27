@@ -8,7 +8,7 @@ export interface Payload extends Payload.Data {
 
 export namespace Payload {
 	export interface Data {
-		[claim: string]: Value | Value[] | undefined
+		[claim: string]: Value | undefined
 	}
-	export type Value = boolean | string | number | Data | boolean[] | string[] | number[] | Data[] | Value[]
+	export type Value = boolean | string | number | Data | Value[]
 }
