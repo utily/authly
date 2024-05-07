@@ -58,7 +58,7 @@ export class Verifier<T extends Payload> extends Actor<Verifier<T>> {
 		}
 		return result as T | undefined
 	}
-	private async verifySignature(header: Header, splitted: string[]) {
+	private async verifySignature(header: Header, splitted: string[]): Promise<boolean> {
 		let result = false
 		if (this.algorithms) {
 			const algorithms = this.algorithms[header.alg]
@@ -68,8 +68,6 @@ export class Verifier<T extends Payload> extends Actor<Verifier<T>> {
 					break
 				}
 			}
-		} else {
-			result = true // This verifier is used without signature-checking
 		}
 		return result
 	}
@@ -85,6 +83,26 @@ export class Verifier<T extends Payload> extends Actor<Verifier<T>> {
 		return authorization && authorization.startsWith("Bearer ")
 			? this.verify(authorization.substr(7), ...audience)
 			: undefined
+	}
+	async unpack(token: string | Token | undefined): Promise<T | undefined> {
+		let result: Payload | undefined
+		const splitted = token?.split(".")
+		if (!splitted)
+			result = undefined
+		else {
+			try {
+				result = JSON.parse(new TextDecoder().decode(Base64.decode(splitted[1], "url"))) as Payload
+				if (result.iat)
+					result.iat = Math.floor(result.iat / 1000)
+				if (result.exp)
+					result.exp = Math.floor(result.exp / 1000)
+				result.token = token
+				result = await this.transformers.reduceRight(async (p, c) => c.reverse(await p), Promise.resolve(result))
+			} catch {
+				result = undefined
+			}
+		}
+		return result as T | undefined
 	}
 	private static get now(): number {
 		return Verifier.staticNow == undefined
