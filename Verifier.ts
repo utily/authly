@@ -46,7 +46,6 @@ export class Verifier<T extends Payload> extends Actor<Verifier<T>> {
 						result.exp = Math.floor(result.exp / 1000)
 					result =
 						!this.algorithms ||
-						"none" in this.algorithms ||
 						((result.exp == undefined || result.exp > now) && (result.iat == undefined || result.iat <= now + 60))
 							? result
 							: undefined
