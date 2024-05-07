@@ -78,9 +78,9 @@ describe("Verifier", () => {
 		}
 		const verified = {
 			smallDifference: await verifier.verify(signed.smallDifference),
-			big_difference: await verifier.verify(signed.bigDifference),
+			bigDifference: await verifier.verify(signed.bigDifference),
 		}
 		expect(verified.smallDifference).not.toEqual(undefined)
-		expect(verified.big_difference).toEqual(undefined)
+		expect(verified.bigDifference).toEqual(undefined)
 	})
 })
