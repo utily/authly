@@ -8,7 +8,8 @@ describe("Verifier", () => {
 	const validIssuer = authly.Issuer.create("audience", authly.Algorithm.HS256("secret"))
 	const noneVerifier = authly.Verifier.create(authly.Algorithm.none())
 	const noneIssuer = authly.Issuer.create("audience", authly.Algorithm.none())
-	authly.Issuer.defaultIssuedAt = 1570094329996
+	const defaultIssuedAt = 1570094329996
+	authly.Issuer.defaultIssuedAt = defaultIssuedAt
 	it("undefined", async () => expect(await verifier.verify(undefined, "audience")).toEqual(undefined))
 	it("not a token", async () => expect(await verifier.verify("not a token", "audience")).toEqual(undefined))
 	it("not.a.token", async () => expect(await verifier.verify("not.a.token", "audience")).toEqual(undefined))
@@ -51,5 +52,35 @@ describe("Verifier", () => {
 		expect(jwt).not.toEqual(base64std)
 		expect(verifier && (await verifier.verify(base64url, "audience"))).toBeTruthy()
 		expect(verifier && (await verifier.verify(base64std, "audience"))).toBeTruthy()
+	})
+	it("no vs none algorithm", async () => {
+		const audience = "audience"
+		const defaultIssuedAtSeconds = (authly.Verifier.staticNow = Math.floor(defaultIssuedAt / 1_000))
+		const issuer = authly.Issuer.create(audience, authly.Algorithm.none())
+		const verifiers = {
+			no: authly.Verifier.create(),
+			none: authly.Verifier.create(authly.Algorithm.none()),
+		}
+		const original = { iat: defaultIssuedAtSeconds + 120, foo: "foo" }
+		const signed = await issuer?.sign(original)
+		const verified = {
+			no: await verifiers.no.verify(signed, audience),
+			none: await verifiers.none?.verify(signed, audience),
+		}
+		expect(verified.no).not.toEqual(undefined)
+		expect(verified.none).toEqual(undefined)
+	})
+	it("leniency", async () => {
+		const defaultIssuedAtSeconds = (authly.Verifier.staticNow = Math.floor(defaultIssuedAt / 1_000))
+		const signed = {
+			smallDifference: await validIssuer.sign({ iat: defaultIssuedAtSeconds + 30 }),
+			bigDifference: await validIssuer.sign({ iat: defaultIssuedAtSeconds + 120 }),
+		}
+		const verified = {
+			smallDifference: await verifier.verify(signed.smallDifference),
+			bigDifference: await verifier.verify(signed.bigDifference),
+		}
+		expect(verified.smallDifference).not.toEqual(undefined)
+		expect(verified.bigDifference).toEqual(undefined)
 	})
 })
