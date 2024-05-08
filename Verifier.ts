@@ -1,4 +1,4 @@
-import { Base64, TextDecoder } from "cryptly"
+import { cryptly } from "cryptly"
 import { Actor } from "./Actor"
 import { Algorithm } from "./Algorithm"
 import { Header } from "./Header"
@@ -19,49 +19,65 @@ export class Verifier<T extends Payload> extends Actor<Verifier<T>> {
 		} else
 			this.algorithms = undefined
 	}
-	async verify(token: string | Token | undefined, ...audience: string[]): Promise<T | undefined> {
-		let result: Payload | undefined = undefined
-		if (token) {
-			const splitted = token.split(".", 3)
-			if (splitted.length == 3) {
-				try {
-					const oldDecoder = token.includes("/") || token.includes("+") // For backwards compatibility.
-					const header: Header = JSON.parse(
-						new TextDecoder().decode(Base64.decode(splitted[0], oldDecoder ? "standard" : "url"))
-					)
-					if (await this.verifySignature(header, splitted)) {
-						result = JSON.parse(
-							new TextDecoder().decode(Base64.decode(splitted[1], oldDecoder ? "standard" : "url"))
-						) as Payload
-					}
-				} catch {
-					// Keep result undefined
-				}
-				result = result && this.verifyAudience(result.aud, audience) ? result : undefined
-				if (result) {
-					const now = Verifier.now
-					if (result?.iat && result.iat > 1000000000000)
-						result.iat = Math.floor(result.iat / 1000)
-					if (result?.exp && result.exp > 1000000000000)
-						result.exp = Math.floor(result.exp / 1000)
-					result =
-						!this.algorithms ||
-						((result.exp == undefined || result.exp > now) && (result.iat == undefined || result.iat <= now + 60))
-							? result
-							: undefined
-				}
-				if (result) {
-					result.token = token
-					result = await this.transformers.reduceRight(async (p, c) => c.reverse(await p), Promise.resolve(result))
-				}
+	private async decode(
+		token: string | Token | undefined
+	): Promise<{ header: Header; payload: Payload; signature: string; splitted: [string, string, string] } | undefined> {
+		let result: Awaited<ReturnType<Verifier<T>["decode"]>>
+		const splitted = token?.split(".")
+		if (splitted?.length != 3)
+			result = undefined
+		else {
+			try {
+				const standard: cryptly.Base64.Standard = token?.match(/[/+]/) ? "standard" : "url"
+				const decoder = new cryptly.TextDecoder()
+				const header: Header = JSON.parse(decoder.decode(cryptly.Base64.decode(splitted[0], standard)))
+				const payload: Payload | undefined = JSON.parse(
+					decoder.decode(cryptly.Base64.decode(splitted[1], standard))
+				) as Payload
+				if (payload.iat && payload.iat > 1000000000000)
+					payload.iat = Math.floor(payload.iat / 1000)
+				if (payload.exp && payload.exp > 1000000000000)
+					payload.exp = Math.floor(payload.exp / 1000)
+				payload.token = token
+				result = !payload
+					? undefined
+					: { header, payload, signature: splitted[0], splitted: [splitted[0], splitted[1], splitted[2]] }
+			} catch {
+				result = undefined
 			}
 		}
+		return result
+	}
+	private async transform(payload: Payload | undefined): Promise<T | undefined> {
+		const result = await this.transformers.reduceRight(async (p, c) => c.reverse(await p), Promise.resolve(payload))
 		return result as T | undefined
+	}
+	async unpack(token: string | Token | undefined): Promise<T | undefined> {
+		return await this.transform((await this.decode(token))?.payload)
+	}
+	async verify(token: string | Token | undefined, ...audience: string[]): Promise<T | undefined> {
+		let result: T | undefined
+		const decoded = await this.decode(token)
+		const now = Verifier.now
+		if (!decoded)
+			result = undefined
+		else if (!(await this.verifySignature(decoded.header, decoded.splitted)))
+			result = undefined
+		else if (!this.verifyAudience(decoded.payload.aud, audience))
+			result = undefined
+		else if (
+			!(decoded.payload.exp == undefined || decoded.payload.exp > now) ||
+			!(decoded.payload.iat == undefined || decoded.payload.iat <= now + 60 || decoded.payload.iat <= now - 60)
+		)
+			result = undefined
+		else
+			result = await this.transform(decoded.payload)
+		return result
 	}
 	private async verifySignature(header: Header, splitted: string[]): Promise<boolean> {
 		let result = false
 		if (this.algorithms) {
-			const algorithms = this.algorithms[header.alg]
+			const algorithms = this.algorithms[header.alg] ?? []
 			for (const currentAlgorithm of algorithms) {
 				if (await currentAlgorithm.verify(`${splitted[0]}.${splitted[1]}`, splitted[2])) {
 					result = true
@@ -83,26 +99,6 @@ export class Verifier<T extends Payload> extends Actor<Verifier<T>> {
 		return authorization && authorization.startsWith("Bearer ")
 			? this.verify(authorization.substr(7), ...audience)
 			: undefined
-	}
-	async unpack(token: string | Token | undefined): Promise<T | undefined> {
-		let result: Payload | undefined
-		const splitted = token?.split(".")
-		if (!splitted)
-			result = undefined
-		else {
-			try {
-				result = JSON.parse(new TextDecoder().decode(Base64.decode(splitted[1], "url"))) as Payload
-				if (result.iat)
-					result.iat = Math.floor(result.iat / 1000)
-				if (result.exp)
-					result.exp = Math.floor(result.exp / 1000)
-				result.token = token
-				result = await this.transformers.reduceRight(async (p, c) => c.reverse(await p), Promise.resolve(result))
-			} catch {
-				result = undefined
-			}
-		}
-		return result as T | undefined
 	}
 	private static get now(): number {
 		return Verifier.staticNow == undefined

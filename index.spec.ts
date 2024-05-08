@@ -102,15 +102,13 @@ describe("authly", () => {
 			"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJpc3N1ZXIiLCJpYXQiOjQ5MDYyLCJhdWQiOlsidmVyaWZpZXIiLCJhdWRpZW5jZSJdLCJ0ZXN0IjoidGVzdCJ9.BxRECvB1umtdTIs7FsiCPcw7y-nPob2rCK-nC4WHwew"
 		const verifier = authly.Verifier.create()
 		expect(verifier).toBeTruthy()
-		if (verifier) {
-			expect(await verifier.verify(token)).toEqual({
-				iss: "issuer",
-				aud: ["verifier", "audience"],
-				iat: 49062,
-				test: "test",
-				token,
-			})
-		}
+		expect(await verifier.unpack(token)).toEqual({
+			iss: "issuer",
+			aud: ["verifier", "audience"],
+			iat: 49062,
+			test: "test",
+			token,
+		})
 	})
 	it("HS256 + property encryption", async () => {
 		const algorithm = authly.Algorithm.HS256("secret-key")
