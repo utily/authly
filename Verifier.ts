@@ -41,7 +41,7 @@ export class Verifier<T extends Payload> extends Actor<Verifier<T>> {
 				payload.token = token
 				result = !payload
 					? undefined
-					: { header, payload, signature: splitted[0], splitted: [splitted[0], splitted[1], splitted[2]] }
+					: { header, payload, signature: splitted[2], splitted: [splitted[0], splitted[1], splitted[2]] }
 			} catch {
 				result = undefined
 			}
