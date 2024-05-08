@@ -1,6 +1,6 @@
 {
 	"name": "authly",
-	"version": "3.0.13",
+	"version": "3.1.0",
 	"description": "Tokenized authentication using JSON Web Tokens with support for encrypted token properties.",
 	"author": "Utily Contributors",
 	"license": "MIT",

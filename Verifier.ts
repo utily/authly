@@ -52,6 +52,27 @@ export class Verifier<T extends Payload> extends Actor<Verifier<T>> {
 		const result = await this.transformers.reduceRight(async (p, c) => c.reverse(await p), Promise.resolve(payload))
 		return result as T | undefined
 	}
+	private async verifySignature(header: Header, splitted: string[]): Promise<boolean> {
+		let result = false
+		if (this.algorithms) {
+			const algorithms = this.algorithms[header.alg] ?? []
+			for (const currentAlgorithm of algorithms) {
+				if (await currentAlgorithm.verify(`${splitted[0]}.${splitted[1]}`, splitted[2])) {
+					result = true
+					break
+				}
+			}
+		}
+		return result
+	}
+	private verifyAudience(audience: undefined | string | string[], allowed: string[]): boolean {
+		return (
+			audience == undefined ||
+			allowed.length == 0 ||
+			(typeof audience == "string" && allowed.some(a => a == audience)) ||
+			(Array.isArray(audience) && audience.some(a => allowed.some(ta => ta == a)))
+		)
+	}
 	async unpack(token: string | Token | undefined): Promise<T | undefined> {
 		return await this.transform((await this.decode(token))?.payload)
 	}
@@ -73,27 +94,6 @@ export class Verifier<T extends Payload> extends Actor<Verifier<T>> {
 		else
 			result = await this.transform(decoded.payload)
 		return result
-	}
-	private async verifySignature(header: Header, splitted: string[]): Promise<boolean> {
-		let result = false
-		if (this.algorithms) {
-			const algorithms = this.algorithms[header.alg] ?? []
-			for (const currentAlgorithm of algorithms) {
-				if (await currentAlgorithm.verify(`${splitted[0]}.${splitted[1]}`, splitted[2])) {
-					result = true
-					break
-				}
-			}
-		}
-		return result
-	}
-	private verifyAudience(audience: undefined | string | string[], allowed: string[]): boolean {
-		return (
-			audience == undefined ||
-			allowed.length == 0 ||
-			(typeof audience == "string" && allowed.some(a => a == audience)) ||
-			(Array.isArray(audience) && audience.some(a => allowed.some(ta => ta == a)))
-		)
 	}
 	async authenticate(authorization: string | Token | undefined, ...audience: string[]): Promise<T | undefined> {
 		return authorization && authorization.startsWith("Bearer ")
