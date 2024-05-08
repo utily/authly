@@ -31,9 +31,7 @@ export class Verifier<T extends Payload> extends Actor<Verifier<T>> {
 				const standard: cryptly.Base64.Standard = token?.match(/[/+]/) ? "standard" : "url"
 				const decoder = new cryptly.TextDecoder()
 				const header: Header = JSON.parse(decoder.decode(cryptly.Base64.decode(splitted[0], standard)))
-				const payload: Payload | undefined = JSON.parse(
-					decoder.decode(cryptly.Base64.decode(splitted[1], standard))
-				) as Payload
+				const payload: Payload = JSON.parse(decoder.decode(cryptly.Base64.decode(splitted[1], standard)))
 				if (payload.iat && payload.iat > 1000000000000)
 					payload.iat = Math.floor(payload.iat / 1000)
 				if (payload.exp && payload.exp > 1000000000000)
