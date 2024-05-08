@@ -23,7 +23,7 @@ export class Verifier<T extends Payload> extends Actor<Verifier<T>> {
 		token: string | Token | undefined
 	): Promise<{ header: Header; payload: Payload; signature: string; splitted: [string, string, string] } | undefined> {
 		let result: Awaited<ReturnType<Verifier<T>["decode"]>>
-		const splitted = token?.split(".")
+		const splitted = token?.split(".", 3)
 		if (splitted?.length != 3)
 			result = undefined
 		else {
