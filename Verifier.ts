@@ -22,16 +22,15 @@ export class Verifier<T extends Payload> extends Actor<Verifier<T>> {
 	private async decode(
 		token: string | Token | undefined
 	): Promise<{ header: Header; payload: Payload; signature: string; splitted: [string, string, string] } | undefined> {
-		let result: Awaited<ReturnType<Verifier<T>["decode"]>>
 		const splitted = token?.split(".", 3)
-		if (splitted?.length != 3)
-			result = undefined
-		else {
+		let result: Awaited<ReturnType<Verifier<T>["decode"]>>
+		if (splitted && splitted.length >= 2) {
 			try {
 				const standard: cryptly.Base64.Standard = token?.match(/[/+]/) ? "standard" : "url"
 				const decoder = new cryptly.TextDecoder()
 				const header: Header = JSON.parse(decoder.decode(cryptly.Base64.decode(splitted[0], standard)))
 				const payload: Payload = JSON.parse(decoder.decode(cryptly.Base64.decode(splitted[1], standard)))
+				// converts milliseconds to seconds for backwards compatibility
 				if (payload.iat && payload.iat > 1000000000000)
 					payload.iat = Math.floor(payload.iat / 1000)
 				if (payload.exp && payload.exp > 1000000000000)
@@ -39,7 +38,7 @@ export class Verifier<T extends Payload> extends Actor<Verifier<T>> {
 				payload.token = token
 				result = !payload
 					? undefined
-					: { header, payload, signature: splitted[2], splitted: [splitted[0], splitted[1], splitted[2]] }
+					: { header, payload, signature: splitted[2] ?? "", splitted: [splitted[0], splitted[1], splitted[2] ?? ""] }
 			} catch {
 				result = undefined
 			}
@@ -75,23 +74,15 @@ export class Verifier<T extends Payload> extends Actor<Verifier<T>> {
 		return await this.transform((await this.decode(token))?.payload)
 	}
 	async verify(token: string | Token | undefined, ...audience: string[]): Promise<T | undefined> {
-		let result: T | undefined
 		const decoded = await this.decode(token)
 		const now = Verifier.now
-		if (!decoded)
-			result = undefined
-		else if (!(await this.verifySignature(decoded.header, decoded.splitted)))
-			result = undefined
-		else if (!this.verifyAudience(decoded.payload.aud, audience))
-			result = undefined
-		else if (
-			!(decoded.payload.exp == undefined || decoded.payload.exp > now) ||
-			!(decoded.payload.iat == undefined || decoded.payload.iat <= now + 60 || decoded.payload.iat <= now - 60)
-		)
-			result = undefined
-		else
-			result = await this.transform(decoded.payload)
-		return result
+		return decoded &&
+			(await this.verifySignature(decoded.header, decoded.splitted)) &&
+			this.verifyAudience(decoded.payload.aud, audience) &&
+			(decoded.payload.exp == undefined || decoded.payload.exp > now) &&
+			(decoded.payload.iat == undefined || decoded.payload.iat <= now + 60 || decoded.payload.iat <= now - 60)
+			? await this.transform(decoded.payload)
+			: undefined
 	}
 	async authenticate(authorization: string | Token | undefined, ...audience: string[]): Promise<T | undefined> {
 		return authorization && authorization.startsWith("Bearer ")
