@@ -55,32 +55,37 @@ describe("Verifier", () => {
 	})
 	it("no vs none algorithm", async () => {
 		const audience = "audience"
-		const defaultIssuedAtSeconds = (authly.Verifier.staticNow = Math.floor(defaultIssuedAt / 1_000))
 		const issuer = authly.Issuer.create(audience, authly.Algorithm.none())
 		const verifiers = {
 			no: authly.Verifier.create(),
 			none: authly.Verifier.create(authly.Algorithm.none()),
 		}
-		const original = { iat: defaultIssuedAtSeconds + 120, foo: "foo" }
+		const original = { iat: defaultIssuedAt, foo: "foo" }
 		const signed = await issuer?.sign(original)
 		const verified = {
 			no: await verifiers.no.verify(signed, audience),
 			none: await verifiers.none?.verify(signed, audience),
 		}
-		expect(verified.no).not.toEqual(undefined)
-		expect(verified.none).toEqual(undefined)
+		expect(verified.no).toEqual(undefined)
+		expect(verified.none).not.toEqual(undefined)
 	})
 	it("leniency", async () => {
 		const defaultIssuedAtSeconds = (authly.Verifier.staticNow = Math.floor(defaultIssuedAt / 1_000))
 		const signed = {
-			smallDifference: await validIssuer.sign({ iat: defaultIssuedAtSeconds + 30 }),
-			bigDifference: await validIssuer.sign({ iat: defaultIssuedAtSeconds + 120 }),
+			bigNegativeDifference: await validIssuer.sign({ iat: defaultIssuedAtSeconds - 120 }),
+			smallNegativeDifference: await validIssuer.sign({ iat: defaultIssuedAtSeconds - 30 }),
+			smallPositiveDifference: await validIssuer.sign({ iat: defaultIssuedAtSeconds + 30 }),
+			bigPositiveDifference: await validIssuer.sign({ iat: defaultIssuedAtSeconds + 120 }),
 		}
 		const verified = {
-			smallDifference: await verifier.verify(signed.smallDifference),
-			bigDifference: await verifier.verify(signed.bigDifference),
+			bigNegativeDifference: await verifier.verify(signed.bigPositiveDifference),
+			smallNegativeDifference: await verifier.verify(signed.smallPositiveDifference),
+			smallPositiveDifference: await verifier.verify(signed.smallPositiveDifference),
+			bigPositiveDifference: await verifier.verify(signed.bigPositiveDifference),
 		}
-		expect(verified.smallDifference).not.toEqual(undefined)
-		expect(verified.bigDifference).toEqual(undefined)
+		expect(verified.bigNegativeDifference).toEqual(undefined)
+		expect(verified.smallNegativeDifference).not.toEqual(undefined)
+		expect(verified.smallPositiveDifference).not.toEqual(undefined)
+		expect(verified.bigPositiveDifference).toEqual(undefined)
 	})
 })
