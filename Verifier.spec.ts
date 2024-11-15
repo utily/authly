@@ -1,4 +1,4 @@
-import * as authly from "./index"
+import { authly } from "./index"
 
 describe("Verifier", () => {
 	const verifier = authly.Verifier.create<authly.Payload>(

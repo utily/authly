@@ -1,4 +1,4 @@
-import { Base64, TextEncoder } from "cryptly"
+import { cryptly } from "cryptly"
 import { Actor } from "./Actor"
 import { Algorithm } from "./Algorithm"
 import { Header } from "./Header"
@@ -34,7 +34,7 @@ export class Issuer<T extends Payload> extends Actor<Issuer<T>> {
 		const transformed = await this.transformers.reduce(async (p, c) => c.apply(await p), Promise.resolve(payload))
 		const data =
 			transformed &&
-			`${Base64.encode(new TextEncoder().encode(JSON.stringify(this.header)), "url")}.${Base64.encode(
+			`${cryptly.Base64.encode(new TextEncoder().encode(JSON.stringify(this.header)), "url")}.${cryptly.Base64.encode(
 				new TextEncoder().encode(JSON.stringify(transformed)),
 				"url"
 			)}`

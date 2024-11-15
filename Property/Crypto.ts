@@ -1,4 +1,4 @@
-import { Base64, Digest, TextDecoder, TextEncoder } from "cryptly"
+import { cryptly } from "cryptly"
 import { Payload } from "../Payload"
 import { Remover } from "./Remover"
 
@@ -15,7 +15,7 @@ export class Crypto {
 			this.process(
 				payload,
 				value => this.encoder.encode(JSON.stringify(value)),
-				value => Base64.encode(value, "url")
+				value => cryptly.Base64.encode(value, "url")
 			)
 		)
 	}
@@ -24,7 +24,7 @@ export class Crypto {
 			payload &&
 			this.process(
 				payload,
-				value => (typeof value == "string" ? Base64.decode(value, "url") : new Uint8Array()),
+				value => (typeof value == "string" ? cryptly.Base64.decode(value, "url") : new Uint8Array()),
 				value => JSON.parse(this.decoder.decode(value))
 			)
 		)
@@ -50,7 +50,7 @@ export class Crypto {
 		if (result[property[0]])
 			if (property.length == 1) {
 				const data = preprocess(payload[property[0]])
-				const key = await new Digest("SHA-512").digest(this.encoder.encode(secret))
+				const key = await new cryptly.Digester("SHA-512").digest(this.encoder.encode(secret))
 				const processed = new Uint8Array(data.length)
 				for (let index = 0; index < data.length; index++)
 					processed[index] = data[index] ^ key[index]

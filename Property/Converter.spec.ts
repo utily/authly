@@ -1,9 +1,8 @@
 import { isoly } from "isoly"
-import { Converter } from "./Converter"
-import { Creatable } from "./Creatable"
+import { authly } from ".."
 const insideObject = { num: [10, 29, 7], foo: ["here", "test"] }
 
-const conversionMap: Creatable.Converter = {
+const conversionMap: authly.Property.Creatable.Converter = {
 	foo: {
 		forward: (value: string) => value + "transformed",
 		backward: (value: string) => value.replace("transformed", ""),
@@ -21,7 +20,8 @@ const conversionMap: Creatable.Converter = {
 		backward: (value: string) => value.replace("different", ""),
 	},
 	"inside.inside": {
-		forward: ((value: { num: number[]; foo: string[] }) => "NotObject") as Creatable.Converter[string]["forward"],
+		forward: ((value: { num: number[]; foo: string[] }) =>
+			"NotObject") as authly.Property.Creatable.Converter[string]["forward"],
 		backward: (value: string) => insideObject,
 	},
 	issued: {
@@ -44,14 +44,14 @@ const transformedObject = {
 	arrayMapping: [20, 4.4, 3],
 	issued: 1683715666,
 }
-const converter = new Converter(conversionMap)
+const converter = new authly.Property.Converter(conversionMap)
 
 describe("Converter", () => {
 	it("Converter.is", async () => {
-		expect(Creatable.Converter.is(conversionMap)).toBe(true)
+		expect(authly.Property.Creatable.Converter.is(conversionMap)).toBe(true)
 	})
 	it("Empty Transformmap", async () => {
-		const converter = new Converter({})
+		const converter = new authly.Property.Converter({})
 		expect(await converter.apply(transformObject)).toEqual(transformObject)
 	})
 	it("Transform Forward", async () => {
@@ -67,13 +67,13 @@ describe("Converter", () => {
 	})
 	it("empty string <---> empty object", async () => {
 		// this conversion is possible with utily/flagly
-		const map: Creatable.Converter = {
+		const map: authly.Property.Creatable.Converter = {
 			flagly: {
 				backward: (value: Record<string, unknown>): string => "",
 				forward: (value: string): Record<string, undefined> => ({}),
 			},
 		}
-		const converter = new Converter(map)
+		const converter = new authly.Property.Converter(map)
 		expect(await converter.apply({ flagly: "" })).toEqual({ flagly: {} })
 	})
 })

@@ -1,4 +1,4 @@
-import { Signer } from "cryptly"
+import { cryptly } from "cryptly"
 import { Header } from "../Header"
 import { Name as AlgorithmName } from "./Name"
 
@@ -9,7 +9,7 @@ export class Algorithm {
 	 * If set, the property will be included in JWT-header by the Issuer.
 	 */
 	public kid?: Header["kid"]
-	private constructor(readonly name: AlgorithmName, private readonly signer: Signer) {}
+	private constructor(readonly name: AlgorithmName, private readonly signer: cryptly.Signer) {}
 
 	async sign(data: Uint8Array): Promise<Uint8Array>
 	async sign(data: string): Promise<string>
@@ -29,46 +29,46 @@ export class Algorithm {
 		privateKey?: Uint8Array | string
 	): Algorithm | undefined
 	static create(name: AlgorithmName, ...keys: (string | Uint8Array)[]): Algorithm | undefined {
-		let result: Signer | undefined
+		let result: cryptly.Signer | undefined
 		switch (name) {
 			case "ES256":
-				result = Signer.create("ECDSA", "SHA-256", keys[0], keys[1])
+				result = cryptly.Signer.create("ECDSA", "SHA-256", keys[0], keys[1])
 				break
 			case "ES384":
-				result = Signer.create("ECDSA", "SHA-384", keys[0], keys[1])
+				result = cryptly.Signer.create("ECDSA", "SHA-384", keys[0], keys[1])
 				break
 			case "ES512":
-				result = Signer.create("ECDSA", "SHA-512", keys[0], keys[1])
+				result = cryptly.Signer.create("ECDSA", "SHA-512", keys[0], keys[1])
 				break
 			case "PS256":
-				result = Signer.create("RSA-PSS", "SHA-256", keys[0], keys[1])
+				result = cryptly.Signer.create("RSA-PSS", "SHA-256", keys[0], keys[1])
 				break
 			case "PS384":
-				result = Signer.create("RSA-PSS", "SHA-384", keys[0], keys[1])
+				result = cryptly.Signer.create("RSA-PSS", "SHA-384", keys[0], keys[1])
 				break
 			case "PS512":
-				result = Signer.create("RSA-PSS", "SHA-512", keys[0], keys[1])
+				result = cryptly.Signer.create("RSA-PSS", "SHA-512", keys[0], keys[1])
 				break
 			case "HS256":
-				result = Signer.create("HMAC", "SHA-256", keys[0])
+				result = cryptly.Signer.create("HMAC", "SHA-256", keys[0])
 				break
 			case "HS384":
-				result = Signer.create("HMAC", "SHA-384", keys[0])
+				result = cryptly.Signer.create("HMAC", "SHA-384", keys[0])
 				break
 			case "HS512":
-				result = Signer.create("HMAC", "SHA-512", keys[0])
+				result = cryptly.Signer.create("HMAC", "SHA-512", keys[0])
 				break
 			case "RS256":
-				result = Signer.create("RSA", "SHA-256", keys[0], keys[1])
+				result = cryptly.Signer.create("RSA", "SHA-256", keys[0], keys[1])
 				break
 			case "RS384":
-				result = Signer.create("RSA", "SHA-384", keys[0], keys[1])
+				result = cryptly.Signer.create("RSA", "SHA-384", keys[0], keys[1])
 				break
 			case "RS512":
-				result = Signer.create("RSA", "SHA-512", keys[0], keys[1])
+				result = cryptly.Signer.create("RSA", "SHA-512", keys[0], keys[1])
 				break
 			case "none":
-				result = Signer.create("None")
+				result = cryptly.Signer.create("None")
 				break
 		}
 		return result && new Algorithm(name, result)

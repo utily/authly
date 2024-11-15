@@ -1,6 +1,5 @@
 import { isoly } from "isoly"
-import * as authly from "./index"
-import { Creatable } from "./Property"
+import { authly } from "./index"
 authly.Issuer.defaultIssuedAt = new Date("1970-01-01T13:37:42.000Z")
 authly.Verifier.staticNow = new Date("1970-01-01T14:07:42.000Z")
 
@@ -164,7 +163,7 @@ describe("authly", () => {
 		})
 	})
 	it("HS256 + renamer + converter", async () => {
-		const transformers: (authly.Property.Transformer | Creatable.Converter)[] = [
+		const transformers: (authly.Property.Transformer | authly.Property.Creatable.Converter)[] = [
 			{
 				issued: {
 					forward: (value: string) => isoly.DateTime.epoch(value, "seconds"), // "forward" is never used, since Issuer creates the iat-value.

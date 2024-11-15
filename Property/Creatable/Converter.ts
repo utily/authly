@@ -15,6 +15,12 @@ export interface Converter {
 }
 
 export namespace Converter {
+	export const hej: Converter = {
+		permissions: {
+			forward: (value: string[]) => value.map(v => v.charCodeAt(0)),
+			backward: (value: number[]) => value.map(v => String.fromCharCode(v)),
+		},
+	}
 	export function is(value: Converter | any): value is Converter {
 		return (
 			typeof value == "object" &&

@@ -1,7 +1,7 @@
-import { Crypto } from "./Crypto"
+import { authly } from ".."
 
 describe("PropertyCrypto", () => {
-	const crypto = Crypto.create("secret", "encrypted", "things.encrypted")
+	const crypto = authly.Property.Crypto.create("secret", "encrypted", "things.encrypted")
 	it("encrypt", async () => {
 		const encrypted = await crypto.apply({
 			iss: "issuer",
