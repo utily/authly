@@ -1,4 +1,4 @@
-import { Renamer } from "./Renamer"
+import { authly } from ".."
 
 const transformObject = { foo: "Some", inside: { foo: "Value", inside: { foo: "here" } } }
 const transformedObject = {
@@ -11,7 +11,7 @@ const transformedObject = {
 	},
 }
 const transformMap = { foo: "bar", inside: "outside" }
-const propertyRenamer = new Renamer(transformMap)
+const propertyRenamer = new authly.Property.Renamer(transformMap)
 const nestedObject = { foo: [{ foo: "bar" }, { inside: "outside" }] }
 const transformedNestedObject = { bar: [{ bar: "bar" }, { outside: "outside" }] }
 
