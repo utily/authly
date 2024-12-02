@@ -163,19 +163,19 @@ describe("authly", () => {
 		})
 	})
 	it("HS256 + renamer + converter", async () => {
-		const transformers: (authly.Property.Transformer | authly.Property.Creatable.Converter)[] = [
+		const transformers: (authly.Property.Transformer | authly.Property.Converter.Configuration)[] = [
 			{
 				issued: {
-					forward: (value: string) => isoly.DateTime.epoch(value, "seconds"), // "forward" is never used, since Issuer creates the iat-value.
-					backward: (value: number) => isoly.DateTime.create(value),
+					encode: (value: string) => isoly.DateTime.epoch(value, "seconds"), // "encode" is never used, since Issuer creates the iat-value.
+					decode: (value: number) => isoly.DateTime.create(value),
 				},
 				expires: {
-					forward: (value: string) => isoly.DateTime.epoch(value, "seconds"), // "forward" is never used, since Issuer creates the exp-value.
-					backward: (value: number) => isoly.DateTime.create(value),
+					encode: (value: string) => isoly.DateTime.epoch(value, "seconds"), // "encode" is never used, since Issuer creates the exp-value.
+					decode: (value: number) => isoly.DateTime.create(value),
 				},
 				permissions: {
-					forward: (value: string[]) => value.map(v => v.charCodeAt(0)),
-					backward: (value: number[]) => value.map(v => String.fromCharCode(v)),
+					encode: (value: string[]) => value.map(v => v.charCodeAt(0)),
+					decode: (value: number[]) => value.map(v => String.fromCharCode(v)),
 				},
 			},
 			new authly.Property.Renamer({
