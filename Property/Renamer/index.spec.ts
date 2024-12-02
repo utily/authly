@@ -1,4 +1,4 @@
-import { authly } from ".."
+import { authly } from "../../dist/cjs"
 
 const transformObject = { foo: "Some", inside: { foo: "Value", inside: { foo: "here" } } }
 const transformedObject = {

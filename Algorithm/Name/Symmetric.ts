@@ -1,7 +1,9 @@
-export type Symmetric = "HS256" | "HS384" | "HS512"
+import { isly } from "isly"
 
+export type Symmetric = typeof Symmetric.values[number]
 export namespace Symmetric {
-	export function is(value: any | Symmetric): value is Symmetric {
-		return value == "HS256" || value == "HS384" || value == "HS512"
-	}
+	export const values = ["HS256", "HS384", "HS512"] as const
+	export const type = isly.named<Symmetric>("authly.Algorithm.Name.Symmetric", isly.string(values))
+	export const is = type.is
+	export const flaw = type.flaw
 }

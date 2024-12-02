@@ -1,17 +1,10 @@
-export type Asymmetric = "RS256" | "RS384" | "RS512" | "ES256" | "ES384" | "ES512" | "PS256" | "PS384" | "PS512"
+import { isly } from "isly"
+
+export type Asymmetric = typeof Asymmetric.values[number]
 
 export namespace Asymmetric {
-	export function is(value: any | Asymmetric): value is Asymmetric {
-		return (
-			value == "RS256" ||
-			value == "RS384" ||
-			value == "RS512" ||
-			value == "ES256" ||
-			value == "ES384" ||
-			value == "ES512" ||
-			value == "PS256" ||
-			value == "PS384" ||
-			value == "PS512"
-		)
-	}
+	export const values = ["RS256", "RS384", "RS512", "ES256", "ES384", "ES512", "PS256", "PS384", "PS512"] as const
+	export const type = isly.named<Asymmetric>("authly.Algorithm.Name.Asymmetric", isly.string(values))
+	export const is = type.is
+	export const flaw = type.flaw
 }

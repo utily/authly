@@ -1,6 +1,7 @@
 import { cryptly } from "cryptly"
-import { Payload } from "../Payload"
-import { Remover } from "./Remover"
+import { Payload } from "../../Payload"
+import { Remover } from "../Remover"
+import { Configuration as CryptoConfiguration } from "./Configuration"
 
 export class Crypto {
 	protected readonly encoder = new TextEncoder()
@@ -70,4 +71,8 @@ export class Crypto {
 	static create(secret: string | undefined, ...properties: string[]): Crypto | Remover | undefined {
 		return secret ? new Crypto(secret, ...properties) : Remover.create(properties)
 	}
+}
+export namespace Crypto {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	export import Configuration = CryptoConfiguration
 }

@@ -108,3 +108,4 @@ export class Verifier<T extends Payload> extends Actor<Verifier<T>> {
 		)
 	}
 }
+export namespace Verifier {}

@@ -1,3 +1,4 @@
+import { isly } from "isly"
 import { Payload } from "../Payload"
 
 export interface Transformer {
@@ -5,9 +6,12 @@ export interface Transformer {
 	reverse: (payload: Payload | undefined) => Promise<Payload | undefined> | Payload | undefined
 }
 export namespace Transformer {
-	export function is(value: Transformer | any): value is Transformer {
-		return typeof value == "object" && typeof value.apply == "function" && typeof value.reverse == "function"
-	}
+	export const type = isly.object<Transformer>(
+		{ apply: isly.function(), reverse: isly.function() },
+		"authly.Property.Transformer"
+	)
+	export const is = type.is
+	export const flaw = type.flaw
 
 	export function create(transformer: Partial<Transformer>): Transformer {
 		return {

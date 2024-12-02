@@ -1,4 +1,4 @@
-import { Payload } from "../Payload"
+import { Payload } from "../../Payload"
 
 export class Remover {
 	private constructor(readonly toRemove: string[]) {}

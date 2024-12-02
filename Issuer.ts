@@ -54,3 +54,4 @@ export class Issuer<T extends Payload> extends Actor<Issuer<T>> {
 		return (algorithm && new Issuer(issuer, algorithm)) || undefined
 	}
 }
+export namespace Issuer {}

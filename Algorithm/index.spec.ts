@@ -1,3 +1,4 @@
+import { cryptly } from "cryptly"
 import { authly } from ".."
 
 describe("Algorithm.RS256", () => {
@@ -11,7 +12,7 @@ describe("Algorithm.RS256", () => {
 					"amount=2050&currency=EUR&ip=1.1.1.1&card[pan]=4111111111111111&card[expire_month]=06&card[expire_year]=2022&card[csc]=123"
 			  )
 			: ""
-		const hexadecimalSignature = authly.Identifier.toHexadecimal(signature)
+		const hexadecimalSignature = cryptly.Identifier.toHexadecimal(signature)
 		expect(hexadecimalSignature).toEqual(
 			"881de666d7f61c796c1c900784901b1b9bb8298af26bf10f79b2fd59231ab3383d9183ea8120bac3abead1000c4fab63bf6cf1345a31209acfe910c9286e9a3db7d4d15d1ae8e279ef05d5e43184b608ad39741ab04e28095fb8a0c48974e55fd0fe58ac5ef1f6c16670f67fd1c1b9a2a06273b079dc29e0daef6319a2e63545"
 		)

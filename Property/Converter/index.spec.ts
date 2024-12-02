@@ -1,32 +1,33 @@
 import { isoly } from "isoly"
-import { authly } from ".."
+import { authly } from "../../index"
+
 const insideObject = { num: [10, 29, 7], foo: ["here", "test"] }
 
-const conversionMap: authly.Property.Creatable.Converter = {
+const conversionMap: authly.Property.Converter.Configuration = {
 	foo: {
-		forward: (value: string) => value + "transformed",
-		backward: (value: string) => value.replace("transformed", ""),
+		encode: (value: string) => value + "transformed",
+		decode: (value: string) => value.replace("transformed", ""),
 	},
 	num: {
-		forward: (value: number) => value + 5,
-		backward: (value: number) => value - 5,
+		encode: (value: number) => value + 5,
+		decode: (value: number) => value - 5,
 	},
 	arrayMapping: {
-		forward: (value: number[]) => value.map(v => v / 5),
-		backward: (value: number[]) => value.map(v => v * 5),
+		encode: (value: number[]) => value.map(v => v / 5),
+		decode: (value: number[]) => value.map(v => v * 5),
 	},
 	"inside.foo": {
-		forward: (value: string) => value + "different",
-		backward: (value: string) => value.replace("different", ""),
+		encode: (value: string) => value + "different",
+		decode: (value: string) => value.replace("different", ""),
 	},
 	"inside.inside": {
-		forward: ((value: { num: number[]; foo: string[] }) =>
-			"NotObject") as authly.Property.Creatable.Converter[string]["forward"],
-		backward: (value: string) => insideObject,
+		encode: ((value: { num: number[]; foo: string[] }) =>
+			"NotObject") as authly.Property.Converter.Configuration[string]["encode"],
+		decode: (value: string) => insideObject,
 	},
 	issued: {
-		forward: (value: string) => isoly.DateTime.epoch(value, "seconds"),
-		backward: (value: number) => isoly.DateTime.create(value),
+		encode: (value: string) => isoly.DateTime.epoch(value, "seconds"),
+		decode: (value: number) => isoly.DateTime.create(value),
 	},
 }
 
@@ -48,17 +49,17 @@ const converter = new authly.Property.Converter(conversionMap)
 
 describe("Converter", () => {
 	it("Converter.is", async () => {
-		expect(authly.Property.Creatable.Converter.is(conversionMap)).toBe(true)
+		expect(authly.Property.Converter.Configuration.is(conversionMap)).toBe(true)
 	})
 	it("Empty Transformmap", async () => {
 		const converter = new authly.Property.Converter({})
 		expect(await converter.apply(transformObject)).toEqual(transformObject)
 	})
-	it("Transform Forward", async () => {
+	it("Transform encode", async () => {
 		expect(await converter.apply(transformObject)).toEqual(transformedObject)
 	})
 
-	it("Transform Backwards", async () => {
+	it("Transform decodes", async () => {
 		expect(await converter.reverse(transformedObject)).toEqual(transformObject)
 	})
 
@@ -67,10 +68,10 @@ describe("Converter", () => {
 	})
 	it("empty string <---> empty object", async () => {
 		// this conversion is possible with utily/flagly
-		const map: authly.Property.Creatable.Converter = {
+		const map: authly.Property.Converter.Configuration = {
 			flagly: {
-				backward: (value: Record<string, unknown>): string => "",
-				forward: (value: string): Record<string, undefined> => ({}),
+				encode: (value: string): Record<string, undefined> => ({}),
+				decode: (value: Record<string, unknown>): string => "",
 			},
 		}
 		const converter = new authly.Property.Converter(map)
