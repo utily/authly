@@ -73,6 +73,5 @@ export class Crypto {
 	}
 }
 export namespace Crypto {
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	export import Configuration = CryptoConfiguration
 }

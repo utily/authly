@@ -33,6 +33,5 @@ export class Renamer implements Transformer {
 	}
 }
 export namespace Renamer {
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	export import Configuration = RenamerConfiguration
 }

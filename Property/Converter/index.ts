@@ -31,6 +31,5 @@ export class Converter {
 	}
 }
 export namespace Converter {
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	export import Configuration = ConverterConfiguration
 }
