@@ -17,7 +17,6 @@ export namespace Transformer {
 		transformer: Partial<Transformer<S, T>>
 	): Transformer<S, T> {
 		return {
-			// these casts might be very bad
 			apply: transformer.apply ? transformer.apply : (v: S | undefined) => v as any,
 			reverse: transformer.reverse ? transformer.reverse : (v: T | undefined) => v as any,
 		}
