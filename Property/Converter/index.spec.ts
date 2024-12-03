@@ -67,13 +67,13 @@ describe("Converter", () => {
 	})
 	it("empty string <---> empty object", async () => {
 		// this conversion is possible with utily/flagly
-		const map: authly.Property.Converter.Configuration<{ hello: string }, { hello: number }> = {
-			hello: {
-				encode: value => parseInt(value) || undefined,
-				decode: value => value?.toString() ?? "",
+		const map: authly.Property.Converter.Configuration<{ flagly: string }, { flagly: Record<string, any> }> = {
+			flagly: {
+				encode: () => ({}),
+				decode: () => "",
 			},
 		}
 		const converter = new authly.Property.Converter(map)
-		expect(await converter.apply({ hello: "123" })).toEqual({ hello: 123 })
+		expect(await converter.apply({ flagly: "" })).toEqual({ flagly: {} })
 	})
 })
