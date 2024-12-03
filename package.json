@@ -1,6 +1,6 @@
 {
 	"name": "authly",
-	"version": "3.1.2",
+	"version": "4.0.0",
 	"description": "Tokenized authentication using JSON Web Tokens with support for encrypted token properties.",
 	"author": "Utily Contributors",
 	"license": "MIT",
@@ -71,20 +71,21 @@
 		"node": ">=16.0.0"
 	},
 	"dependencies": {
-		"cryptly": "4.0.6"
+		"cryptly": "4.0.6",
+		"isly": "^0.1.20"
 	},
 	"devDependencies": {
 		"@types/jest": "^29.5.14",
-		"@typescript-eslint/eslint-plugin": "7.15.0",
-		"@typescript-eslint/parser": "7.15.0",
+		"@typescript-eslint/eslint-plugin": "8.16.0",
+		"@typescript-eslint/parser": "8.16.0",
 		"eslint": "^8.57.0",
 		"eslint-plugin-prettierx": "github:utily/eslint-plugin-prettierx#utily-20231004",
 		"eslint-plugin-simple-import-sort": "^12.1.1",
+		"isoly": "^2.3.11",
 		"jest": "^29.7.0",
 		"prettierx": "github:utily/prettierx#utily-20231004",
 		"rimraf": "^6.0.1",
 		"ts-jest": "^29.2.5",
-		"typescript": "^5.6.3",
-		"isoly": "^2.3.11"
+		"typescript": "^5.7.2"
 	}
 }

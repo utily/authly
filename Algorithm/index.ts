@@ -148,16 +148,5 @@ export class Algorithm {
 	}
 }
 export namespace Algorithm {
-	export type Name = AlgorithmName
-	export namespace Name {
-		export const is = AlgorithmName.is
-		export type Symmetric = AlgorithmName.Symmetric
-		export namespace Symmetric {
-			export const is = AlgorithmName.Symmetric.is
-		}
-		export type Asymmetric = AlgorithmName.Asymmetric
-		export namespace Asymmetric {
-			export const is = AlgorithmName.Asymmetric.is
-		}
-	}
+	export import Name = AlgorithmName
 }

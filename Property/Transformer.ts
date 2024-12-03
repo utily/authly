@@ -1,18 +1,24 @@
+import { isly } from "isly"
 import { Payload } from "../Payload"
 
-export interface Transformer {
-	apply: (payload: Payload | undefined) => Promise<Payload | undefined> | Payload | undefined
-	reverse: (payload: Payload | undefined) => Promise<Payload | undefined> | Payload | undefined
+export interface Transformer<S extends Record<string, unknown> = Record<string, unknown>, T extends Payload = Payload> {
+	apply: (payload: S | undefined) => Promise<T | undefined> | T | undefined
+	reverse: (payload: T | undefined) => Promise<S | undefined> | S | undefined
 }
 export namespace Transformer {
-	export function is(value: Transformer | any): value is Transformer {
-		return typeof value == "object" && typeof value.apply == "function" && typeof value.reverse == "function"
-	}
+	export const type = isly.object<Transformer>(
+		{ apply: isly.function(), reverse: isly.function() },
+		"authly.Property.Transformer"
+	)
+	export const is = type.is
+	export const flaw = type.flaw
 
-	export function create(transformer: Partial<Transformer>): Transformer {
+	export function create<S extends Record<string, unknown>, T extends Payload>(
+		transformer: Partial<Transformer<S, T>>
+	): Transformer<S, T> {
 		return {
-			apply: transformer.apply ? transformer.apply : (v: Payload | undefined) => v,
-			reverse: transformer.reverse ? transformer.reverse : (v: Payload | undefined) => v,
+			apply: transformer.apply ? transformer.apply : (v: S | undefined) => v as any,
+			reverse: transformer.reverse ? transformer.reverse : (v: T | undefined) => v as any,
 		}
 	}
 }

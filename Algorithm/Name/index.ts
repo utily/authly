@@ -1,18 +1,16 @@
+import { isly } from "isly"
 import { Asymmetric as NameAsymmetric } from "./Asymmetric"
 import { Symmetric as NameSymmetric } from "./Symmetric"
 
-export type Name = "none" | NameSymmetric | NameAsymmetric
+export type Name = "none" | Name.Symmetric | Name.Asymmetric
 
 export namespace Name {
-	export function is(value: any | Name): value is Name {
-		return value == "none" || NameSymmetric.is(value) || NameAsymmetric.is(value)
-	}
-	export type Symmetric = NameSymmetric
-	export namespace Symmetric {
-		export const is = NameSymmetric.is
-	}
-	export type Asymmetric = NameAsymmetric
-	export namespace Asymmetric {
-		export const is = NameAsymmetric.is
-	}
+	export import Symmetric = NameSymmetric
+	export import Asymmetric = NameAsymmetric
+	export const type = isly.named<Name>(
+		"authly.Algorithm.Name",
+		isly.union<Name, "none", Symmetric, Asymmetric>(isly.string("none"), Symmetric.type, Asymmetric.type)
+	)
+	export const is = type.is
+	export const flaw = type.flaw
 }

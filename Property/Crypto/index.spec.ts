@@ -1,4 +1,4 @@
-import { authly } from ".."
+import { authly } from "../../index"
 
 describe("PropertyCrypto", () => {
 	const crypto = authly.Property.Crypto.create("secret", "encrypted", "things.encrypted")

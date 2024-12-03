@@ -1,4 +1,4 @@
-import { authly } from ".."
+import { authly } from "../../index"
 
 const transformObject = { foo: "Some", inside: { foo: "Value", inside: { foo: "here" } } }
 const transformedObject = { inside: { foo: "Value", inside: {} } }
