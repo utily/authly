@@ -27,7 +27,7 @@ export class Converter<S extends Record<string, unknown> = Record<string, unknow
 		if (result[property[0]] != undefined)
 			result[property[0]] =
 				property.length == 1
-					? await mapping(result[property[0]] as Payload)
+					? (await mapping?.(result[property[0]] as Payload)) ?? result[property[0]]
 					: await this.convertProperty(result[property[0]] as Payload, property.slice(1), mapping)
 		return result
 	}
