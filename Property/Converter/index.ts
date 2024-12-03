@@ -35,7 +35,7 @@ export class Converter<S extends Record<string, unknown> = Record<string, unknow
 export namespace Converter {
 	export import Configuration = ConverterConfiguration
 	export const dateTime = {
-		encode: (value: string) => isoly.DateTime.epoch(value, "seconds"),
+		encode: (value: isoly.DateTime) => isoly.DateTime.epoch(value, "seconds"),
 		decode: (value: number) => isoly.DateTime.create(value),
 	}
 }
