@@ -1,3 +1,4 @@
+import { isoly } from "isoly"
 import { Payload } from "../../Payload"
 import { Configuration as ConverterConfiguration } from "./Configuration"
 
@@ -33,4 +34,8 @@ export class Converter<S extends Record<string, unknown> = Record<string, unknow
 }
 export namespace Converter {
 	export import Configuration = ConverterConfiguration
+	export const dateTime = {
+		encode: (value: isoly.DateTime) => isoly.DateTime.epoch(value, "seconds"),
+		decode: (value: number) => isoly.DateTime.create(value),
+	}
 }
