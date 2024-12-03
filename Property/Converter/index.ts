@@ -1,19 +1,26 @@
 import { Payload } from "../../Payload"
 import { Configuration as ConverterConfiguration } from "./Configuration"
 
-export class Converter {
-	constructor(readonly configuration: ConverterConfiguration) {}
+export class Converter<S extends Record<string, unknown> = Record<string, unknown>, T extends Payload = Payload> {
+	constructor(readonly configuration: ConverterConfiguration<S, T>) {}
 
-	async apply(payload: Payload | undefined): Promise<Payload | undefined> {
+	async apply(payload: S | undefined): Promise<T | undefined> {
 		return payload && this.convert(payload, "encode")
 	}
-	async reverse(payload: Payload | undefined): Promise<Payload | undefined> {
+	async reverse(payload: T | undefined): Promise<S | undefined> {
 		return payload && this.convert(payload, "decode")
 	}
-	private convert(payload: Payload, direction: "encode" | "decode"): Promise<Payload> {
+	private async convert(source: S, direction: "encode"): Promise<T>
+	private async convert(target: T, direction: "decode"): Promise<S>
+	private async convert(payload: Record<string, unknown>, direction: "encode" | "decode"): Promise<any> {
 		return Object.entries(this.configuration).reduce<Promise<Payload>>(
-			async (result, [key, mapping]) => await this.convertProperty(await result, key.split("."), mapping[direction]),
-			Promise.resolve(payload)
+			async (result, [key, mapping]) =>
+				await this.convertProperty(
+					{ ...(await result), [key]: payload[key] as Payload.Value },
+					key.split("."),
+					mapping[direction]
+				),
+			Promise.resolve({ ...payload } as Payload)
 		)
 	}
 	private async convertProperty(
