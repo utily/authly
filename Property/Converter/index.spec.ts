@@ -20,15 +20,15 @@ const target = {
 const conversionMap: authly.Property.Converter.Configuration<typeof source, typeof target> = {
 	foo: {
 		encode: value => value + "transformed",
-		decode: value => value?.replace("transformed", "") ?? "",
+		decode: value => value?.replace("transformed", ""),
 	},
 	num: {
 		encode: value => value + 5,
-		decode: value => (value ?? 0) - 5,
+		decode: value => value - 5,
 	},
 	array: {
 		encode: value => value.map(v => v / 5),
-		decode: value => value?.map(v => v * 5) ?? 0,
+		decode: value => value.map(v => v * 5),
 	},
 	"inside.foo": {
 		encode: () => "Valuedifferent",
@@ -40,7 +40,7 @@ const conversionMap: authly.Property.Converter.Configuration<typeof source, type
 	},
 	issued: {
 		encode: value => isoly.DateTime.epoch(value, "seconds"),
-		decode: value => isoly.DateTime.create(value ?? 0),
+		decode: value => isoly.DateTime.create(value),
 	},
 }
 
@@ -49,6 +49,9 @@ const converter = new authly.Property.Converter<typeof source, typeof target>(co
 describe("Converter", () => {
 	it("Converter.Configuration.is", async () => {
 		expect(authly.Property.Converter.Configuration.is(conversionMap)).toBe(true)
+		expect(authly.Property.Converter.Configuration.is({ foo: { encode: (value: string) => value } })).toEqual(true)
+		expect(authly.Property.Converter.Configuration.is({ foo: { decode: (value: string) => value } })).toEqual(true)
+		expect(authly.Property.Converter.Configuration.is({ foo: {} })).toEqual(true)
 	})
 	it("Empty Transformmap", async () => {
 		const converter = new authly.Property.Converter({})
@@ -75,5 +78,28 @@ describe("Converter", () => {
 		}
 		const converter = new authly.Property.Converter(map)
 		expect(await converter.apply({ flagly: "" })).toEqual({ flagly: {} })
+	})
+	it("Only encode", async () => {
+		const converter = new authly.Property.Converter<{ foo: number }, { foo: string }>({
+			foo: {
+				encode: value => value.toString(),
+			},
+		})
+		const source = { foo: 123 }
+		const target = await converter.apply(source)
+		expect(target).toEqual({ foo: "123" })
+		expect(await converter.reverse(target)).toEqual(target)
+	})
+	it("Only decode", async () => {
+		const converter = new authly.Property.Converter<{ foo: number }, { foo: string }>({
+			foo: {
+				decode: value => parseFloat(value),
+			},
+		})
+		const target = { foo: "123" }
+		const source = await converter.reverse(target)
+		expect(source).toEqual({ foo: 123 })
+		expect(target).toEqual({ foo: "123" })
+		expect(await converter.apply(source)).toEqual(source)
 	})
 })

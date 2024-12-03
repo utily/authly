@@ -25,11 +25,9 @@ type GetValue<P extends string, Source extends Record<string, any>> = P extends 
 type MaybePromise<T> = T | Promise<T> | Partial<number>
 export type Configuration<S extends Record<string, unknown> = Record<string, unknown>, T extends Payload = Payload> = {
 	[P in DotNotation<S>]?: {
-		encode: (
-			value: GetValue<P, S>
-		) => MaybePromise<(P extends DotNotation<T> ? GetValue<P, T> : Payload.Value) | undefined>
-		decode: (
-			value: (P extends DotNotation<T> ? GetValue<P, T> : Payload.Value) | undefined
+		encode?: (value: GetValue<P, S>) => MaybePromise<P extends DotNotation<T> ? GetValue<P, T> : Payload.Value>
+		decode?: (
+			value: P extends DotNotation<T> ? GetValue<P, T> : Payload.Value
 		) => MaybePromise<GetValue<P, S>> | undefined
 	}
 }
@@ -40,9 +38,9 @@ export namespace Configuration {
 		isly.record<Configuration>(
 			isly.string(),
 			isly
-				.object<{ encode: (...params: any[]) => any; decode: (...params: any[]) => any }>({
-					encode: isly.function(),
-					decode: isly.function(),
+				.object<{ encode?: (...params: any[]) => any; decode?: (...params: any[]) => any }>({
+					encode: isly.union(isly.function(), isly.undefined()),
+					decode: isly.union(isly.function(), isly.undefined()),
 				})
 				.optional()
 		)
