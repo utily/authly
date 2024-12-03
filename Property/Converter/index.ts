@@ -13,15 +13,9 @@ export class Converter<S extends Record<string, unknown> = Record<string, unknow
 	private async convert(source: S, direction: "encode"): Promise<T>
 	private async convert(target: T, direction: "decode"): Promise<S>
 	private async convert(payload: Record<string, unknown>, direction: "encode" | "decode"): Promise<any> {
-		return Object.entries(this.configuration).reduce<Promise<Payload>>(
-			async (result, [key, mapping]) =>
-				await this.convertProperty(
-					{ ...(await result), [key]: payload[key] as Payload.Value },
-					key.split("."),
-					mapping[direction]
-				),
-			Promise.resolve({ ...payload } as Payload)
-		)
+		return Object.entries(this.configuration).reduce<Promise<Payload>>(async (result, [key, mapping]) => {
+			return await this.convertProperty({ ...(await result) }, key.split("."), (mapping as any)[direction])
+		}, Promise.resolve({ ...payload } as Payload))
 	}
 	private async convertProperty(
 		payload: Payload,
