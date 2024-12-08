@@ -44,7 +44,7 @@
 			]
 		},
 		"transformIgnorePatterns": [
-			"<rootDir>/node_modules/(?!(cryptly|authly|isoly|isly|gracely|cloudly-http|cloudly-router|cloudly-formdata|cloudly-rest)/.*)"
+			"<rootDir>/node_modules/(?!(cryptly|authly|isoly|isly|gracely|cloudly-http|cloudly-router|cloudly-formdata|cloudly-rest|typedly)/.*)"
 		],
 		"testEnvironment": "node",
 		"testRegex": "((\\.|/)(test|spec))(\\.|\\/.+)(jsx?|tsx?)$",
@@ -72,7 +72,8 @@
 	},
 	"dependencies": {
 		"cryptly": "4.0.6",
-		"isly": "^0.1.20"
+		"isly": "^0.1.20",
+		"typedly": "^0.0.10"
 	},
 	"devDependencies": {
 		"@types/jest": "^29.5.14",
