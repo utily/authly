@@ -20,15 +20,13 @@ const payload: authly.Processor.Type.Payload<Type> = {
 	n: 8,
 	a: [20, 4.4, 3],
 }
-// const issued: authly.Processor.Configuration.Property<isoly.DateTime, "iat", number> = {
-const issued: authly.Processor.Configuration<Type>["issued"] = {
-	rename: "iat",
-	encode: (value: isoly.DateTime): number => isoly.DateTime.epoch(value, "seconds"),
-	decode: (value: number): isoly.DateTime => isoly.DateTime.create(value),
-}
 
 const configuration: authly.Processor.Configuration<Type> = {
-	issued,
+	issued: {
+		rename: "iat",
+		encode: (value: isoly.DateTime): number => isoly.DateTime.epoch(value, "seconds"),
+		decode: (value: number): isoly.DateTime => isoly.DateTime.create(value),
+	},
 	foo: {
 		rename: "f",
 		encode: value => value + "Transformed",
@@ -48,12 +46,8 @@ const configuration: authly.Processor.Configuration<Type> = {
 const processor = authly.Processor.create(configuration)
 
 describe("Processor", () => {
-	it("encode", () => {
-		expect(processor.encode(claims)).toEqual(payload)
-	})
-	it("decode", () => {
-		expect(processor.decode(payload)).toEqual(claims)
-	})
+	it("encode", () => expect(processor.encode(claims)).toEqual(payload))
+	it("decode", () => expect(processor.decode(payload)).toEqual(claims))
 	// it("Transform Both Ways", async () => {
 	// 	expect(await converter.reverse(await converter.apply(claims))).toEqual(claims)
 	// })

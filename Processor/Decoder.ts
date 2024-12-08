@@ -12,9 +12,9 @@ export class Decoder<T extends Type> {
 		) as Type.Claims<T>
 	}
 	static create<T extends Type>(configuration: Configuration<T>): Decoder<T> {
-		const entries = Object.entries(configuration).map(([n, p]) => Property.create(n, p))
-		const properties = Object.fromEntries(entries)
-		return new Decoder<T>(properties as any as Properties<T>)
+		return new Decoder<T>(
+			Object.fromEntries(Object.entries(configuration).map(([n, p]) => Property.create(n, p))) as any as Properties<T>
+		)
 	}
 }
 export namespace Decoder {}
