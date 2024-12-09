@@ -3,23 +3,23 @@ import { Decoder } from "./Decoder"
 import { Encoder } from "./Encoder"
 import { Type as ProcessorType } from "./Type"
 
-export class Processor<P extends Processor.Type> {
-	#encoder: Encoder<P> | undefined
-	private get encoder(): Encoder<P> {
-		return (this.#encoder ??= Encoder.create<P>(this.configuration))
+export class Processor<T extends Processor.Type.Constraints<T>> {
+	#encoder: Encoder<T> | undefined
+	private get encoder(): Encoder<T> {
+		return (this.#encoder ??= Encoder.create<T>(this.configuration))
 	}
-	#decoder: Decoder<P> | undefined
-	private get decoder(): Decoder<P> {
-		return (this.#decoder ??= Decoder.create<P>(this.configuration))
+	#decoder: Decoder<T> | undefined
+	private get decoder(): Decoder<T> {
+		return (this.#decoder ??= Decoder.create<T>(this.configuration))
 	}
-	private constructor(readonly configuration: Processor.Configuration<P>) {}
-	encode(claims: Processor.Type.Claims<P>): Processor.Type.Payload<P> {
+	private constructor(readonly configuration: Processor.Configuration<T>) {}
+	encode(claims: Processor.Type.Claims<T>): Processor.Type.Payload<T> {
 		return this.encoder.process(claims)
 	}
-	decode(payload: Processor.Type.Payload<P>): Processor.Type.Claims<P> {
+	decode(payload: Processor.Type.Payload<T>): Processor.Type.Claims<T> {
 		return this.decoder.process(payload)
 	}
-	static create<P extends Processor.Type>(configuration: Processor.Configuration<P>): Processor<P> {
+	static create<T extends Processor.Type.Constraints<T>>(configuration: Processor.Configuration<T>): Processor<T> {
 		return new Processor(configuration)
 	}
 }

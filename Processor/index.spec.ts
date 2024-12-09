@@ -1,12 +1,12 @@
 import { isoly } from "isoly"
 import { authly } from "../index"
 
-interface Type extends authly.Processor.Type {
+type Type = authly.Processor.Type<{
 	issued: { name: "iat"; claim: isoly.DateTime; payload: number }
 	foo: { name: "f"; claim: string; payload: string }
 	number: { name: "n"; claim: number; payload: number }
 	array: { name: "a"; claim: number[]; payload: number[] }
-}
+}>
 
 const claims: authly.Processor.Type.Claims<Type> = {
 	issued: "2023-05-10T10:47:46.000Z",
@@ -23,22 +23,22 @@ const payload: authly.Processor.Type.Payload<Type> = {
 
 const configuration: authly.Processor.Configuration<Type> = {
 	issued: {
-		rename: "iat",
+		name: "iat",
 		encode: value => isoly.DateTime.epoch(value, "seconds"),
 		decode: value => isoly.DateTime.create(value),
 	},
 	foo: {
-		rename: "f",
+		name: "f",
 		encode: value => value + "Transformed",
 		decode: value => value?.replace("Transformed", ""),
 	},
 	number: {
-		rename: "n",
+		name: "n",
 		encode: value => value + 5,
 		decode: value => value - 5,
 	},
 	array: {
-		rename: "a",
+		name: "a",
 		encode: value => value.map(v => v / 5),
 		decode: value => value.map(v => v * 5),
 	},

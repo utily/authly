@@ -1,40 +1,42 @@
-import { Payload } from "../Payload"
+import { typedly } from "typedly"
 import { Configuration } from "./Configuration"
 import { Type } from "./Type"
 
-export class Encoder<T extends Type> {
+export class Encoder<T extends Type.Constraints<T>> {
 	private constructor(private readonly properties: Properties<T>) {}
 	process(claims: Type.Claims<T>): Type.Payload<T> {
-		return Object.fromEntries(
-			Object.entries(claims).map(([claim, value]) => this.properties[claim].process(value))
-		) as Type.Payload<T>
+		return typedly.Object.reduce<Type.Payload<T>, Type.Claims<T>>(
+			claims,
+			(result, [key, value]) => {
+				const [name, processed] = this.properties[key].process(value)
+				return { ...result, [name]: processed }
+			},
+			{} as Type.Payload<T>
+		)
 	}
-	static create<T extends Type>(configuration: Configuration<T>): Encoder<T> {
-		return new Encoder<T>(
-			Object.fromEntries(Object.entries(configuration).map(([n, p]) => Property.create(n, p))) as Properties<T>
+	static create<T extends Type.Constraints<T>>(configuration: Configuration<T>): Encoder<T> {
+		return new this(
+			typedly.Object.reduce<Properties<T>, Configuration<T>>(
+				configuration,
+				(result, [key, value]) => ({ ...result, [key]: Property.create(value) }),
+				{} as Properties<T>
+			)
 		)
 	}
 }
 export namespace Encoder {}
 
-type Properties<P extends Type> = {
-	[Claim in keyof P]: Property<P[Claim]["claim"], P[Claim]["name"], P[Claim]["payload"]>
+type Properties<T extends Type.Constraints<T>> = {
+	[Claim in keyof T]: Property<T, Claim>
 }
-class Property<ClaimValue = never, PayloadName = string, PayloadValue = Payload[string]> {
-	private constructor(readonly rename: PayloadName, readonly encode: (value: ClaimValue) => PayloadValue) {}
-	process(value: ClaimValue): [PayloadName, PayloadValue] {
-		return [this.rename, this.encode(value)]
+class Property<T extends Type.Constraints<T>, P extends keyof T> {
+	private constructor(readonly name: T[P]["name"], readonly encode: Configuration.Property<T, P>["encode"]) {}
+	process(value: T[P]["claim"]): [T[P]["name"], T[P]["payload"]] {
+		return [this.name, this.encode(value)]
 	}
-	static create<ClaimName = string, ClaimValue = never, PayloadName = string, PayloadValue = Payload[string]>(
-		name: ClaimName,
-		configuration: Configuration.Property<ClaimValue, PayloadName, PayloadValue>
-	): [ClaimName, Property<ClaimValue, PayloadName, PayloadValue>] {
-		return [
-			name,
-			new Property<ClaimValue, PayloadName, PayloadValue>(
-				(configuration.rename ?? name) as any as PayloadName,
-				configuration.encode ?? ((v: ClaimValue): PayloadValue => v as any)
-			),
-		]
+	static create<T extends Type.Constraints<T>, P extends keyof T>(
+		configuration: Configuration.Property<T, P>
+	): Property<T, P> {
+		return new this(configuration.name, configuration.encode)
 	}
 }
