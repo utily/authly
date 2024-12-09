@@ -24,8 +24,8 @@ const payload: authly.Processor.Type.Payload<Type> = {
 const configuration: authly.Processor.Configuration<Type> = {
 	issued: {
 		rename: "iat",
-		encode: (value: isoly.DateTime): number => isoly.DateTime.epoch(value, "seconds"),
-		decode: (value: number): isoly.DateTime => isoly.DateTime.create(value),
+		encode: value => isoly.DateTime.epoch(value, "seconds"),
+		decode: value => isoly.DateTime.create(value),
 	},
 	foo: {
 		rename: "f",
@@ -42,7 +42,7 @@ const configuration: authly.Processor.Configuration<Type> = {
 		encode: value => value.map(v => v / 5),
 		decode: value => value.map(v => v * 5),
 	},
-} as authly.Processor.Configuration<Type>
+}
 const processor = authly.Processor.create(configuration)
 
 describe("Processor", () => {

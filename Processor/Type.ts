@@ -1,18 +1,18 @@
 import { Payload } from "../Payload"
 
-export type Type = {
-	[Claim in string]: {
+export type Type<T extends Type<T> = NonNullable<object>> = {
+	[Claim in keyof T]: {
 		name: string
 		claim: any
-		payload: Payload[string]
+		payload: Payload.Value
 	}
 }
 
 export namespace Type {
-	export type Claims<T extends Type> = {
+	export type Claims<T extends Type<T> = NonNullable<object>> = {
 		[Claim in keyof T]: T[Claim]["claim"]
 	}
-	export type Payload<T extends Type> = {
+	export type Payload<T extends Type<T> = NonNullable<object>> = {
 		[Claim in keyof T as T[Claim]["name"]]: T[Claim]["payload"]
 	}
 }
