@@ -1,6 +1,8 @@
 import { Configuration as ProcessorConfiguration } from "./Configuration"
+import { Converter as ProcessorConverter } from "./Converter"
 import { Decoder } from "./Decoder"
 import { Encoder } from "./Encoder"
+import { Encrypter as ProcessorEncrypter } from "./Encrypter"
 import { Type as ProcessorType } from "./Type"
 
 export class Processor<T extends Processor.Type.Constraints<T>> {
@@ -25,5 +27,7 @@ export class Processor<T extends Processor.Type.Constraints<T>> {
 }
 export namespace Processor {
 	export import Configuration = ProcessorConfiguration
+	export import Converter = ProcessorConverter
 	export import Type = ProcessorType
+	export import Encrypter = ProcessorEncrypter
 }
