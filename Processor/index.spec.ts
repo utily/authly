@@ -25,7 +25,10 @@ const configuration: authly.Processor.Configuration<Type> = {
 	issued: {
 		name: "iat",
 		encode: value => isoly.DateTime.epoch(value, "seconds"),
-		decode: value => isoly.DateTime.create(value),
+		decode: async value => {
+			await new Promise(resolve => setTimeout(resolve, 0))
+			return isoly.DateTime.create(value)
+		},
 	},
 	foo: {
 		name: "f",
@@ -46,8 +49,8 @@ const configuration: authly.Processor.Configuration<Type> = {
 const processor = authly.Processor.create(configuration)
 
 describe("Processor", () => {
-	it("encode", () => expect(processor.encode(claims)).toEqual(payload))
-	it("decode", () => expect(processor.decode(payload)).toEqual(claims))
+	it("encode", async () => expect(await processor.encode(claims)).toEqual(payload))
+	it("decode", async () => expect(await processor.decode(payload)).toEqual(claims))
 	// it("Transform Both Ways", async () => {
 	// 	expect(await converter.reverse(await converter.apply(claims))).toEqual(claims)
 	// })

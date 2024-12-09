@@ -13,14 +13,14 @@ export class Processor<T extends Processor.Type.Constraints<T>> {
 		return (this.#decoder ??= Decoder.create<T>(this.configuration))
 	}
 	private constructor(readonly configuration: Processor.Configuration<T>) {}
-	encode(claims: Processor.Type.Claims<T>): Processor.Type.Payload<T> {
-		return this.encoder.process(claims)
+	async encode(claims: Processor.Type.Claims<T>): Promise<Processor.Type.Payload<T>> {
+		return await this.encoder.process(claims)
 	}
-	decode(payload: Processor.Type.Payload<T>): Processor.Type.Claims<T> {
-		return this.decoder.process(payload)
+	async decode(payload: Processor.Type.Payload<T>): Promise<Processor.Type.Claims<T>> {
+		return await this.decoder.process(payload)
 	}
 	static create<T extends Processor.Type.Constraints<T>>(configuration: Processor.Configuration<T>): Processor<T> {
-		return new Processor(configuration)
+		return new this(configuration)
 	}
 }
 export namespace Processor {
