@@ -1,5 +1,6 @@
 import { isoly } from "isoly"
 import { authly } from "./index"
+
 authly.Issuer.defaultIssuedAt = new Date("1970-01-01T13:37:42.000Z")
 authly.Verifier.staticNow = new Date("1970-01-01T14:07:42.000Z")
 

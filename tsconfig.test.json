@@ -22,8 +22,9 @@
 				"configFile": "./tslint.json",
 				"suppressWhileTypeErrorsPresent": false,
 				"mockTypeScriptVersion": false
-			}
-		]
+			},
+		],
+		"types": ["@vitest/globals"]
 	},
 	"typeAcquisition": {
 		"enable": true
