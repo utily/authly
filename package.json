@@ -73,7 +73,7 @@
 	"dependencies": {
 		"cryptly": "^6.0.2",
 		"isly": "^0.1.20",
-		"typedly": "0.0.17"
+		"typedly": "0.0.18"
 	},
 	"devDependencies": {
 		"@types/jest": "^29.5.14",

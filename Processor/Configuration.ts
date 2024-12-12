@@ -1,7 +1,7 @@
 import { Type } from "./Type"
 
 type MaybePromise<T> = T | Promise<T>
-export type Configuration<T extends Type.Constraints<T> = NonNullable<object>> = {
+export type Configuration<T extends Type.Constraints<T> = Type.Required> = {
 	[Claim in keyof T]: Configuration.Property<T, Claim>
 }
 export namespace Configuration {

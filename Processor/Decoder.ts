@@ -7,15 +7,15 @@ export class Decoder<T extends Type.Constraints<T>> {
 	async process(payload: Type.Payload<T>): Promise<Type.Claims<T>> {
 		return (
 			await Promise.all(
-				typedly.Object.entries(payload).map(async ([key, value]) => this.properties[key].process(value as any))
+				typedly.Object.entries(payload).map(async ([key, value]) => this.properties[key].process(value))
 			)
 		).reduce((result, [key, value]) => ({ ...result, [key]: value }), {} as Type.Claims<T>)
 	}
 	static create<T extends Type.Constraints<T>>(configuration: Configuration<T>): Decoder<T> {
 		return new this(
-			typedly.Object.reduce(
+			typedly.Object.reduce<Properties<T>, Configuration<T>>(
 				configuration,
-				(result, [key, value]) => ({ ...result, [value.name]: Property.create(key, value) }),
+				(result, [jwtClaimName, value]) => ({ ...result, [value.name]: Property.create(jwtClaimName, value) }),
 				{} as Properties<T>
 			)
 		)
@@ -26,7 +26,7 @@ export namespace Decoder {}
 type Properties<T extends Type.Constraints<T>> = {
 	[Claim in keyof Type.Payload<T>]: Property<T, Claim>
 }
-export class Property<T extends Type.Constraints<T>, P extends keyof T> {
+export class Property<T extends Type.Constraints<T>, P extends keyof Type.Payload<T>> {
 	private constructor(private readonly name: P, private readonly decode: Configuration.Property<T, P>["decode"]) {}
 	async process(value: T[P]["payload"]): Promise<[P, T[P]["claim"]]> {
 		return [this.name, await this.decode(value)]

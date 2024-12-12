@@ -1,106 +1,102 @@
 import { cryptly } from "cryptly"
+import { typedly } from "typedly"
 import { Actor } from "./Actor"
 import { Algorithm } from "./Algorithm"
 import { Header } from "./Header"
 import { Payload } from "./Payload"
+import { Processor } from "./Processor"
 import { Token } from "./Token"
 
-export class Verifier<T extends Payload> extends Actor<Verifier<T>> {
-	readonly algorithms: { [algorithm: string]: Algorithm[] } | undefined
-	private constructor(...algorithms: Algorithm[]) {
-		super()
-		if (algorithms.length > 0) {
-			this.algorithms = {}
+interface Components {
+	header: string
+	body: string
+	signature: string | undefined
+}
+
+export class Verifier<T extends Processor.Type.Constraints<T>> extends Actor<T> {
+	readonly algorithms?: { [name in Algorithm.Name]?: Algorithm[] }
+	private constructor(processor: Processor<T>, algorithms: Algorithm[]) {
+		super(processor)
+		if (algorithms.length > 0)
 			for (const algorithm of algorithms)
-				if (this.algorithms[algorithm.name])
-					this.algorithms[algorithm.name].push(algorithm)
-				else
-					this.algorithms[algorithm.name] = [algorithm]
-		} else
-			this.algorithms = undefined
+				this.algorithms = {
+					...this.algorithms,
+					[algorithm.name]: [...(this.algorithms?.[algorithm.name] ?? []), algorithm],
+				}
 	}
 	private async decode(
-		token: string | Token | undefined
-	): Promise<{ header: Header; payload: Payload; signature: string; splitted: [string, string, string] } | undefined> {
-		const splitted = token?.split(".", 3)
-		let result: Awaited<ReturnType<Verifier<T>["decode"]>>
-		if (splitted && splitted.length >= 2) {
+		token: string | undefined
+	): Promise<{ header: Header; payload: Payload; components: Components } | undefined> {
+		let result: typedly.Function.Return<Verifier<T>["decode"]>
+		const components = (([header, body, signature]: (string | undefined)[]) =>
+			!header || !body ? undefined : { header, body, signature })(token?.split(".", 3) ?? [])
+		if (components)
 			try {
 				const standard: cryptly.Base64.Standard = token?.match(/[/+]/) ? "standard" : "url"
 				const decoder = new TextDecoder()
-				const header: Header = JSON.parse(decoder.decode(cryptly.Base64.decode(splitted[0], standard)))
-				const payload: Payload = JSON.parse(decoder.decode(cryptly.Base64.decode(splitted[1], standard)))
+				const header: Header = JSON.parse(decoder.decode(cryptly.Base64.decode(components.header, standard)))
+				const payload: Payload = JSON.parse(decoder.decode(cryptly.Base64.decode(components.body, standard)))
 				payload.token = token
-				result = !payload
-					? undefined
-					: { header, payload, signature: splitted[2] ?? "", splitted: [splitted[0], splitted[1], splitted[2] ?? ""] }
+				result = !payload ? undefined : { header, payload, components }
 			} catch {
 				result = undefined
 			}
-		}
 		return result
 	}
-	private async transform(payload: Payload | undefined): Promise<T | undefined> {
-		const result = await this.transformers.reduceRight(async (p, c) => c.reverse(await p), Promise.resolve(payload))
-		return result as T | undefined
-	}
-	private async verifySignature(header: Header, splitted: string[]): Promise<boolean> {
+	private async verifySignature(header: Header, components: Components): Promise<boolean> {
 		let result = false
-		if (this.algorithms) {
+		if (this.algorithms && components.signature) {
 			const algorithms = this.algorithms[header.alg] ?? []
-			for (const currentAlgorithm of algorithms) {
-				if (await currentAlgorithm.verify(`${splitted[0]}.${splitted[1]}`, splitted[2])) {
+			for (const algorithm of algorithms)
+				if (await algorithm.verify(`${components.header}.${components.body}`, components.signature)) {
 					result = true
 					break
 				}
-			}
 		}
 		return result
 	}
-	private verifyAudience(audience: undefined | string | string[], allowed: string[]): boolean {
-		return (
-			audience == undefined ||
-			allowed.length == 0 ||
-			(typeof audience == "string" && allowed.some(a => a == audience)) ||
-			(Array.isArray(audience) && audience.some(a => allowed.some(ta => ta == a)))
-		)
+	private async transform(payload: Payload | undefined): Promise<Processor.Type.Claims<T> | undefined> {
+		let result: Processor.Type.Claims<T> | undefined
+		try {
+			// TODO: scary cast. can we make it safer?
+			//       clean undefined values from entering decode?
+			result = payload && (await this.processor.decode(payload as Processor.Type.Payload<T>))
+		} catch {
+			result = undefined
+		}
+		return result
 	}
-	async unpack(token: string | Token | undefined): Promise<T | undefined> {
+	private verifyAudience(audience: string | string[] | undefined, allowed: string[]): boolean {
+		return Array.isArray(audience)
+			? audience.some(audience => this.verifyAudience(audience, allowed))
+			: audience == undefined || allowed.length == 0 || allowed.some(allowed => allowed == audience)
+	}
+	async unpack(token: Token | undefined): Promise<Processor.Type.Claims<T> | undefined> {
 		return await this.transform((await this.decode(token))?.payload)
 	}
-	async verify(token: string | Token | undefined, ...audience: string[]): Promise<T | undefined> {
+	async verify(token: Token | undefined, audiences: string[]): Promise<Processor.Type.Claims<T> | undefined> {
 		const decoded = await this.decode(token)
-		const now = Verifier.now
+		const now = this.time()
 		return decoded &&
-			(await this.verifySignature(decoded.header, decoded.splitted)) &&
-			this.verifyAudience(decoded.payload.aud, audience) &&
+			(await this.verifySignature(decoded.header, decoded.components)) &&
+			this.verifyAudience(decoded.payload.aud, audiences) &&
 			(decoded.payload.exp == undefined || decoded.payload.exp > now) &&
 			(decoded.payload.iat == undefined || decoded.payload.iat <= now + 60 || decoded.payload.iat <= now - 60)
 			? await this.transform(decoded.payload)
 			: undefined
 	}
-	async authenticate(authorization: string | Token | undefined, ...audience: string[]): Promise<T | undefined> {
-		return authorization && authorization.startsWith("Bearer ")
-			? this.verify(authorization.substr(7), ...audience)
-			: undefined
-	}
-	private static get now(): number {
-		return Verifier.staticNow == undefined
-			? Math.floor(Date.now() / 1000)
-			: typeof Verifier.staticNow == "number"
-			? Verifier.staticNow
-			: Math.floor(Verifier.staticNow.getTime() / 1000)
-	}
-	static staticNow: undefined | Date | number
-	static create<T extends Payload>(): Verifier<T>
-	static create<T extends Payload>(...algorithms: Algorithm[]): Verifier<T>
-	static create<T extends Payload>(...algorithms: (Algorithm | undefined)[]): Verifier<T> | undefined
-	static create<T extends Payload>(...algorithms: (Algorithm | undefined)[]): Verifier<T> | undefined {
-		return (
-			((algorithms.length == 0 || algorithms.some(a => !!a)) &&
-				new Verifier(...(algorithms.filter(a => !!a) as Algorithm[]))) ||
-			undefined
-		)
+	static create<T extends Processor.Type.Constraints<T>>(
+		configuration: Processor.Configuration<T>,
+		algorithms: Algorithm[]
+	): Verifier<T>
+	static create<T extends Processor.Type.Constraints<T>>(processor: Processor<T>, algorithms: Algorithm[]): Verifier<T>
+	static create<T extends Processor.Type.Constraints<T>>(
+		source: Processor<T> | Processor.Configuration<T>,
+		algorithms: Algorithm[]
+	): Verifier<T> {
+		return source instanceof Processor
+			? new this(source, algorithms)
+			: this.create(Processor.create(source), algorithms)
 	}
 }
 export namespace Verifier {}

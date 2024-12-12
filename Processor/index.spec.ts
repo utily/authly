@@ -3,46 +3,54 @@ import { isoly } from "isoly"
 import { authly } from "../index"
 
 type Type = authly.Processor.Type<{
-	issued: { name: "iat"; claim: isoly.DateTime; payload: number }
-	foo: { name: "f"; claim: string; payload: string }
-	number: { name: "n"; claim: number; payload: number }
-	array: { name: "a"; claim: number[]; payload: number[] }
+	iat: { name: "issued"; claim: isoly.DateTime; payload: number }
+	iss: { name: "issuer"; claim: string; payload: string }
+	f: { name: "foo"; claim: string; payload: string }
+	n: { name: "number"; claim: number; payload: number }
+	a: { name: "array"; claim: number[]; payload: number[] }
 }>
 
 const claims: authly.Processor.Type.Claims<Type> = {
 	issued: "2023-05-10T10:47:46.000Z",
+	issuer: "undefined",
 	foo: "Some",
 	number: 3,
 	array: [100, 22, 15],
 }
 const payload: authly.Processor.Type.Payload<Type> = {
 	iat: 1683715666,
+	iss: "undefined",
 	f: "SomeTransformed",
 	n: 8,
 	a: [20, 4.4, 3],
 }
 
 const configuration: authly.Processor.Configuration<Type> = {
-	issued: {
-		name: "iat",
+	iat: {
+		name: "issued",
 		encode: value => isoly.DateTime.epoch(value, "seconds"),
 		decode: async value => {
 			await new Promise(resolve => setTimeout(resolve, 0))
 			return isoly.DateTime.create(value)
 		},
 	},
-	foo: {
-		name: "f",
+	iss: {
+		name: "issuer",
+		encode: value => value,
+		decode: value => value,
+	},
+	f: {
+		name: "foo",
 		encode: value => value + "Transformed",
 		decode: value => value?.replace("Transformed", ""),
 	},
-	number: {
-		name: "n",
+	n: {
+		name: "number",
 		encode: value => value + 5,
 		decode: value => value - 5,
 	},
-	array: {
-		name: "a",
+	a: {
+		name: "array",
 		encode: value => value.map(v => v / 5),
 		decode: value => value.map(v => v * 5),
 	},

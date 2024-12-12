@@ -15,7 +15,8 @@ export class Encoder<T extends Type.Constraints<T>> {
 		return new this(
 			typedly.Object.reduce<Properties<T>, Configuration<T>>(
 				configuration,
-				(result, [key, value]) => ({ ...result, [key]: Property.create(value) }),
+				(result, [jwtClaimName, value]) => ({ ...result, [value.name]: Property.create(
+					, value) }),
 				{} as Properties<T>
 			)
 		)
