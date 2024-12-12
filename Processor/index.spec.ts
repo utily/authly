@@ -1,3 +1,4 @@
+import { cryptly } from "cryptly"
 import { isoly } from "isoly"
 import { authly } from "../index"
 
@@ -60,5 +61,22 @@ describe("Processor", () => {
 		})
 		expect(await processor.encode({ flagly: {} })).toEqual({ flagly: "" })
 		expect(await processor.decode({ flagly: "" })).toEqual({ flagly: {} })
+	})
+	it("encrypt / decrypt", async () => {
+		type MyValue = { hello: string; foo: number }
+		type Map = authly.Processor.Type<{
+			encrypted: { name: "enc"; claim: MyValue; payload: cryptly.Base64 }
+		}>
+		const processor = authly.Processor.create<Map>({
+			encrypted: {
+				name: "enc",
+				...new authly.Processor.Encrypter("secret", "undefined", 123456789).generate<MyValue>("enc"),
+			},
+		})
+		const source = { encrypted: { hello: "world", foo: 123 } }
+		const encoded = await processor.encode(source)
+		expect(encoded).toEqual({ enc: "Tpm-RJBgiWCUOuLx9Gdjoy9b7kYpWTG6HFxbg0N3ow" })
+		const decoded = await processor.decode(encoded)
+		expect(decoded).toEqual(source)
 	})
 })
