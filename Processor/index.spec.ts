@@ -3,8 +3,8 @@ import { isoly } from "isoly"
 import { authly } from "../index"
 
 type Type = authly.Processor.Type<{
-	iat: { name: "issued"; claim: isoly.DateTime; payload: number }
-	iss: { name: "issuer"; claim: string; payload: string }
+	iat: { name: "issued"; claim: isoly.DateTime; payload: number } // required
+	iss: { name: "issuer"; claim: string; payload: string } // required
 	f: { name: "foo"; claim: string; payload: string }
 	n: { name: "number"; claim: number; payload: number }
 	a: { name: "array"; claim: number[]; payload: number[] }
@@ -62,28 +62,44 @@ describe("Processor", () => {
 	it("decode", async () => expect(await processor.decode(payload)).toEqual(claims))
 	it("empty string <---> empty object", async () => {
 		type Map = authly.Processor.Type<{
+			iat: { name: "issued"; claim: number; payload: number }
+			iss: { name: "issuer"; claim: string; payload: string }
 			flagly: { name: "flagly"; claim: Record<string, never>; payload: string }
 		}>
 		const processor = authly.Processor.create<Map>({
+			iat: { name: "issued", encode: value => value, decode: value => value },
+			iss: { name: "issuer", encode: value => value, decode: value => value },
 			flagly: { name: "flagly", encode: () => "", decode: () => ({}) },
 		})
-		expect(await processor.encode({ flagly: {} })).toEqual({ flagly: "" })
-		expect(await processor.decode({ flagly: "" })).toEqual({ flagly: {} })
+		expect(await processor.encode({ issued: 1234567890, issuer: "undefined", flagly: {} })).toEqual({
+			iat: 1234567890,
+			iss: "undefined",
+			flagly: "",
+		})
+		expect(await processor.decode({ iat: 1234567890, iss: "undefined", flagly: "" })).toEqual({
+			issued: 1234567890,
+			issuer: "undefined",
+			flagly: {},
+		})
 	})
 	it("encrypt / decrypt", async () => {
 		type MyValue = { hello: string; foo: number }
 		type Map = authly.Processor.Type<{
-			encrypted: { name: "enc"; claim: MyValue; payload: cryptly.Base64 }
+			iat: { name: "issued"; claim: number; payload: number }
+			iss: { name: "issuer"; claim: string; payload: string }
+			enc: { name: "encrypted"; claim: MyValue; payload: cryptly.Base64 }
 		}>
 		const processor = authly.Processor.create<Map>({
-			encrypted: {
-				name: "enc",
+			iat: { name: "issued", encode: value => value, decode: value => value },
+			iss: { name: "issuer", encode: value => value, decode: value => value },
+			enc: {
+				name: "encrypted",
 				...new authly.Processor.Encrypter("secret", "undefined", 123456789).generate<MyValue>("enc"),
 			},
 		})
-		const source = { encrypted: { hello: "world", foo: 123 } }
+		const source = { issuer: "undefined", issued: 1234567890, encrypted: { hello: "world", foo: 123 } }
 		const encoded = await processor.encode(source)
-		expect(encoded).toEqual({ enc: "Tpm-RJBgiWCUOuLx9Gdjoy9b7kYpWTG6HFxbg0N3ow" })
+		expect(encoded).toEqual({ iss: "undefined", iat: 1234567890, enc: "TpmwTpMu3GDGffny6Stw7nEV7AtqWWnqXE0c" })
 		const decoded = await processor.decode(encoded)
 		expect(decoded).toEqual(source)
 	})
