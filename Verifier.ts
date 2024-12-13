@@ -55,7 +55,7 @@ export class Verifier<T extends Processor.Type.Constraints<T>> extends Actor<T> 
 		}
 		return result
 	}
-	private async transform(payload: Payload | undefined): Promise<Processor.Type.Claims<T> | undefined> {
+	private async process(payload: Payload | undefined): Promise<Processor.Type.Claims<T> | undefined> {
 		let result: Processor.Type.Claims<T> | undefined
 		try {
 			// TODO: scary cast. can we make it safer?
@@ -72,7 +72,7 @@ export class Verifier<T extends Processor.Type.Constraints<T>> extends Actor<T> 
 			: audience == undefined || allowed.length == 0 || allowed.some(allowed => allowed == audience)
 	}
 	async unpack(token: Token | undefined): Promise<Processor.Type.Claims<T> | undefined> {
-		return await this.transform((await this.decode(token))?.payload)
+		return await this.process((await this.decode(token))?.payload)
 	}
 	async verify(token: Token | undefined, audiences: string[]): Promise<Processor.Type.Claims<T> | undefined> {
 		const decoded = await this.decode(token)
@@ -82,7 +82,7 @@ export class Verifier<T extends Processor.Type.Constraints<T>> extends Actor<T> 
 			this.verifyAudience(decoded.payload.aud, audiences) &&
 			(decoded.payload.exp == undefined || decoded.payload.exp > now) &&
 			(decoded.payload.iat == undefined || decoded.payload.iat <= now + 60 || decoded.payload.iat <= now - 60)
-			? await this.transform(decoded.payload)
+			? await this.process(decoded.payload)
 			: undefined
 	}
 	static create<T extends Processor.Type.Constraints<T>>(

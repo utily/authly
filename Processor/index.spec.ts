@@ -3,11 +3,11 @@ import { isoly } from "isoly"
 import { authly } from "../index"
 
 type Type = authly.Processor.Type<{
-	iat: { name: "issued"; claim: isoly.DateTime; payload: number } // required
-	iss: { name: "issuer"; claim: string; payload: string } // required
-	f: { name: "foo"; claim: string; payload: string }
-	n: { name: "number"; claim: number; payload: number }
-	a: { name: "array"; claim: number[]; payload: number[] }
+	iat: { name: "issued"; original: isoly.DateTime; encoded: number } // required
+	iss: { name: "issuer"; original: string; encoded: string } // required
+	f: { name: "foo"; original: string; encoded: string }
+	n: { name: "number"; original: number; encoded: number }
+	a: { name: "array"; original: number[]; encoded: number[] }
 }>
 
 const claims: authly.Processor.Type.Claims<Type> = {
@@ -62,9 +62,9 @@ describe("Processor", () => {
 	it("decode", async () => expect(await processor.decode(payload)).toEqual(claims))
 	it("empty string <---> empty object", async () => {
 		type Map = authly.Processor.Type<{
-			iat: { name: "issued"; claim: number; payload: number }
-			iss: { name: "issuer"; claim: string; payload: string }
-			flagly: { name: "flagly"; claim: Record<string, never>; payload: string }
+			iat: { name: "issued"; original: number; encoded: number }
+			iss: { name: "issuer"; original: string; encoded: string }
+			flagly: { name: "flagly"; original: Record<string, never>; encoded: string }
 		}>
 		const processor = authly.Processor.create<Map>({
 			iat: { name: "issued", encode: value => value, decode: value => value },
@@ -85,9 +85,9 @@ describe("Processor", () => {
 	it("encrypt / decrypt", async () => {
 		type MyValue = { hello: string; foo: number }
 		type Map = authly.Processor.Type<{
-			iat: { name: "issued"; claim: number; payload: number }
-			iss: { name: "issuer"; claim: string; payload: string }
-			enc: { name: "encrypted"; claim: MyValue; payload: cryptly.Base64 }
+			iat: { name: "issued"; original: number; encoded: number }
+			iss: { name: "issuer"; original: string; encoded: string }
+			enc: { name: "encrypted"; original: MyValue; encoded: cryptly.Base64 }
 		}>
 		const processor = authly.Processor.create<Map>({
 			iat: { name: "issued", encode: value => value, decode: value => value },

@@ -1,19 +1,18 @@
-import { Payload } from "../Payload"
+import { Payload as AuthlyPayload } from "../Payload"
 
-interface Property<T extends Payload.Value = Payload.Value> {
-	name: string
-	claim: unknown
-	payload: T
-}
-
-export type Type<T extends Type.Constraints<T>> = {
+export type Type<T extends Type.Constraints<T> & Type.Required & Type.Optional> = {
 	[Claim in keyof T]: {
 		name: T[Claim]["name"]
-		claim: T[Claim]["claim"]
-		payload: T[Claim]["payload"]
+		original: T[Claim]["original"]
+		encoded: T[Claim]["encoded"]
 	}
 }
 export namespace Type {
+	export interface Property<T extends AuthlyPayload.Value = AuthlyPayload.Value> {
+		name: string
+		original: unknown
+		encoded: T
+	}
 	export interface Required {
 		iss: Property<string>
 		iat: Property<number>
@@ -25,13 +24,13 @@ export namespace Type {
 		nbf?: Property<number>
 		jti?: Property<string>
 	}
-	export type Constraints<T> = { [property in keyof T]: Property } & Required & Optional
+	export type Constraints<T> = { [property in keyof T]: Property }
 	// names on json
-	export type Claims<T extends Type.Constraints<T> = Required> = {
-		[Claim in keyof T as T[Claim]["name"]]: T[Claim]["claim"]
+	export type Claims<T extends Type.Constraints<Omit<T, keyof Required>> = NonNullable<object>> = {
+		[Claim in keyof T as T[Claim]["name"]]: T[Claim]["original"]
 	}
 	// names on jwt
-	export type Payload<T extends Type.Constraints<T> = Required> = {
-		[Claim in keyof T]: T[Claim]["payload"]
+	export type Payload<T extends Type.Constraints<T> = NonNullable<object>> = {
+		[Claim in keyof T]: T[Claim]["encoded"]
 	}
 }

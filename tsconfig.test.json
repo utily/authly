@@ -13,17 +13,7 @@
 		"moduleResolution": "node",
 		"resolveJsonModule": true,
 		"esModuleInterop": true,
-		"allowJs": true,
-		"plugins": [
-			{
-				"name": "typescript-tslint-plugin",
-				"alwaysShowRuleFailuresAsWarnings": false,
-				"ignoreDefinitionFiles": true,
-				"configFile": "./tslint.json",
-				"suppressWhileTypeErrorsPresent": false,
-				"mockTypeScriptVersion": false
-			}
-		]
+		"allowJs": true
 	},
 	"typeAcquisition": {
 		"enable": true

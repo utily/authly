@@ -3,7 +3,7 @@ import { authly } from "./index"
 authly.Issuer.defaultIssuedAt = new Date("1970-01-01T13:37:42.000Z")
 authly.Verifier.staticNow = new Date("1970-01-01T14:07:42.000Z")
 
-describe("authly", () => {
+authly.Issuer.staticTime = describe("authly", () => {
 	it("none", async () => {
 		const algorithm = authly.Algorithm.none()
 		const issuer = authly.Issuer.create("issuer", algorithm)

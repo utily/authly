@@ -3,12 +3,11 @@ import { Configuration } from "./Configuration"
 import { Type } from "./Type"
 
 export class Decoder<T extends Type.Constraints<T>> {
-	private constructor(private readonly properties: Properties<T>) {
-		console.log("decoder properties", properties)
-	}
+	private constructor(private readonly properties: Properties<T>) {}
 	async process(payload: Type.Payload<T>): Promise<Type.Claims<T>> {
 		return (
 			await Promise.all(
+				// TODO: should we only pass value if it is not undefined?
 				typedly.Object.entries(payload).map(async ([key, value]) => this.properties[key].process(value))
 			)
 		).reduce((result, [key, value]) => ({ ...result, [key]: value }), {} as Type.Claims<T>)
@@ -33,7 +32,7 @@ export class Property<T extends Type.Constraints<T>, P extends keyof Type.Payloa
 		private readonly prettyClaimName: T[P]["name"],
 		private readonly decode: Configuration.Property<T, P>["decode"]
 	) {}
-	async process(value: T[P]["payload"]): Promise<[T[P]["name"], T[P]["claim"]]> {
+	async process(value: T[P]["encoded"]): Promise<[T[P]["name"], T[P]["original"]]> {
 		return [this.prettyClaimName, await this.decode(value)]
 	}
 	static create<T extends Type.Constraints<T>, P extends keyof T>(

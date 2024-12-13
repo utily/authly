@@ -3,9 +3,7 @@ import { Configuration } from "./Configuration"
 import { Type } from "./Type"
 
 export class Encoder<T extends Type.Constraints<T>> {
-	private constructor(private readonly properties: Properties<T>) {
-		console.log("encoder properties", this.properties)
-	}
+	private constructor(private readonly properties: Properties<T>) {}
 	async process(claims: Type.Claims<T>): Promise<Type.Payload<T>> {
 		return (
 			await Promise.all(
@@ -32,7 +30,7 @@ type Properties<T extends Type.Constraints<T> = Type.Required> = {
 }
 class Property<T extends Type.Constraints<T>, P extends keyof T> {
 	private constructor(readonly jwtClaimName: P, readonly encode: Configuration.Property<T, P>["encode"]) {}
-	async process(value: T[P]["claim"]): Promise<[P, T[P]["payload"]]> {
+	async process(value: T[P]["original"]): Promise<[P, T[P]["encoded"]]> {
 		return [this.jwtClaimName, await this.encode(value)]
 	}
 	static create<T extends Type.Constraints<T>, P extends keyof T>(
