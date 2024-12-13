@@ -23,9 +23,11 @@
 				"suppressWhileTypeErrorsPresent": false,
 				"mockTypeScriptVersion": false
 			}
-		]
+		],
+		"types": ["vitest/globals"]
 	},
 	"typeAcquisition": {
-		"enable": true
+		"enable": true,
+		"include": ["vitest"]
 	}
 }

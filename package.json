@@ -39,6 +39,7 @@
 		"fix": "eslint '**/*.{ts,tsx}' --fix",
 		"build": "rimraf dist/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && ./fixup.sh",
 		"test": "vitest",
+		"coverage": "vitest run --coverage",
 		"prepare": "npm run build",
 		"clean": "rimraf dist node_modules coverage"
 	},
@@ -53,6 +54,7 @@
 	"devDependencies": {
 		"@typescript-eslint/eslint-plugin": "8.16.0",
 		"@typescript-eslint/parser": "8.16.0",
+		"@vitest/coverage-v8": "^2.1.8",
 		"eslint": "^8.57.0",
 		"eslint-plugin-prettierx": "github:utily/eslint-plugin-prettierx#utily-20231004",
 		"eslint-plugin-simple-import-sort": "^12.1.1",

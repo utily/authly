@@ -6,6 +6,9 @@ export default defineConfig({
 		typecheck: {
 			tsconfig: "./tsconfig.test.json",
 		},
+		coverage: {
+			reporter: ["text", "json", "html"],
+		},
 		globals: true,
 		include: ["**/*.spec.[tj]s"],
 		testTimeout: 20000,
