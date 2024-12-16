@@ -26,18 +26,19 @@ export class Verifier<T extends Processor.Type.Constraints<T>> extends Actor<T> 
 	}
 	private async decode(
 		token: string | undefined
-	): Promise<{ header: Header; payload: Payload; components: Components } | undefined> {
+	): Promise<{ header: Header; payload: Payload; components: Components; token: Token } | undefined> {
 		let result: typedly.Function.Return<Verifier<T>["decode"]>
 		const components = (([header, body, signature]: (string | undefined)[]) =>
 			!header || !body ? undefined : { header, body, signature })(token?.split(".", 3) ?? [])
-		if (components)
+		if (!components || !token)
+			result = undefined
+		else
 			try {
 				const standard: cryptly.Base64.Standard = token?.match(/[/+]/) ? "standard" : "url"
 				const decoder = new TextDecoder()
 				const header: Header = JSON.parse(decoder.decode(cryptly.Base64.decode(components.header, standard)))
 				const payload: Payload = JSON.parse(decoder.decode(cryptly.Base64.decode(components.body, standard)))
-				payload.token = token
-				result = !payload ? undefined : { header, payload, components }
+				result = !payload ? undefined : { header, payload, components, token }
 			} catch {
 				result = undefined
 			}
@@ -66,24 +67,37 @@ export class Verifier<T extends Processor.Type.Constraints<T>> extends Actor<T> 
 		}
 		return result
 	}
-	private verifyAudience(audience: string | string[] | undefined, allowed: string[]): boolean {
-		return Array.isArray(audience)
+	private verifyAudience(audience: string | string[] | undefined, allowed: string[] | undefined): boolean {
+		return allowed == undefined
+			? true
+			: Array.isArray(audience)
 			? audience.some(audience => this.verifyAudience(audience, allowed))
-			: audience == undefined || allowed.length == 0 || allowed.some(allowed => allowed == audience)
+			: audience == undefined
+			? false
+			: allowed.some(allowed => allowed == audience)
 	}
-	async unpack(token: Token | undefined): Promise<Processor.Type.Claims<T> | undefined> {
-		return await this.process((await this.decode(token))?.payload)
-	}
-	async verify(token: Token | undefined, audiences: string[]): Promise<Processor.Type.Claims<T> | undefined> {
+	async unpack(token: Token | undefined): Promise<(Processor.Type.Claims<T> & { token: Token }) | undefined> {
 		const decoded = await this.decode(token)
-		const now = this.time()
-		return decoded &&
+		return (
+			decoded &&
+			(await this.process(decoded.payload).then(result => (!result ? result : { ...result, token: decoded.token })))
+		)
+	}
+	async verify(
+		token: Token | undefined,
+		audience: string | string[] | undefined
+	): Promise<(Processor.Type.Claims<T> & { token: Token }) | undefined> {
+		const decoded = await this.decode(token)
+		const now = this.time() * 1_000
+		const result =
+			decoded &&
 			(await this.verifySignature(decoded.header, decoded.components)) &&
-			this.verifyAudience(decoded.payload.aud, audiences) &&
+			this.verifyAudience(decoded.payload.aud, typeof audience == "string" ? [audience] : audience) &&
 			(decoded.payload.exp == undefined || decoded.payload.exp > now) &&
 			(decoded.payload.iat == undefined || decoded.payload.iat <= now + 60 || decoded.payload.iat <= now - 60)
-			? await this.process(decoded.payload)
-			: undefined
+				? await this.process(decoded.payload).then(result => (!result ? result : { ...result, token: decoded.token }))
+				: undefined
+		return result
 	}
 	static create<T extends Processor.Type.Constraints<T>>(
 		configuration: Processor.Configuration<T>,

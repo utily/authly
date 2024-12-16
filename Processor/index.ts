@@ -15,6 +15,9 @@ export class Processor<T extends Processor.Type.Constraints<T>> {
 		return (this.#decoder ??= Decoder.create<T>(this.configuration))
 	}
 	private constructor(readonly configuration: Processor.Configuration<T>) {}
+	name<Claim extends keyof T>(claim: Claim): T[Claim]["name"] {
+		return this.configuration[claim]["name"]
+	}
 	async encode(claims: Processor.Type.Claims<T>): Promise<Processor.Type.Payload<T>> {
 		return await this.encoder.process(claims)
 	}

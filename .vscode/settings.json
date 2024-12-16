@@ -61,5 +61,6 @@
 		"transactly",
 		"typedly",
 		"uply"
-	]
+	],
+	"typescript.tsdk": "node_modules/typescript/lib"
 }

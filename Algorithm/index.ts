@@ -21,7 +21,7 @@ export class Algorithm {
 		return this.signer.verify(data, signature)
 	}
 
-	static create(name: "none"): Algorithm | undefined
+	static create(name: "none"): Algorithm
 	static create(name: AlgorithmName.Symmetric, key: Uint8Array | string): Algorithm
 	static create(name: AlgorithmName.Symmetric, key: Uint8Array | string | undefined): Algorithm
 	static create(
@@ -74,7 +74,7 @@ export class Algorithm {
 		}
 		return new Algorithm(name, result)
 	}
-	static none(): Algorithm | undefined {
+	static none(): Algorithm {
 		return Algorithm.create("none")
 	}
 	static HS256(key: Uint8Array | string): Algorithm
