@@ -6,18 +6,30 @@ export interface Converter<C, P> {
 	decode: (value: P) => MaybePromise<C>
 }
 type MaybePromise<T> = T | Promise<T>
+export function Converter<T>(): Converter<T, T> {
+	return {
+		encode: value => value,
+		decode: value => value,
+	}
+}
 export namespace Converter {
-	export const dateTime: Converter<isoly.DateTime, number> = {
-		encode: (value: isoly.DateTime) => isoly.DateTime.epoch(value, "seconds"),
-		decode: (value: number) => isoly.DateTime.create(value),
+	export function dateTime(): Converter<isoly.DateTime, number> {
+		return {
+			encode: value => isoly.DateTime.epoch(value, "seconds"),
+			decode: value => isoly.DateTime.create(value),
+		}
 	}
-	export const json: Converter<any, string> = {
-		encode: (value: any): string => JSON.stringify(value),
-		decode: (value: string): any => JSON.parse(value),
+	export function json<T>(): Converter<T, string> {
+		return {
+			encode: value => JSON.stringify(value),
+			decode: value => JSON.parse(value),
+		}
 	}
-	export const binary: Converter<ArrayBufferLike, cryptly.Base64> = {
-		encode: (value: ArrayBuffer): cryptly.Base64 => cryptly.Base64.encode(value, "url"),
-		decode: (value: cryptly.Base64): ArrayBuffer => cryptly.Base64.decode(value, "url"),
+	export function binary(): Converter<ArrayBufferLike, cryptly.Base64> {
+		return {
+			encode: (value: ArrayBuffer): cryptly.Base64 => cryptly.Base64.encode(value, "url"),
+			decode: (value: cryptly.Base64): ArrayBuffer => cryptly.Base64.decode(value, "url"),
+		}
 	}
 	export function toBinary<C>(converter: Converter<C, string>): Converter<C, Uint8Array> {
 		return {

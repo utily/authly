@@ -15,7 +15,7 @@ export class Encrypter {
 	}
 	generate<C>(
 		path: string,
-		converter: Converter<C, Uint8Array> = Converter.toBinary(Converter.json)
+		converter: Converter<C, Uint8Array> = Converter.toBinary(Converter.json())
 	): Converter<C, cryptly.Base64> {
 		const secret = this.secret + path
 		return {

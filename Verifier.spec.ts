@@ -18,20 +18,6 @@ describe("authly.Verifier", () => {
 	it("staticTime", async () => {
 		expect(authly.Verifier.staticTime).toEqual(fixtures.times.verified)
 	})
-	it("verification with time to spare", async () => {
-		expect(await verifier.verify(fixtures.token.signed, "unknown")).toMatchObject(result)
-		expect(await verifier.verify(fixtures.token.unsigned, ["unknown"])).toEqual(undefined)
-	})
-	it("verification with leeway", async () => {
-		authly.Verifier.staticTime = fixtures.times.leeway
-		expect(await verifier.verify(fixtures.token.signed, "unknown")).toMatchObject(result)
-		expect(await verifier.verify(fixtures.token.unsigned, ["unknown"])).toEqual(undefined)
-		delete authly.Verifier.staticTime
-	})
-	it("no algorithm", async () => {
-		expect(await verifiers.no.verify(fixtures.token.signed, "unknown")).toEqual(undefined)
-		expect(await verifiers.no.verify(fixtures.token.unsigned, ["unknown"])).toEqual(undefined)
-	})
 	it("unpack", async () => {
 		expect(await verifier.unpack(fixtures.token.signed)).toMatchObject(result)
 		expect(await verifiers.no.unpack(fixtures.token.signed)).toMatchObject(result)
@@ -49,14 +35,28 @@ describe("authly.Verifier", () => {
 			token: fixtures.token.unsigned,
 		})
 	})
+	it("verification with time to spare", async () => {
+		expect(await verifier.verify(fixtures.token.signed, "audience")).toMatchObject(result)
+		expect(await verifier.verify(fixtures.token.unsigned, ["audience"])).toEqual(undefined)
+	})
+	it("verification with leeway", async () => {
+		authly.Verifier.staticTime = fixtures.times.leeway
+		expect(await verifier.verify(fixtures.token.signed, "audience")).toMatchObject(result)
+		expect(await verifier.verify(fixtures.token.unsigned, ["audience"])).toEqual(undefined)
+		delete authly.Verifier.staticTime
+	})
+	it("no algorithm", async () => {
+		expect(await verifiers.no.verify(fixtures.token.signed, "audience")).toEqual(undefined)
+		expect(await verifiers.no.verify(fixtures.token.unsigned, ["audience"])).toEqual(undefined)
+	})
 	it("none algorithm", async () => {
-		expect(await verifiers.none.verify(fixtures.token.signed, "unknown")).toEqual(undefined)
-		expect(await verifiers.none.verify(fixtures.token.unsigned, ["unknown"])).toEqual(undefined)
+		expect(await verifiers.none.verify(fixtures.token.signed, "audience")).toEqual(undefined)
+		expect(await verifiers.none.verify(fixtures.token.unsigned, ["audience"])).toEqual(undefined)
 	})
 	it("verification expired token", async () => {
 		authly.Verifier.staticTime = fixtures.times.expired
-		expect(await verifier.verify(fixtures.token.signed, "unknown")).toEqual(undefined)
-		expect(await verifier.verify(fixtures.token.unsigned, ["unknown"])).toEqual(undefined)
+		expect(await verifier.verify(fixtures.token.signed, "audience")).toEqual(undefined)
+		expect(await verifier.verify(fixtures.token.unsigned, ["audience"])).toEqual(undefined)
 		delete authly.Verifier.staticTime
 	})
 })

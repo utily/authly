@@ -6,8 +6,8 @@ authly.Actor.staticTime = fixtures.times.issued
 describe("authly.Issuer", () => {
 	const issuer: authly.Issuer<fixtures.Type> = authly.Issuer.create(
 		fixtures.configuration,
-		"unknown",
-		"unknown",
+		"issuer",
+		"audience",
 		authly.Algorithm.RS256(fixtures.keys.public, fixtures.keys.private)
 	)
 	it("staticTime", async () => {
@@ -19,8 +19,8 @@ describe("authly.Issuer", () => {
 	it("unsigned", async () => {
 		const issuer: authly.Issuer<fixtures.Type> = authly.Issuer.create(
 			fixtures.configuration,
-			"unknown",
-			"unknown",
+			"issuer",
+			"audience",
 			authly.Algorithm.none()
 		)
 		expect(await issuer.sign(fixtures.claims)).toEqual(fixtures.token.unsigned)

@@ -101,16 +101,18 @@ export class Verifier<T extends Processor.Type.Constraints<T>> extends Actor<T> 
 	}
 	static create<T extends Processor.Type.Constraints<T>>(
 		configuration: Processor.Configuration<T>,
-		algorithms: Algorithm[]
+		algorithms: Algorithm | Algorithm[]
 	): Verifier<T>
 	static create<T extends Processor.Type.Constraints<T>>(processor: Processor<T>, algorithms: Algorithm[]): Verifier<T>
 	static create<T extends Processor.Type.Constraints<T>>(
 		source: Processor<T> | Processor.Configuration<T>,
 		algorithms: Algorithm[]
 	): Verifier<T> {
-		return source instanceof Processor
-			? new this(source, algorithms)
-			: this.create(Processor.create(source), algorithms)
+		return !(source instanceof Processor)
+			? this.create(Processor.create(source), algorithms)
+			: !Array.isArray(algorithms)
+			? this.create(source, [algorithms])
+			: new this(source, algorithms)
 	}
 }
 export namespace Verifier {}
