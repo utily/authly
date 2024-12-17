@@ -1,6 +1,6 @@
 import { cryptly } from "cryptly"
 import { isoly } from "isoly"
-import { Converter } from "../Converter"
+import { Converter } from "./Converter"
 export class Encrypter<T> {
 	constructor(
 		private readonly secret: string,

@@ -1,4 +1,4 @@
-import { authly } from "../../index"
+import { authly } from "../index"
 
 describe("authly.Processor.Encrypter", () => {
 	const encrypter = new authly.Processor.Encrypter("secret")
