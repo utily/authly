@@ -1,62 +1,60 @@
-import { fixtures } from "./fixtures"
 import { authly } from "./index"
+import { Test } from "./Test"
 
-authly.Actor.staticTime = fixtures.times.verified
+authly.Actor.staticTime = Test.times.verified
 
 describe("authly.Verifier", () => {
-	const verifier = authly.Verifier.create<fixtures.Type>(fixtures.configuration, [
-		authly.Algorithm.RS256(fixtures.keys.public),
-	])
+	const verifier = authly.Verifier.create<Test.Type>(Test.configuration, [authly.Algorithm.RS256(Test.keys.public)])
 	const verifiers = {
-		no: authly.Verifier.create(fixtures.configuration, []),
-		none: authly.Verifier.create<fixtures.Type>(fixtures.configuration, [authly.Algorithm.none()]),
+		no: authly.Verifier.create(Test.configuration, []),
+		none: authly.Verifier.create<Test.Type>(Test.configuration, [authly.Algorithm.none()]),
 	}
 	const result = {
-		...fixtures.claims,
-		token: fixtures.token.signed,
+		...Test.payload,
+		token: Test.token.signed,
 	}
 	it("staticTime", async () => {
-		expect(authly.Verifier.staticTime).toEqual(fixtures.times.verified)
+		expect(authly.Verifier.staticTime).toEqual(Test.times.verified)
 	})
 	it("unpack", async () => {
-		expect(await verifier.unpack(fixtures.token.signed)).toMatchObject(result)
-		expect(await verifiers.no.unpack(fixtures.token.signed)).toMatchObject(result)
-		expect(await verifiers.none.unpack(fixtures.token.signed)).toMatchObject(result)
-		expect(await verifier.unpack(fixtures.token.unsigned)).toMatchObject({
+		expect(await verifier.unpack(Test.token.signed)).toMatchObject(result)
+		expect(await verifiers.no.unpack(Test.token.signed)).toMatchObject(result)
+		expect(await verifiers.none.unpack(Test.token.signed)).toMatchObject(result)
+		expect(await verifier.unpack(Test.token.unsigned)).toMatchObject({
 			...result,
-			token: fixtures.token.unsigned,
+			token: Test.token.unsigned,
 		})
-		expect(await verifiers.no.unpack(fixtures.token.unsigned)).toMatchObject({
+		expect(await verifiers.no.unpack(Test.token.unsigned)).toMatchObject({
 			...result,
-			token: fixtures.token.unsigned,
+			token: Test.token.unsigned,
 		})
-		expect(await verifiers.none.unpack(fixtures.token.unsigned)).toMatchObject({
+		expect(await verifiers.none.unpack(Test.token.unsigned)).toMatchObject({
 			...result,
-			token: fixtures.token.unsigned,
+			token: Test.token.unsigned,
 		})
 	})
 	it("verification with time to spare", async () => {
-		expect(await verifier.verify(fixtures.token.signed, "audience")).toMatchObject(result)
-		expect(await verifier.verify(fixtures.token.unsigned, ["audience"])).toEqual(undefined)
+		expect(await verifier.verify(Test.token.signed, "audience")).toMatchObject(result)
+		expect(await verifier.verify(Test.token.unsigned, ["audience"])).toEqual(undefined)
 	})
 	it("verification with leeway", async () => {
-		authly.Verifier.staticTime = fixtures.times.leeway
-		expect(await verifier.verify(fixtures.token.signed, "audience")).toMatchObject(result)
-		expect(await verifier.verify(fixtures.token.unsigned, ["audience"])).toEqual(undefined)
+		authly.Verifier.staticTime = Test.times.leeway
+		expect(await verifier.verify(Test.token.signed, "audience")).toMatchObject(result)
+		expect(await verifier.verify(Test.token.unsigned, ["audience"])).toEqual(undefined)
 		delete authly.Verifier.staticTime
 	})
 	it("no algorithm", async () => {
-		expect(await verifiers.no.verify(fixtures.token.signed, "audience")).toEqual(undefined)
-		expect(await verifiers.no.verify(fixtures.token.unsigned, ["audience"])).toEqual(undefined)
+		expect(await verifiers.no.verify(Test.token.signed, "audience")).toEqual(undefined)
+		expect(await verifiers.no.verify(Test.token.unsigned, ["audience"])).toEqual(undefined)
 	})
 	it("none algorithm", async () => {
-		expect(await verifiers.none.verify(fixtures.token.signed, "audience")).toEqual(undefined)
-		expect(await verifiers.none.verify(fixtures.token.unsigned, ["audience"])).toEqual(undefined)
+		expect(await verifiers.none.verify(Test.token.signed, "audience")).toEqual(undefined)
+		expect(await verifiers.none.verify(Test.token.unsigned, ["audience"])).toEqual(undefined)
 	})
 	it("verification expired token", async () => {
-		authly.Verifier.staticTime = fixtures.times.expired
-		expect(await verifier.verify(fixtures.token.signed, "audience")).toEqual(undefined)
-		expect(await verifier.verify(fixtures.token.unsigned, ["audience"])).toEqual(undefined)
+		authly.Verifier.staticTime = Test.times.expired
+		expect(await verifier.verify(Test.token.signed, "audience")).toEqual(undefined)
+		expect(await verifier.verify(Test.token.unsigned, ["audience"])).toEqual(undefined)
 		delete authly.Verifier.staticTime
 	})
 })

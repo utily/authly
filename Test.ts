@@ -1,7 +1,7 @@
 import { isoly } from "isoly"
 import { authly } from "./index"
 
-export namespace fixtures {
+export namespace Test {
 	export const keys = {
 		public:
 			"MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDRkP7wOUeOjevJnHuAGH39TqxhiArpuD/RbOb23cg3+v2kEGiI5HtTecivd5dbtGu41SWkTCnFis3rxQK8G1+6A1K7ibeAdkRSrpM9cZKo+nmfqdmn47TVBS4G6P0BLUvw6hgKltX9mqCPpLRGv/fDEjCd04VpKNbjsqg5x+1LwwIDAQAB",
@@ -16,8 +16,8 @@ export namespace fixtures {
 		expired: "2024-01-01T21:00:00.000Z",
 	}
 	export type Type = authly.Processor.Type<{
-		iat: { name: "issued"; original: isoly.DateTime; encoded: number } // required
-		iss: { name: "issuer"; original: string; encoded: string } // required
+		iat: { name: "issued"; original: isoly.DateTime; encoded: number } // optional
+		iss: { name: "issuer"; original: string; encoded: string } // optional
 		aud: { name: "audience"; original: string; encoded: string } // optional
 		exp: { name: "expires"; original: string; encoded: number } // optional
 		foo: { name: "bar"; original: string; encoded: number }
@@ -37,8 +37,8 @@ export namespace fixtures {
 		},
 		foo: { name: "bar", encode: value => parseInt(value), decode: value => value.toString(10) },
 	}
-	export const claims: authly.Processor.Type.Payload<Omit<Type, keyof authly.Processor.Type.Required>> = {
-		expires: fixtures.times.expires,
+	export const payload: authly.Processor.Type.Payload<Type> = {
+		expires: Test.times.expires,
 		bar: "123",
 	}
 	export const token = {
