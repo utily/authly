@@ -7,7 +7,6 @@ export class Actor<T extends Processor.Type.Constraints<T>> {
 		const time = (this.constructor as typeof Actor).staticTime ?? Actor.staticTime
 		return typeof time == "number" ? time : Math.floor(isoly.DateTime.epoch(time ? time : isoly.DateTime.now()) / 1_000)
 	}
-	// TODO: replace Date with isoly.DateTime
 	static staticTime?: isoly.Date | number
 }
 export namespace Actor {}

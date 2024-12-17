@@ -2,7 +2,6 @@ import { cryptly } from "cryptly"
 import { Header } from "../Header"
 import { Name as AlgorithmName } from "./Name"
 
-// TODO: maybe rewrite this to include proper typing for algorithm names and indexing in switch?
 export class Algorithm {
 	/**
 	 * Key Id

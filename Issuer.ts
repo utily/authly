@@ -1,4 +1,5 @@
 import { cryptly } from "cryptly"
+import { isoly } from "isoly"
 import { Actor } from "./Actor"
 import { Algorithm } from "./Algorithm"
 import { Header } from "./Header"
@@ -19,16 +20,18 @@ export class Issuer<T extends Processor.Type.Constraints<T>> extends Actor<T> {
 	private async process(claims: Processor.Type.Claims<T>): Promise<Processor.Type.Payload<T>> {
 		return await this.processor.encode(claims)
 	}
-	// TODO: replace Date with isoly.DateTime
+	private issued(issued: isoly.DateTime | number): number {
+		return typeof issued == "number" ? issued : isoly.DateTime.epoch(issued, "seconds")
+	}
 	async sign(
 		claims: Processor.Type.Claims<Omit<T, keyof Processor.Type.Required>>,
-		issued?: Date | number
+		{ ...options }: Issuer.Options = {}
 	): Promise<Token> {
 		claims = {
 			...(await (async name => ({
 				[name]: (
 					(await this.processor.decode({
-						iat: typeof issued == "object" ? issued.getTime() / 1000 : issued ?? this.time(),
+						iat: options.issued == undefined ? this.time() : this.issued(options.issued),
 					} as Processor.Type.Payload<T>)) as Processor.Type.Claims<T>
 				)[name],
 			}))(this.processor.name("iat"))),
@@ -77,4 +80,8 @@ export class Issuer<T extends Processor.Type.Constraints<T>> extends Actor<T> {
 			: this.create(Processor.create(source), issuer, audience, algorithm)
 	}
 }
-export namespace Issuer {}
+export namespace Issuer {
+	export interface Options {
+		issued?: isoly.DateTime | number
+	}
+}

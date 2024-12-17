@@ -10,7 +10,6 @@ export class Decoder<T extends Type.Constraints<T>> {
 		}, {} as State<T>)
 		return (
 			await Promise.all(
-				// TODO: should we only pass value if it is not undefined?
 				typedly.Object.entries(payload).map(async ([key, value]) => {
 					const result = await this.properties[key].process(value, state)
 					;(state[this.configuration[key].name] as typedly.Promise<T[keyof T]["original"]>).resolve(result.value)

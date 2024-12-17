@@ -60,8 +60,6 @@ export class Verifier<T extends Processor.Type.Constraints<T>> extends Actor<T> 
 	private async process(payload: Processor.Type.Payload<T> | undefined): Promise<Processor.Type.Claims<T> | undefined> {
 		let result: Processor.Type.Claims<T> | undefined
 		try {
-			// TODO: scary cast. can we make it safer?
-			//       clean undefined values from entering decode?
 			result = payload && (await this.processor.decode(payload))
 		} catch {
 			result = undefined
