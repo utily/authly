@@ -11,7 +11,7 @@ type Type = authly.Processor.Type<{
 	a: { name: "array"; original: number[]; encoded: number[] }
 }>
 
-const claims: authly.Processor.Type.Claims<Type> = {
+const claims: authly.Processor.Type.Payload<Type> = {
 	issuer: "issuer",
 	audience: "audience",
 	issued: "2023-05-10T10:47:46.000Z",
@@ -19,7 +19,7 @@ const claims: authly.Processor.Type.Claims<Type> = {
 	number: 3,
 	array: [100, 22, 15],
 }
-const payload: authly.Processor.Type.Payload<Type> = {
+const payload: authly.Processor.Type.Claims<Type> = {
 	iss: "issuer",
 	aud: "audience",
 	iat: 1683715666,
@@ -95,17 +95,13 @@ describe("Processor", () => {
 			sub: { name: "subject"; original: string; encoded: string }
 			enc: { name: "encrypted"; original: MyValue; encoded: cryptly.Base64 }
 		}>
-		const encrypter = new authly.Processor.Encrypter<MyValue>("secret")
+		const encrypter = new authly.Processor.Encrypter("secret")
 		const processor = authly.Processor.create<Map>({
 			iss: { name: "issuer", encode: value => value, decode: value => value },
 			aud: { name: "audience", encode: value => value, decode: value => value },
 			iat: { name: "issued", ...authly.Processor.Converter.dateTime() },
 			sub: { name: "subject", encode: value => value, decode: value => value },
-			enc: {
-				name: "encrypted",
-				encode: async (value, state) => encrypter.encode("enc", value, await state.subject, await state.issued),
-				decode: async (value, state) => encrypter.decode("enc", value, await state.subject, await state.issued),
-			},
+			enc: { name: "encrypted", ...encrypter.generate("enc") },
 		})
 		const source = {
 			issuer: "issuer",

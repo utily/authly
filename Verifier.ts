@@ -25,7 +25,7 @@ export class Verifier<T extends Processor.Type.Constraints<T>> extends Actor<T> 
 	}
 	private async decode(
 		token: string | undefined
-	): Promise<{ header: Header; payload: Processor.Type.Payload<T>; components: Components; token: Token } | undefined> {
+	): Promise<{ header: Header; payload: Processor.Type.Claims<T>; components: Components; token: Token } | undefined> {
 		let result: typedly.Function.Return<Verifier<T>["decode"]>
 		const components = (([header, body, signature]: (string | undefined)[]) =>
 			!header || !body ? undefined : { header, body, signature })(token?.split(".", 3) ?? [])
@@ -36,7 +36,7 @@ export class Verifier<T extends Processor.Type.Constraints<T>> extends Actor<T> 
 				const standard: cryptly.Base64.Standard = token?.match(/[/+]/) ? "standard" : "url"
 				const decoder = new TextDecoder()
 				const header: Header = JSON.parse(decoder.decode(cryptly.Base64.decode(components.header, standard)))
-				const payload: Processor.Type.Payload<T> = JSON.parse(
+				const payload: Processor.Type.Claims<T> = JSON.parse(
 					decoder.decode(cryptly.Base64.decode(components.body, standard))
 				)
 				result = !payload ? undefined : { header, payload, components, token }
@@ -57,8 +57,8 @@ export class Verifier<T extends Processor.Type.Constraints<T>> extends Actor<T> 
 		}
 		return result
 	}
-	private async process(payload: Processor.Type.Payload<T> | undefined): Promise<Processor.Type.Claims<T> | undefined> {
-		let result: Processor.Type.Claims<T> | undefined
+	private async process(payload: Processor.Type.Claims<T> | undefined): Promise<Processor.Type.Payload<T> | undefined> {
+		let result: Processor.Type.Payload<T> | undefined
 		try {
 			result = payload && (await this.processor.decode(payload))
 		} catch {
@@ -75,7 +75,7 @@ export class Verifier<T extends Processor.Type.Constraints<T>> extends Actor<T> 
 			? false
 			: allowed.some(allowed => allowed == audience)
 	}
-	async unpack(token: Token | undefined): Promise<(Processor.Type.Claims<T> & { token: Token }) | undefined> {
+	async unpack(token: Token | undefined): Promise<(Processor.Type.Payload<T> & { token: Token }) | undefined> {
 		const decoded = await this.decode(token)
 		return (
 			decoded &&
@@ -85,7 +85,7 @@ export class Verifier<T extends Processor.Type.Constraints<T>> extends Actor<T> 
 	async verify(
 		token: Token | undefined,
 		audience: string | string[] | undefined
-	): Promise<(Processor.Type.Claims<T> & { token: Token }) | undefined> {
+	): Promise<(Processor.Type.Payload<T> & { token: Token }) | undefined> {
 		const decoded = await this.decode(token)
 		const now = this.time() * 1_000
 		const result =

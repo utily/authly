@@ -37,11 +37,11 @@ export namespace Type {
 		typedly.Object.Optional<Type.Required, keyof Type.Required> &
 		typedly.Object.Optional<Type.Optional, keyof Type.Optional>
 	// names on json
-	export type Claims<T extends Type.Constraints<Omit<T, keyof Required>> = NonNullable<object>> = {
+	export type Payload<T extends Type.Constraints<Omit<T, keyof Required>> = NonNullable<object>> = {
 		[Claim in keyof T as T[Claim]["name"]]: T[Claim]["original"]
 	} & {}
 	// names on jwt
-	export type Payload<T extends Type.Constraints<T> = NonNullable<object>> = {
+	export type Claims<T extends Type.Constraints<T> = NonNullable<object>> = {
 		[Claim in keyof T]: T[Claim]["encoded"]
 	}
 }

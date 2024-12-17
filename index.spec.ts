@@ -7,10 +7,10 @@ authly.Verifier.staticTime = fixtures.times.verified
 describe("authly", () => {
 	it("RS256", async () => {
 		interface Key {
-			subject: string
 			issuer: string
 			audience: string
 			issued: string
+			subject: string
 			name: { first: string; last: string }
 			roles: string[]
 		}
@@ -22,18 +22,21 @@ describe("authly", () => {
 			nam: { name: "name"; original: Key["name"]; encoded: Key["name"] }
 			rol: { name: "roles"; original: Key["roles"]; encoded: string }
 		}>
-		const encrypter = new authly.Processor.Encrypter<string[]>("secret")
+		const encrypter = new authly.Processor.Encrypter("secret")
 		const configuration: authly.Processor.Configuration<Type> = {
-			iss: { name: "issuer", ...authly.Processor.Converter() },
-			aud: { name: "audience", ...authly.Processor.Converter() },
+			iss: { name: "issuer", ...authly.Processor.Converter.none() },
+			aud: { name: "audience", ...authly.Processor.Converter.none() },
 			iat: { name: "issued", ...authly.Processor.Converter.dateTime() },
-			sub: { name: "subject", ...authly.Processor.Converter() },
-			nam: { name: "name", ...authly.Processor.Converter() },
+			sub: { name: "subject", ...authly.Processor.Converter.none() },
+			nam: { name: "name", ...authly.Processor.Converter.none() },
 			rol: {
 				name: "roles",
-				encode: async (value, state) =>
-					await encrypter.encode("rol", value, await state.subject, await state.issued, { unit: "seconds" }),
-				decode: async (value, state) => await encrypter.decode("rol", value, await state.subject, await state.issued),
+				...encrypter.generate("rol"),
+				// name: "roles", encrypter.generate(authly.Processor.Converter.none())
+
+				// encode: async (value, state) =>
+				// 	await encrypter.encode("rol", value, await state.subject, await state.issued, { unit: "seconds" }),
+				// decode: async (value, state) => await encrypter.decode("rol", value, await state.subject, await state.issued),
 			},
 		}
 		const issuer = authly.Issuer.create<Type>(

@@ -17,14 +17,14 @@ export class Issuer<T extends Processor.Type.Constraints<T>> extends Actor<T> {
 		super(processor)
 		this.header = { alg: algorithm.name, typ: "JWT", ...(algorithm.kid && { kid: algorithm.kid }) }
 	}
-	private async process(claims: Processor.Type.Claims<T>): Promise<Processor.Type.Payload<T>> {
+	private async process(claims: Processor.Type.Payload<T>): Promise<Processor.Type.Claims<T>> {
 		return await this.processor.encode(claims)
 	}
 	private issued(issued: isoly.DateTime | number): number {
 		return typeof issued == "number" ? issued : isoly.DateTime.epoch(issued, "seconds")
 	}
 	async sign(
-		claims: Processor.Type.Claims<Omit<T, keyof Processor.Type.Required>>,
+		claims: Processor.Type.Payload<Omit<T, keyof Processor.Type.Required>>,
 		{ ...options }: Issuer.Options = {}
 	): Promise<Token> {
 		claims = {
@@ -32,17 +32,21 @@ export class Issuer<T extends Processor.Type.Constraints<T>> extends Actor<T> {
 				[name]: (
 					(await this.processor.decode({
 						iat: options.issued == undefined ? this.time() : this.issued(options.issued),
-					} as Processor.Type.Payload<T>)) as Processor.Type.Claims<T>
+					} as Processor.Type.Claims<T>)) as Processor.Type.Payload<T>
 				)[name],
 			}))(this.processor.name("iat"))),
 			...(await (async name => ({
 				[name]: (
-					(await this.processor.decode({ iss: this.issuer } as Processor.Type.Payload<T>)) as Processor.Type.Claims<T>
+					(await this.processor.decode({
+						iss: this.issuer,
+					} as Processor.Type.Claims<T>)) as Processor.Type.Payload<T>
 				)[name],
 			}))(this.processor.name("iss"))),
 			...(await (async name => ({
 				[name]: (
-					(await this.processor.decode({ aud: this.audience } as Processor.Type.Payload<T>)) as Processor.Type.Claims<T>
+					(await this.processor.decode({
+						aud: this.audience,
+					} as Processor.Type.Claims<T>)) as Processor.Type.Payload<T>
 				)[name],
 			}))(this.processor.name("aud"))),
 			...claims,
@@ -52,7 +56,7 @@ export class Issuer<T extends Processor.Type.Constraints<T>> extends Actor<T> {
 			encoder.encode(JSON.stringify(this.header)),
 			"url"
 		)}.${cryptly.Base64.encode(
-			encoder.encode(JSON.stringify(await this.process(claims as any as Processor.Type.Claims<T>))),
+			encoder.encode(JSON.stringify(await this.process(claims as any as Processor.Type.Payload<T>))),
 			"url"
 		)}`
 		return `${payload}.${await this.algorithm.sign(payload)}`

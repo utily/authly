@@ -8,6 +8,8 @@
 		"allowJs": true
 	},
 	"files": [
-		"index.ts"
+		"index.ts",
+		"Claims.ts",
+		"Promisify.ts"
 	]
 }

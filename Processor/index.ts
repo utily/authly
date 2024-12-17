@@ -18,10 +18,10 @@ export class Processor<T extends Processor.Type.Constraints<T>> {
 	name<Claim extends keyof T>(claim: Claim): T[Claim]["name"] {
 		return this.configuration[claim]["name"]
 	}
-	async encode(claims: Processor.Type.Claims<T>): Promise<Processor.Type.Payload<T>> {
+	async encode(claims: Processor.Type.Payload<T>): Promise<Processor.Type.Claims<T>> {
 		return await this.encoder.process(claims)
 	}
-	async decode(payload: Processor.Type.Payload<T>): Promise<Processor.Type.Claims<T>> {
+	async decode(payload: Processor.Type.Claims<T>): Promise<Processor.Type.Payload<T>> {
 		return await this.decoder.process(payload)
 	}
 	static create<T extends Processor.Type.Constraints<T>>(configuration: Processor.Configuration<T>): Processor<T> {

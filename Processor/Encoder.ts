@@ -4,7 +4,7 @@ import { Type } from "./Type"
 
 export class Encoder<T extends Type.Constraints<T>> {
 	private constructor(private readonly properties: Properties<T>) {}
-	async process(claims: Type.Claims<T>): Promise<Type.Payload<T>> {
+	async process(claims: Type.Payload<T>): Promise<Type.Claims<T>> {
 		const state = typedly.Object.entries(claims).reduce<State<T>>((result, [key]) => {
 			return { ...result, [key]: typedly.Promise.create<any>() }
 		}, {} as State<T>)
@@ -16,7 +16,7 @@ export class Encoder<T extends Type.Constraints<T>> {
 					return [result.key, result.value] as const
 				})
 			)
-		).reduce((result, [key, value]) => ({ ...result, [key]: value }), {} as Type.Payload<T>)
+		).reduce((result, [key, value]) => ({ ...result, [key]: value }), {} as Type.Claims<T>)
 	}
 	static create<T extends Type.Constraints<T>>(configuration: Configuration<T>): Encoder<T> {
 		return new this(
@@ -29,6 +29,7 @@ export class Encoder<T extends Type.Constraints<T>> {
 	}
 }
 
+// original + encoded object. one with promises and one without
 type State<T extends Type.Constraints<T>> = {
 	[Claim in keyof T as T[Claim]["name"]]: typedly.Promise<T[Claim]["encoded"]>
 }

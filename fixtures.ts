@@ -37,7 +37,7 @@ export namespace fixtures {
 		},
 		foo: { name: "bar", encode: value => parseInt(value), decode: value => value.toString(10) },
 	}
-	export const claims: authly.Processor.Type.Claims<Omit<Type, keyof authly.Processor.Type.Required>> = {
+	export const claims: authly.Processor.Type.Payload<Omit<Type, keyof authly.Processor.Type.Required>> = {
 		expires: fixtures.times.expires,
 		bar: "123",
 	}
