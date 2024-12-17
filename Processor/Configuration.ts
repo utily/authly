@@ -2,7 +2,7 @@ import { typedly } from "typedly"
 import { Converter } from "./Converter"
 import { Type } from "./Type"
 
-export type Configuration<T extends Type.Constraints<T> = Type.Required> = {
+export type Configuration<T extends Type.Constraints<T> = Type.Standard> = {
 	[Claim in keyof T]: Configuration.Property<T, Claim>
 }
 export namespace Configuration {

@@ -19,7 +19,7 @@ export namespace Converter {
 			encoded: E
 		}
 	}
-	export function none<T>(): Converter<T, T> {
+	export function identity<T>(): Converter<T, T> {
 		return {
 			encode: value => value,
 			decode: value => value,

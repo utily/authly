@@ -1,6 +1,6 @@
-import { typedly } from "typedly"
+import { Claims as authlyClaims } from "../Claims"
 
-export type Type<T extends Type.Constraints<T> & Type.Required & Type.Optional> = {
+export type Type<T extends Type.Constraints<T> & Type.Standard> = {
 	[Claim in keyof T]: {
 		name: T[Claim]["name"]
 		original: T[Claim]["original"]
@@ -22,22 +22,13 @@ export namespace Type {
 			export type Value = boolean | string | number | Data | Value[]
 		}
 	}
-	export interface Required {
-		aud: Property<string>
-		iss: Property<string>
-		iat: Property<number>
+	export type Standard = {
+		[P in keyof authlyClaims]?: Property<Required<authlyClaims>[P]>
 	}
-	export interface Optional {
-		sub?: Property<string>
-		exp?: Property<number>
-		nbf?: Property<number>
-		jti?: Property<string>
-	}
-	export type Constraints<T> = { [property in keyof T]: Property } &
-		typedly.Object.Optional<Type.Required, keyof Type.Required> &
-		typedly.Object.Optional<Type.Optional, keyof Type.Optional>
+	export type Constraints<T> = { [property in keyof T]: Property } & Standard
+
 	// names on json
-	export type Payload<T extends Type.Constraints<Omit<T, keyof Required>> = NonNullable<object>> = {
+	export type Payload<T extends Type.Constraints<T> = NonNullable<object>> = {
 		[Claim in keyof T as T[Claim]["name"]]: T[Claim]["original"]
 	} & {}
 	// names on jwt
