@@ -1,5 +1,4 @@
 import { typedly } from "typedly"
-import { Payload as AuthlyPayload } from "../Payload"
 
 export type Type<T extends Type.Constraints<T> & Type.Required & Type.Optional> = {
 	[Claim in keyof T]: {
@@ -9,10 +8,19 @@ export type Type<T extends Type.Constraints<T> & Type.Required & Type.Optional> 
 	}
 }
 export namespace Type {
-	export interface Property<T extends AuthlyPayload.Value = AuthlyPayload.Value> {
+	export interface Property<T extends Property.Data.Value = Property.Data.Value> {
 		name: string
 		original: unknown
 		encoded: T
+	}
+	export namespace Property {
+		export type Data = Data.Data
+		export namespace Data {
+			export interface Data {
+				[claim: string]: Value | undefined
+			}
+			export type Value = boolean | string | number | Data | Value[]
+		}
 	}
 	export interface Required {
 		aud: Property<string>

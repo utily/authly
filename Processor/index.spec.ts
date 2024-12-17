@@ -91,30 +91,36 @@ describe("Processor", () => {
 		type Map = authly.Processor.Type<{
 			iss: { name: "issuer"; original: string; encoded: string }
 			aud: { name: "audience"; original: string; encoded: string }
-			iat: { name: "issued"; original: number; encoded: number }
+			iat: { name: "issued"; original: string; encoded: number }
+			sub: { name: "subject"; original: string; encoded: string }
 			enc: { name: "encrypted"; original: MyValue; encoded: cryptly.Base64 }
 		}>
+		const encrypter = new authly.Processor.Encrypter<MyValue>("secret")
 		const processor = authly.Processor.create<Map>({
 			iss: { name: "issuer", encode: value => value, decode: value => value },
 			aud: { name: "audience", encode: value => value, decode: value => value },
-			iat: { name: "issued", encode: value => value, decode: value => value },
+			iat: { name: "issued", ...authly.Processor.Converter.dateTime() },
+			sub: { name: "subject", encode: value => value, decode: value => value },
 			enc: {
 				name: "encrypted",
-				...new authly.Processor.Encrypter("secret", "undefined", 123456789).generate<MyValue>("enc"),
+				encode: async (value, state) => encrypter.encode("enc", value, await state.subject, await state.issued),
+				decode: async (value, state) => encrypter.decode("enc", value, await state.subject, await state.issued),
 			},
 		})
 		const source = {
 			issuer: "issuer",
 			audience: "audience",
-			issued: 1234567890,
+			issued: "2024-01-01T00:00:00.000Z",
+			subject: "subject",
 			encrypted: { hello: "world", foo: 123 },
 		}
 		const encoded = await processor.encode(source)
 		expect(encoded).toEqual({
 			iss: "issuer",
 			aud: "audience",
-			iat: 1234567890,
-			enc: "TpmwTpMu3GDGffny6Stw7nEV7AtqWWnqXE0c",
+			iat: 1704067200,
+			sub: "subject",
+			enc: "kS82IugN0bCiQ5a9ej7v-XQUyS6gTj3YMejH",
 		})
 		const decoded = await processor.decode(encoded)
 		expect(decoded).toEqual(source)

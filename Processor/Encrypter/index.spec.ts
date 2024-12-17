@@ -1,15 +1,31 @@
 import { authly } from "../../index"
 
 describe("authly.Processor.Encrypter", () => {
-	const encrypter = new authly.Processor.Encrypter("secret", "undefined", 123456789)
+	const encrypter = new authly.Processor.Encrypter("secret")
 	it("top level claim", async () => {
-		const { encode, decode } = encrypter.generate("encrypted")
-		expect(await encode({ property: "value", number: 1337 })).toEqual("f9VCdpkeKUbv6pEG_-2AXqZczVPCUp1ykC5oV7Ptz_xd3w")
-		expect(await decode("f9VCdpkeKUbv6pEG_-2AXqZczVPCUp1ykC5oV7Ptz_xd3w")).toEqual({ property: "value", number: 1337 })
+		expect(await encrypter.encode("encrypted", { property: "value", number: 1337 }, "undefined", 1704067200)).toEqual(
+			"WSNLnhuPsQ_Nwbqoio9uZid0LRV-gu9OvVcPQUI8PE2d0g"
+		)
+		expect(
+			await encrypter.decode(
+				"encrypted",
+				"WSNLnhuPsQ_Nwbqoio9uZid0LRV-gu9OvVcPQUI8PE2d0g",
+				"undefined",
+				"2024-01-01T00:00:00.000Z"
+			)
+		).toEqual({ property: "value", number: 1337 })
 	})
 	it("sub claim", async () => {
-		const { encode, decode } = encrypter.generate("things.encrypted")
-		expect(await encode({ property: "value", number: 1337 })).toEqual("IwVZ3J9-bOpO1-9llM3GQRmjR4pL1xkYhqLoQ_We6H9ilg")
-		expect(await decode("IwVZ3J9-bOpO1-9llM3GQRmjR4pL1xkYhqLoQ_We6H9ilg")).toEqual({ property: "value", number: 1337 })
+		expect(
+			await encrypter.encode("things.encrypted", { property: "value", number: 1337 }, "undefined", 1704067200)
+		).toEqual("gv2sWR7t_OVEhoc-x_HGEy3znrLkQXmYV1Jkqmr6dn5d9g")
+		expect(
+			await encrypter.decode(
+				"things.encrypted",
+				"gv2sWR7t_OVEhoc-x_HGEy3znrLkQXmYV1Jkqmr6dn5d9g",
+				"undefined",
+				"2024-01-01T00:00:00.000Z"
+			)
+		).toEqual({ property: "value", number: 1337 })
 	})
 })

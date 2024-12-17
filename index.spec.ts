@@ -1,50 +1,40 @@
-import { isoly } from "isoly"
-import { isly } from "isly"
 import { fixtures } from "./fixtures"
 import { authly } from "./index"
 
 authly.Issuer.staticTime = fixtures.times.issued
 authly.Verifier.staticTime = fixtures.times.verified
 
-interface User {
-	name: { first: string; last: string }
-	roles: string[]
-}
-
-interface Key {
-	issuer: string
-	audience: string
-	issued: string
-	name: { first: string; last: string }
-	roles: string[]
-}
-namespace Key {
-	export const type = isly.object<Key>({
-		issuer: isly.string(),
-		issued: isly.fromIs("isoly.DateTime", isoly.DateTime.is),
-		audience: isly.string(),
-		name: isly.object({ first: isly.string(), last: isly.string() }),
-		roles: isly.array(isly.string()),
-	})
-	export const is = type.is
-	export const flaw = type.flaw
-}
-
 describe("authly", () => {
 	it("RS256", async () => {
+		interface Key {
+			subject: string
+			issuer: string
+			audience: string
+			issued: string
+			name: { first: string; last: string }
+			roles: string[]
+		}
 		type Type = authly.Processor.Type<{
 			iss: { name: "issuer"; original: string; encoded: string }
 			aud: { name: "audience"; original: string; encoded: string }
 			iat: { name: "issued"; original: string; encoded: number }
+			sub: { name: "subject"; original: string; encoded: string }
 			nam: { name: "name"; original: Key["name"]; encoded: Key["name"] }
 			rol: { name: "roles"; original: Key["roles"]; encoded: string }
 		}>
+		const encrypter = new authly.Processor.Encrypter<string[]>("secret")
 		const configuration: authly.Processor.Configuration<Type> = {
 			iss: { name: "issuer", ...authly.Processor.Converter() },
 			aud: { name: "audience", ...authly.Processor.Converter() },
 			iat: { name: "issued", ...authly.Processor.Converter.dateTime() },
+			sub: { name: "subject", ...authly.Processor.Converter() },
 			nam: { name: "name", ...authly.Processor.Converter() },
-			rol: { name: "roles", encode: value => value.join(" "), decode: value => value.split(" ") },
+			rol: {
+				name: "roles",
+				encode: async (value, state) =>
+					await encrypter.encode("rol", value, await state.subject, await state.issued, { unit: "seconds" }),
+				decode: async (value, state) => await encrypter.decode("rol", value, await state.subject, await state.issued),
+			},
 		}
 		const issuer = authly.Issuer.create<Type>(
 			configuration,
@@ -52,17 +42,17 @@ describe("authly", () => {
 			"audience",
 			authly.Algorithm.RS256(fixtures.keys.public, fixtures.keys.private)
 		)
-		const user: User = {
-			name: { first: "Jessie", last: "Doe" },
-			roles: ["accountant", "user"],
-		}
 		const result =
-			"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDQxMTAsImlzcyI6Imlzc3VlciIsImF1ZCI6ImF1ZGllbmNlIiwibmFtIjp7ImZpcnN0IjoiSmVzc2llIiwibGFzdCI6IkRvZSJ9LCJyb2wiOiJhY2NvdW50YW50IHVzZXIifQ.Pl4iFN8csQruGvQ7NOxqb3yeBOdNjdjQmikoTTK0mRWgZjW687fmDPMHlayL2-6RZfszJf5uiot1Hlpr63I0eriWsLd8Wv3yFyDmTKPtZL20Hh5okvVCYmFMSF7mMfZunG-Hzza2MzVbCmqmbt09zHrfdxf3BWluXxGfkiC5-zg"
-		expect(await issuer.sign(user)).toEqual(result)
+			"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDQxMTAsImlzcyI6Imlzc3VlciIsImF1ZCI6ImF1ZGllbmNlIiwic3ViIjoibXlVc2VySWQiLCJuYW0iOnsiZmlyc3QiOiJKZXNzaWUiLCJsYXN0IjoiRG9lIn0sInJvbCI6IlVlbFVSZ0U3bnNfRXlHbXVkLXhaX0hveCJ9.cJ2w_d55lD_-D_vCnNwwGOxFRd5n5wp5H9A5avCKt4quLTmuLXdafJTaqlrglyn8FnYfbO51aMpZFS6bNNRfhWLIOonlWjR5qDdHvoWQSzi4RSHKooKrEFW4B6MoJMWhWWZ7ibNPeSX0vk0YXK1cO9hjBeFcAU4za8Pur-nelRs"
+		const source: Pick<Key, "subject" | "name" | "roles"> = {
+			subject: "myUserId",
+			name: { first: "Jessie", last: "Doe" },
+			roles: ["manager", "user"],
+		}
+		expect(await issuer.sign(source)).toEqual(result)
 		const verifier = authly.Verifier.create<Type>(configuration, authly.Algorithm.RS256(fixtures.keys.public))
 		const verified = await verifier.verify(result, "audience")
-		expect(verified).toMatchObject(user)
-		expect(Key.is(verified)).toEqual(true)
+		expect(verified).toMatchObject(source)
 	})
 	it("HS256", async () => {
 		const algorithm = authly.Algorithm.HS256("secret-key")
