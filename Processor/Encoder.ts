@@ -39,13 +39,13 @@ export namespace Encoder {
 	}
 }
 
-type Properties<T extends Type.Constraints<T> = Type.Required> = {
+type Properties<T extends Type.Constraints<T> = Type.Standard> = {
 	[Claim in keyof T as T[Claim]["name"]]: Property<T, Claim>
 }
 class Property<T extends Type.Constraints<T>, P extends keyof T> {
 	private constructor(readonly jwtClaimName: P, readonly encode: Configuration.Property<T, P>["encode"]) {}
-	async process(value: T[P]["original"], state: Encoder.State<T>): Promise<{ key: P; value: T[P]["encoded"] }> {
-		return { key: this.jwtClaimName, value: await this.encode(value, state) }
+	async process(value: T[P]["original"], context: Encoder.State<T>): Promise<{ key: P; value: T[P]["encoded"] }> {
+		return { key: this.jwtClaimName, value: await this.encode(value, context) }
 	}
 	static create<T extends Type.Constraints<T>, P extends keyof T>(
 		jwtClaimName: P,
