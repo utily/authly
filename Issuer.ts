@@ -24,10 +24,11 @@ export class Issuer<T extends Processor.Type.Constraints<T>> extends Actor<T> {
 		return typeof issued == "number" ? issued : isoly.DateTime.epoch(issued, "seconds")
 	}
 	async sign(
-		claims: Processor.Type.Payload<Omit<T, keyof Processor.Type.Required>>,
+		payload: Processor.Type.Payload<Omit<T, keyof Processor.Type.Required>>,
 		{ ...options }: Issuer.Options = {}
 	): Promise<Token> {
-		claims = {
+		payload = {
+			...payload,
 			...(await (async name => ({
 				[name]: (
 					(await this.processor.decode({
@@ -49,17 +50,16 @@ export class Issuer<T extends Processor.Type.Constraints<T>> extends Actor<T> {
 					} as Processor.Type.Claims<T>)) as Processor.Type.Payload<T>
 				)[name],
 			}))(this.processor.name("aud"))),
-			...claims,
 		}
 		const encoder = new TextEncoder()
-		const payload = `${cryptly.Base64.encode(
+		const result = `${cryptly.Base64.encode(
 			encoder.encode(JSON.stringify(this.header)),
 			"url"
 		)}.${cryptly.Base64.encode(
-			encoder.encode(JSON.stringify(await this.process(claims as any as Processor.Type.Payload<T>))),
+			encoder.encode(JSON.stringify(await this.process(payload as any as Processor.Type.Payload<T>))),
 			"url"
 		)}`
-		return `${payload}.${await this.algorithm.sign(payload)}`
+		return `${result}.${await this.algorithm.sign(result)}`
 	}
 	static create<T extends Processor.Type.Constraints<T>>(
 		configuration: Processor.Configuration<T>,
