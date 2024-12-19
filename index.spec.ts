@@ -38,7 +38,7 @@ describe("authly", () => {
 			authly.Algorithm.RS256(Test.keys.public, Test.keys.private)
 		)
 		const result =
-			"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDQxMTAsImlzcyI6Imlzc3VlciIsImF1ZCI6ImF1ZGllbmNlIiwic3ViIjoibXlVc2VySWQiLCJuYW0iOnsiZmlyc3QiOiJKZXNzaWUiLCJsYXN0IjoiRG9lIn0sInJvbCI6IlVlbFVSZ0U3bnNfRXlHbXVkLXhaX0hveCJ9.cJ2w_d55lD_-D_vCnNwwGOxFRd5n5wp5H9A5avCKt4quLTmuLXdafJTaqlrglyn8FnYfbO51aMpZFS6bNNRfhWLIOonlWjR5qDdHvoWQSzi4RSHKooKrEFW4B6MoJMWhWWZ7ibNPeSX0vk0YXK1cO9hjBeFcAU4za8Pur-nelRs"
+			"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJteVVzZXJJZCIsIm5hbSI6Ikplc3NpZSBEb2UiLCJyb2wiOiJVZWxVUmdFN25zX0V5R211ZC14Wl9Ib3giLCJpYXQiOjE3MDQxMTAsImlzcyI6Imlzc3VlciIsImF1ZCI6ImF1ZGllbmNlIn0.oKGqKQrNM6OYLtFG08B-64tm7tfLDrrI3UA3lxkhJK401p3MkXBVGeqHqhTwTX7v4r03KNkuL-Y5qjiLcJi0MgbSfJ727mt-SZKjo7G5CeMEeqlMItLHnHWcDZQjWfZRlM7PLrdjK0UdI3e0IwPgN3kiKsJwnCWoE8OAHtYxbts"
 		const source: Pick<Key, "subject" | "name" | "roles"> = {
 			subject: "myUserId",
 			name: { first: "Jessie", last: "Doe" },
@@ -53,7 +53,7 @@ describe("authly", () => {
 		const algorithm = authly.Algorithm.HS256("secret-key")
 		const issuer = authly.Issuer.create<Test.Type>(Test.configuration, "issuer", "audience", algorithm)
 		const result =
-			"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDQxMTAwMDAsImlzcyI6Imlzc3VlciIsImF1ZCI6ImF1ZGllbmNlIiwiZXhwIjoxNzA0MTM5MjAwLCJmb28iOjEyM30.pQfJMeDm6MkdLMrFQYKpMAAfiBTWRRkW47mZjQrx8Sc"
+			"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDQxMzkyMDAsImZvbyI6MTIzLCJpYXQiOjE3MDQxMTAwMDAsImlzcyI6Imlzc3VlciIsImF1ZCI6ImF1ZGllbmNlIn0._j6DqXg_ZRn-SYGZKj6oS76FHf2YmKBlGgk73EOt5dQ"
 		expect(await issuer.sign(Test.payload)).toEqual(result)
 		const verifier = authly.Verifier.create<Test.Type>(Test.configuration, [algorithm])
 		expect(await verifier.verify(result, "audience")).toMatchObject({ ...Test.payload, token: result })
@@ -63,7 +63,7 @@ describe("authly", () => {
 		algorithm.kid = "myKeyId1234"
 		const issuer = authly.Issuer.create<Test.Type>(Test.configuration, "issuer", "audience", algorithm)
 		const result =
-			"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im15S2V5SWQxMjM0In0.eyJpYXQiOjE3MDQxMTAwMDAsImlzcyI6Imlzc3VlciIsImF1ZCI6ImF1ZGllbmNlIiwiZXhwIjoxNzA0MTM5MjAwLCJmb28iOjEyM30.hJNfkQMS3u14J0-Y31z0Cz_sPNBSShdf8O_YuW3jJeA"
+			"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im15S2V5SWQxMjM0In0.eyJleHAiOjE3MDQxMzkyMDAsImZvbyI6MTIzLCJpYXQiOjE3MDQxMTAwMDAsImlzcyI6Imlzc3VlciIsImF1ZCI6ImF1ZGllbmNlIn0.yVo_znugEa_udktzibSpHUyMXn8aDhgHPPCL3p-tpk0"
 		expect(await issuer.sign(Test.payload)).toEqual(result)
 		const verifier = authly.Verifier.create<Test.Type>(Test.configuration, [algorithm])
 		expect(await verifier.verify(result, "audience")).toMatchObject({ ...Test.payload, token: result })

@@ -28,9 +28,15 @@ export namespace Type {
 	export type Constraints<T> = { [property in keyof T]: Property } & Standard
 
 	// names on json
-	export type Payload<T extends Type.Constraints<T> = NonNullable<object>> = {
+	export type Payload<T extends Type.Constraints<T> = Standard> = {
 		[Claim in keyof T as T[Claim]["name"]]: T[Claim]["original"]
-	} & {}
+	}
+	export namespace Payload {
+		// Omit<T, "aud" | "iss" | "iat">
+		export type Creatable<T extends Type.Constraints<T>> = {
+			[Claim in keyof Omit<T, "aud" | "iss" | "iat"> as T[Claim]["name"]]: T[Claim]["original"]
+		}
+	}
 	// names on jwt
 	export type Claims<T extends Type.Constraints<T> = NonNullable<object>> = {
 		[Claim in keyof T]: T[Claim]["encoded"]

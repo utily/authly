@@ -23,10 +23,7 @@ export class Issuer<T extends Processor.Type.Constraints<T>> extends Actor<T> {
 	private issued(issued: isoly.DateTime | number): number {
 		return typeof issued == "number" ? issued : isoly.DateTime.epoch(issued, "seconds")
 	}
-	async sign(
-		payload: Processor.Type.Payload<Omit<T, keyof Processor.Type.Required>>,
-		{ ...options }: Issuer.Options = {}
-	): Promise<Token> {
+	async sign(payload: Processor.Type.Payload.Creatable<T>, { ...options }: Issuer.Options = {}): Promise<Token> {
 		payload = {
 			...payload,
 			...(await (async name => ({

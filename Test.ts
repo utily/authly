@@ -37,14 +37,14 @@ export namespace Test {
 		},
 		foo: { name: "bar", encode: value => parseInt(value), decode: value => value.toString(10) },
 	}
-	export const payload: authly.Processor.Type.Payload<Type> = {
+	export const payload: authly.Processor.Type.Payload.Creatable<Type> = {
 		expires: Test.times.expires,
 		bar: "123",
 	}
 	export const token = {
 		signed:
-			"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDQxMTAwMDAsImlzcyI6Imlzc3VlciIsImF1ZCI6ImF1ZGllbmNlIiwiZXhwIjoxNzA0MTM5MjAwLCJmb28iOjEyM30.g-ciEnlP3BMWar1LvuihjqNyp1PBsqkW4-sS0h1mw3_aTwDBxQbO7MwY5KjJX9_gMbgFMxjqnqiRedzGkv4avhCqbFcDGsfp7RX9jArpA1vQaZ_n0gqTbBgeCaZ4ZwiwZJ_w4kJbaBDnZwPK4svdFMsV4OvMA2WAGcpUbT_qjgQ",
+			"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDQxMzkyMDAsImZvbyI6MTIzLCJpYXQiOjE3MDQxMTAwMDAsImlzcyI6Imlzc3VlciIsImF1ZCI6ImF1ZGllbmNlIn0.jVPxYtFZaXmm3B-dPUtdRgkjWaVpiohbJg1qvZxgfa9X4R1caFKGEV-A-Eze2fZ8cJXTZ9ijNv-8Os-Pb9RAkVZ6lSepaTlxYM5ldNFyWFIY2WGYnfMsf_FuK5Mb0_xFbHWGj68QzauYnSu1SIoqaguE9eEovFUtRl0sJSKlhSM",
 		unsigned:
-			"eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpYXQiOjE3MDQxMTAwMDAsImlzcyI6Imlzc3VlciIsImF1ZCI6ImF1ZGllbmNlIiwiZXhwIjoxNzA0MTM5MjAwLCJmb28iOjEyM30.",
+			"eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJleHAiOjE3MDQxMzkyMDAsImZvbyI6MTIzLCJpYXQiOjE3MDQxMTAwMDAsImlzcyI6Imlzc3VlciIsImF1ZCI6ImF1ZGllbmNlIn0.",
 	}
 }

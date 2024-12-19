@@ -4,19 +4,20 @@ import { Converter } from "./Converter"
 import { Type } from "./Type"
 
 export class Decoder<T extends Type.Constraints<T>> {
-	private constructor(
-		private readonly configuration: Configuration<T>,
-		private readonly properties: Decoder.Properties<T>
-	) {}
+	private constructor(private readonly properties: Decoder.Properties<T>) {}
 	async process(payload: Type.Claims<T>): Promise<Type.Payload<T>> {
-		const context = typedly.Object.entries(payload).reduce<State<T>>((result, [key]) => {
-			return { ...result, [this.configuration[key].name]: typedly.Promise.create<any>() }
-		}, {} as State<T>)
+		const resolvers: { [Key in keyof Type.Claims<T>]?: (value: any) => void } = {}
+		const context: Converter.Context.Decode<Type.Payload<T>, Type.Claims<T>> = {
+			original: typedly.Object.entries(payload).reduce((result, [key]) => {
+				return { ...result, [key]: new Promise<any>(resolve => (resolvers[key] = resolve)) }
+			}, {} as Converter.Context.Decode<Type.Payload<T>, Type.Claims<T>>["original"]),
+			encoded: payload,
+		}
 		return (
 			await Promise.all(
 				typedly.Object.entries(payload).map(async ([key, value]) => {
 					const result = await this.properties[key].process(value, context)
-					;(context[this.configuration[key].name] as typedly.Promise<T[keyof T]["original"]>).resolve(result.value)
+					resolvers[key]?.(result.value)
 					return [result.key, result.value] as const
 				})
 			)
@@ -24,7 +25,6 @@ export class Decoder<T extends Type.Constraints<T>> {
 	}
 	static create<T extends Type.Constraints<T>>(configuration: Configuration<T>): Decoder<T> {
 		return new this(
-			configuration,
 			typedly.Object.reduce<Decoder.Properties<T>, Configuration<T>>(
 				configuration,
 				(result, [key, value]) => ({ ...result, [key]: Decoder.Property.create(key, value) }),
