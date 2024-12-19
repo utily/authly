@@ -1,22 +1,12 @@
-import * as Property from "./Property"
-export class Actor<T extends Actor<T>> {
-	protected readonly transformers: Property.Transformer[] = []
-	constructor(readonly id?: string) {}
+import { isoly } from "isoly"
+import { Processor } from "./Processor"
 
-	add(...argument: (Property.Configuration | Property.Transformer | undefined)[]): T {
-		argument.forEach(
-			value =>
-				value && this.transformers.push(Property.Configuration.is(value) ? this.creatableToTransformer(value) : value)
-		)
-		return this as unknown as T
+export class Actor<T extends Processor.Type.Constraints<T>> {
+	protected constructor(protected readonly processor: Processor<T>) {}
+	protected time(): number {
+		const time = (this.constructor as typeof Actor).staticTime ?? Actor.staticTime
+		return typeof time == "number" ? time : Math.floor(isoly.DateTime.epoch(time ? time : isoly.DateTime.now()) / 1_000)
 	}
-
-	private creatableToTransformer(creatable: Property.Configuration): Property.Transformer {
-		return Property.Converter.Configuration.is(creatable)
-			? new Property.Converter(creatable)
-			: Property.Crypto.Configuration.is(creatable)
-			? Property.Crypto.create(creatable[0], ...creatable.slice(1))
-			: new Property.Renamer(creatable)
-	}
+	static staticTime?: isoly.Date | number
 }
 export namespace Actor {}

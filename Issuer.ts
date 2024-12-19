@@ -1,57 +1,88 @@
 import { cryptly } from "cryptly"
+import { isoly } from "isoly"
 import { Actor } from "./Actor"
 import { Algorithm } from "./Algorithm"
 import { Header } from "./Header"
-import { Payload } from "./Payload"
+import { Processor } from "./Processor"
 import { Token } from "./Token"
 
-export class Issuer<T extends Payload> extends Actor<Issuer<T>> {
-	audience?: string | string[]
-	/** Duration in seconds */
-	duration?: number
-	get header(): Header {
-		return {
-			alg: this.algorithm.name,
-			typ: "JWT",
-			...(this.algorithm.kid && { kid: this.algorithm.kid }),
+export class Issuer<T extends Processor.Type.Constraints<T>> extends Actor<T> {
+	private readonly header: Header
+	private constructor(
+		processor: Processor<T>,
+		private readonly issuer: string,
+		private readonly audience: string,
+		readonly algorithm: Algorithm
+	) {
+		super(processor)
+		this.header = { alg: algorithm.name, typ: "JWT", ...(algorithm.kid && { kid: algorithm.kid }) }
+	}
+	private async process(claims: Processor.Type.Payload<T>): Promise<Processor.Type.Claims<T>> {
+		return await this.processor.encode(claims)
+	}
+	private issued(issued: isoly.DateTime | number): number {
+		return typeof issued == "number" ? issued : isoly.DateTime.epoch(issued, "seconds")
+	}
+	async sign(payload: Processor.Type.Payload.Creatable<T>, { ...options }: Issuer.Options = {}): Promise<Token> {
+		payload = {
+			...payload,
+			...(await (async name => ({
+				[name]: (
+					(await this.processor.decode({
+						iat: options.issued == undefined ? this.time() : this.issued(options.issued),
+					} as Processor.Type.Claims<T>)) as Processor.Type.Payload<T>
+				)[name],
+			}))(this.processor.name("iat"))),
+			...(await (async name => ({
+				[name]: (
+					(await this.processor.decode({
+						iss: this.issuer,
+					} as Processor.Type.Claims<T>)) as Processor.Type.Payload<T>
+				)[name],
+			}))(this.processor.name("iss"))),
+			...(await (async name => ({
+				[name]: (
+					(await this.processor.decode({
+						aud: this.audience,
+					} as Processor.Type.Claims<T>)) as Processor.Type.Payload<T>
+				)[name],
+			}))(this.processor.name("aud"))),
 		}
+		const encoder = new TextEncoder()
+		const result = `${cryptly.Base64.encode(
+			encoder.encode(JSON.stringify(this.header)),
+			"url"
+		)}.${cryptly.Base64.encode(
+			encoder.encode(JSON.stringify(await this.process(payload as any as Processor.Type.Payload<T>))),
+			"url"
+		)}`
+		return `${result}.${await this.algorithm.sign(result)}`
 	}
-	get payload(): Payload {
-		const result: Payload = { iss: this.id, iat: Issuer.issuedAt }
-		if (this.audience)
-			result.aud = this.audience
-		if (this.duration && result.iat)
-			result.exp = result.iat + this.duration
-		return result
-	}
-	private constructor(issuer: string, readonly algorithm: Algorithm) {
-		super(issuer)
-	}
-	async sign(payload: T, issuedAt?: Date | number): Promise<Token | undefined> {
-		payload = { ...this.payload, ...payload }
-		if (issuedAt)
-			payload.iat = typeof issuedAt == "number" ? issuedAt : issuedAt.getTime() / 1000
-		const transformed = await this.transformers.reduce(async (p, c) => c.apply(await p), Promise.resolve(payload))
-		const data =
-			transformed &&
-			`${cryptly.Base64.encode(new TextEncoder().encode(JSON.stringify(this.header)), "url")}.${cryptly.Base64.encode(
-				new TextEncoder().encode(JSON.stringify(transformed)),
-				"url"
-			)}`
-		return data && `${data}.${await this.algorithm.sign(data)}`
-	}
-	private static get issuedAt(): number {
-		return Issuer.defaultIssuedAt == undefined
-			? Math.floor(Date.now() / 1000)
-			: typeof Issuer.defaultIssuedAt == "number"
-			? Issuer.defaultIssuedAt
-			: Math.floor(Issuer.defaultIssuedAt.getTime() / 1000)
-	}
-	static defaultIssuedAt: undefined | Date | number
-	static create<T extends Payload>(issuer: string, algorithm: Algorithm): Issuer<T>
-	static create<T extends Payload>(issuer: string, algorithm: Algorithm | undefined): Issuer<T> | undefined
-	static create<T extends Payload>(issuer: string, algorithm: Algorithm | undefined): Issuer<T> | undefined {
-		return (algorithm && new Issuer(issuer, algorithm)) || undefined
+	static create<T extends Processor.Type.Constraints<T>>(
+		configuration: Processor.Configuration<T>,
+		issuer: string,
+		audience: string,
+		algorithm: Algorithm
+	): Issuer<T>
+	static create<T extends Processor.Type.Constraints<T>>(
+		processor: Processor<T>,
+		issuer: string,
+		audience: string,
+		algorithm: Algorithm
+	): Issuer<T>
+	static create<T extends Processor.Type.Constraints<T>>(
+		source: Processor<T> | Processor.Configuration<T>,
+		issuer: string,
+		audience: string,
+		algorithm: Algorithm
+	): Issuer<T> {
+		return source instanceof Processor
+			? new this(source, issuer, audience, algorithm)
+			: this.create(Processor.create(source), issuer, audience, algorithm)
 	}
 }
-export namespace Issuer {}
+export namespace Issuer {
+	export interface Options {
+		issued?: isoly.DateTime | number
+	}
+}
