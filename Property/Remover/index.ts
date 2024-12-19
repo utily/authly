@@ -20,7 +20,7 @@ export class Remover {
 	}
 	private removeProperty(payload: Payload, property: string[]): Payload {
 		const result = { ...payload }
-		if (result[property[0]])
+		if (property[0] && result[property[0]])
 			if (property.length == 1)
 				delete result[property[0]]
 			else

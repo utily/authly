@@ -48,13 +48,14 @@ export class Crypto {
 		postprocess: (value: Uint8Array) => any
 	): Promise<Payload> {
 		const result = { ...payload }
-		if (result[property[0]])
+		if (property[0] && result[property[0]])
 			if (property.length == 1) {
 				const data = preprocess(payload[property[0]])
 				const key = await new cryptly.Digester("SHA-512").digest(this.encoder.encode(secret))
 				const processed = new Uint8Array(data.length)
-				for (let index = 0; index < data.length; index++)
-					processed[index] = data[index] ^ key[index]
+				const length = Math.min(data.length, key.length)
+				for (let index = 0; index < length; index++)
+					processed[index] = data[index]! ^ key[index]! // don't check length as we know key is at least as long as data & key
 				result[property[0]] = postprocess(processed)
 			} else
 				result[property[0]] = await this.processProperty(
