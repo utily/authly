@@ -55,3 +55,4 @@ export class Issuer<T extends Payload> extends Actor<Issuer<T>> {
 	}
 }
 export namespace Issuer {}
+const a = new TextEncoder()

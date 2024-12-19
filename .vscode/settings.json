@@ -1,8 +1,7 @@
 {
-	// Update search.exclude if you add a pattern to files.exclude
 	"files.exclude": {
 		".*": true,
-		".sh": true,
+		"*.sh": true,
 		"*.json": true,
 		"CODEOWNERS": true,
 		"dist": true,
@@ -10,12 +9,13 @@
 		"LICENSE": true,
 		"tsconfig.*": true,
 		"node_modules": true,
-		"*.code-workspace": true
+		"*.code-workspace": true,
+		"*.config.ts": true,
+		"coverage": true
 	},
-	// Make it possible to open excluded files with Ctrl + P
 	"search.exclude": {
 		".*": false,
-		".sh": false,
+		"*.sh": false,
 		"*.json": false,
 		"CODEOWNERS": false,
 		"dist": false,
@@ -23,7 +23,9 @@
 		"LICENSE": false,
 		"tsconfig.*": false,
 		"node_modules": false,
-		"*.code-workspace": false
+		"*.code-workspace": false,
+		"*.config.ts": false,
+		"coverage": false
 	},
 	"files.insertFinalNewline": true,
 	"editor.tabSize": 2,
@@ -48,16 +50,17 @@
 		"isly",
 		"isoly",
 		"langly",
-		"npmrc",
 		"paramly",
 		"persistly",
-		"Renamer",
 		"selectivly",
 		"servly",
 		"servly-azure",
 		"smoothly",
 		"tidily",
 		"transactly",
-		"uply"
-	]
+		"typedly",
+		"uply",
+		"Renamer",
+	],
+	"typescript.tsdk": "node_modules/typescript/lib"
 }
