@@ -26,10 +26,7 @@ describe("authly", () => {
 				encode: value => `${value.first} ${value.last}`,
 				decode: value => (([first, last]) => ({ first, last }))(value.split(" ")),
 			},
-			rol: {
-				name: "roles",
-				...encrypter.generate("rol"),
-			},
+			rol: { name: "roles", ...encrypter.generate("rol") },
 		}
 		const issuer = authly.Issuer.create<Type>(
 			configuration,
