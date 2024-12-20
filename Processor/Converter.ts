@@ -45,10 +45,14 @@ export namespace Converter {
 	}
 	export function toBinary<C>(converter: Converter<C, string>): Converter<C, Uint8Array> {
 		return {
-			encode: async (value: C, context: Converter.Context.Encode /* TODO: type args */): Promise<Uint8Array> =>
-				new TextEncoder().encode(await converter.encode(value, context)),
-			decode: async (value: Uint8Array, context: Converter.Context.Decode /* TODO: type args */): Promise<C> =>
-				converter.decode(new TextDecoder().decode(value), context),
+			encode: async <O extends Record<string, unknown>, E extends Claims = Claims>(
+				value: C,
+				context: Converter.Context.Encode<O, E>
+			): Promise<Uint8Array> => new TextEncoder().encode(await converter.encode(value, context)),
+			decode: async <O extends Record<string, unknown>, E extends Claims = Claims>(
+				value: Uint8Array,
+				context: Converter.Context.Decode<O, E>
+			): Promise<C> => converter.decode(new TextDecoder().decode(value), context),
 		}
 	}
 }

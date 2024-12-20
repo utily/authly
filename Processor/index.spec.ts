@@ -3,9 +3,9 @@ import { isoly } from "isoly"
 import { authly } from "../index"
 
 type Type = authly.Processor.Type<{
-	iss: { name: "issuer"; original: string; encoded: string } // required
-	aud: { name: "audience"; original: string; encoded: string } // required
-	iat: { name: "issued"; original: isoly.DateTime; encoded: number } // required
+	iss: { name: "issuer"; original: string; encoded: string } // optional
+	aud: { name: "audience"; original: string; encoded: string } // optional
+	iat: { name: "issued"; original: isoly.DateTime; encoded: number } // optional
 	f: { name: "foo"; original: string; encoded: string }
 	n: { name: "number"; original: number; encoded: number }
 	a: { name: "array"; original: number[]; encoded: number[] }
