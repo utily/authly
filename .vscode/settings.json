@@ -43,6 +43,7 @@
 		"authly",
 		"cloudly",
 		"cryptly",
+		"Encrypter",
 		"flagly",
 		"gracely",
 		"isly",
@@ -58,6 +59,8 @@
 		"smoothly",
 		"tidily",
 		"transactly",
+		"typedly",
 		"uply"
-	]
+	],
+	"typescript.tsdk": "node_modules/typescript/lib"
 }

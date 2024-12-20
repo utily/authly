@@ -20,16 +20,16 @@ export class Algorithm {
 		return this.signer.verify(data, signature)
 	}
 
-	static create(name: "none"): Algorithm | undefined
+	static create(name: "none"): Algorithm
 	static create(name: AlgorithmName.Symmetric, key: Uint8Array | string): Algorithm
-	static create(name: AlgorithmName.Symmetric, key: Uint8Array | string | undefined): Algorithm | undefined
+	static create(name: AlgorithmName.Symmetric, key: Uint8Array | string | undefined): Algorithm
 	static create(
 		name: AlgorithmName.Asymmetric,
 		publicKey: Uint8Array | string | undefined,
 		privateKey?: Uint8Array | string
-	): Algorithm | undefined
-	static create(name: AlgorithmName, ...keys: (string | Uint8Array)[]): Algorithm | undefined {
-		let result: cryptly.Signer | undefined
+	): Algorithm
+	static create(name: AlgorithmName, ...keys: (string | Uint8Array)[]): Algorithm {
+		let result: cryptly.Signer
 		switch (name) {
 			case "ES256":
 				result = cryptly.Signer.create("ECDSA", "SHA-256", keys[0], keys[1])
@@ -71,9 +71,9 @@ export class Algorithm {
 				result = cryptly.Signer.create("None")
 				break
 		}
-		return result && new Algorithm(name, result)
+		return new Algorithm(name, result)
 	}
-	static none(): Algorithm | undefined {
+	static none(): Algorithm {
 		return Algorithm.create("none")
 	}
 	static HS256(key: Uint8Array | string): Algorithm
@@ -92,58 +92,31 @@ export class Algorithm {
 		return Algorithm.create("HS512", key)
 	}
 
-	static RS256(
-		publicKey: Uint8Array | string | undefined,
-		privateKey?: Uint8Array | string | undefined
-	): Algorithm | undefined {
+	static RS256(publicKey: Uint8Array | string | undefined, privateKey?: Uint8Array | string | undefined): Algorithm {
 		return Algorithm.create("RS256", publicKey, privateKey)
 	}
-	static RS384(
-		publicKey: Uint8Array | string | undefined,
-		privateKey?: Uint8Array | string | undefined
-	): Algorithm | undefined {
+	static RS384(publicKey: Uint8Array | string | undefined, privateKey?: Uint8Array | string | undefined): Algorithm {
 		return Algorithm.create("RS384", publicKey, privateKey)
 	}
-	static RS512(
-		publicKey: Uint8Array | string | undefined,
-		privateKey?: Uint8Array | string | undefined
-	): Algorithm | undefined {
+	static RS512(publicKey: Uint8Array | string | undefined, privateKey?: Uint8Array | string | undefined): Algorithm {
 		return Algorithm.create("RS512", publicKey, privateKey)
 	}
-	static ES256(
-		publicKey: Uint8Array | string | undefined,
-		privateKey?: Uint8Array | string | undefined
-	): Algorithm | undefined {
+	static ES256(publicKey: Uint8Array | string | undefined, privateKey?: Uint8Array | string | undefined): Algorithm {
 		return Algorithm.create("ES256", publicKey, privateKey)
 	}
-	static ES384(
-		publicKey: Uint8Array | string | undefined,
-		privateKey?: Uint8Array | string | undefined
-	): Algorithm | undefined {
+	static ES384(publicKey: Uint8Array | string | undefined, privateKey?: Uint8Array | string | undefined): Algorithm {
 		return Algorithm.create("ES384", publicKey, privateKey)
 	}
-	static ES512(
-		publicKey: Uint8Array | string | undefined,
-		privateKey?: Uint8Array | string | undefined
-	): Algorithm | undefined {
+	static ES512(publicKey: Uint8Array | string | undefined, privateKey?: Uint8Array | string | undefined): Algorithm {
 		return Algorithm.create("ES512", publicKey, privateKey)
 	}
-	static PS256(
-		publicKey: Uint8Array | string | undefined,
-		privateKey?: Uint8Array | string | undefined
-	): Algorithm | undefined {
+	static PS256(publicKey: Uint8Array | string | undefined, privateKey?: Uint8Array | string | undefined): Algorithm {
 		return Algorithm.create("PS256", publicKey, privateKey)
 	}
-	static PS384(
-		publicKey: Uint8Array | string | undefined,
-		privateKey?: Uint8Array | string | undefined
-	): Algorithm | undefined {
+	static PS384(publicKey: Uint8Array | string | undefined, privateKey?: Uint8Array | string | undefined): Algorithm {
 		return Algorithm.create("PS384", publicKey, privateKey)
 	}
-	static PS512(
-		publicKey: Uint8Array | string | undefined,
-		privateKey?: Uint8Array | string | undefined
-	): Algorithm | undefined {
+	static PS512(publicKey: Uint8Array | string | undefined, privateKey?: Uint8Array | string | undefined): Algorithm {
 		return Algorithm.create("PS512", publicKey, privateKey)
 	}
 }
