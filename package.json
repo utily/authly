@@ -72,7 +72,7 @@
 	},
 	"dependencies": {
 		"cryptly": "^6.0.2",
-		"isly": "^0.1.20",
+		"isly": "^0.1.23",
 		"typedly": "^0.0.26"
 	},
 	"devDependencies": {

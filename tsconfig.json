@@ -10,6 +10,5 @@
 	"files": [
 		"index.ts",
 		"Claims.ts",
-		"Promisify.ts"
 	]
 }
