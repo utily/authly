@@ -1,7 +1,7 @@
 import { cryptly } from "cryptly"
 import { isoly } from "isoly"
+import { typedly } from "typedly"
 import { Claims } from "../Claims"
-import { Promisify } from "../Promisify"
 
 export interface Converter<C, P, O extends Record<string, unknown> = any, E extends Claims = Claims> {
 	encode: (value: C, { original, encoded }: Converter.Context.Encode<O, E>) => MaybePromise<P>
@@ -12,10 +12,10 @@ export namespace Converter {
 	export namespace Context {
 		export interface Encode<O extends Record<string, unknown> = any, E extends Claims = Claims> {
 			original: O
-			encoded: Promisify<E>
+			encoded: typedly.Promise.Promisify<E>
 		}
 		export interface Decode<O extends Record<string, unknown> = any, E extends Claims = Claims> {
-			original: Promisify<O>
+			original: typedly.Promise.Promisify<O>
 			encoded: E
 		}
 	}

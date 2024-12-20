@@ -1,5 +1,5 @@
+import { typedly } from "typedly"
 import { authly } from "../index"
-import { Promisify } from "../Promisify"
 
 describe("authly.Processor.Encrypter", () => {
 	const encrypter = new authly.Processor.Encrypter("secret")
@@ -10,7 +10,7 @@ describe("authly.Processor.Encrypter", () => {
 	])("encrypt + decrypt", async (path, encrypted) => {
 		const { encode, decode } = encrypter.generate(path)
 		expect(
-			await encode({ property: "value", number: 1337 }, { original: {}, encoded: Promisify.apply(claims) })
+			await encode({ property: "value", number: 1337 }, { original: {}, encoded: typedly.Promise.promisify(claims) })
 		).toEqual(encrypted)
 		expect(await decode(encrypted, { original: {}, encoded: claims })).toEqual({
 			property: "value",
