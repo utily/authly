@@ -1,7 +1,10 @@
 {
 	"compilerOptions": {
+		"skipLibCheck": true,
 		"target": "es2020",
 		"module": "es2020",
+		"strict": true,
+		"alwaysStrict": true,
 		"noImplicitAny": true,
 		"removeComments": false,
 		"preserveConstEnums": true,
@@ -13,17 +16,7 @@
 		"moduleResolution": "node",
 		"resolveJsonModule": true,
 		"esModuleInterop": true,
-		"allowJs": true,
-		"plugins": [
-			{
-				"name": "typescript-tslint-plugin",
-				"alwaysShowRuleFailuresAsWarnings": false,
-				"ignoreDefinitionFiles": true,
-				"configFile": "./tslint.json",
-				"suppressWhileTypeErrorsPresent": false,
-				"mockTypeScriptVersion": false
-			}
-		]
+		"allowJs": true
 	},
 	"typeAcquisition": {
 		"enable": true
